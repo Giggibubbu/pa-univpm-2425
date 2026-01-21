@@ -1,0 +1,8 @@
+node_modules/
+.env*
+Dockerfile.web-node-dev
+docker-compose-dev.yml
+.git
+dist/
+docker-scripts/
+keys/jwtRS256.key

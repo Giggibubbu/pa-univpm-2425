@@ -1,0 +1,10 @@
+FROM node:24-bookworm-slim
+WORKDIR /usr/app
+COPY . .
+RUN mkdir -p /usr/app/dist
+# Installa le dipendenze del progetto
+RUN npm install
+# Compila il progetto
+RUN npm run build
+# Comando per avviare l'applicazione
+CMD ["./wait-for-it.sh", "dbpg-web-node:5432", "-t", "60", "--", "npm", "run", "start"]

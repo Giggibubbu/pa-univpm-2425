@@ -1,0 +1,51 @@
+{
+  "name": "progetto_progavanzata2425",
+  "version": "1.0.0",
+  "description": "Progetto Programmazione Avanzata AA 24/25",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node dist/app.js",
+    "build": "tsc",
+    "dev": "tsx watch src/app.ts*",
+    "olddev": "ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
+    "buildUserModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x iWQ1O£4@0X£O -p 5432 -e postgres",
+    "buildNavReqModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x iWQ1O£4@0X£O -p 5432 -e postgres -t navigation_requests",
+    "buildNoNavModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x iWQ1O£4@0X£O -p 5432 -e postgres -t no_navigation_zones"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Giggibubbu/progetto_progavanzata2425.git"
+  },
+  "author": "Lorenzo Olivieri",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Giggibubbu/progetto_progavanzata2425/issues"
+  },
+  "homepage": "https://github.com/Giggibubbu/progetto_progavanzata2425#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.2",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.0.4",
+    "@types/typescript": "^0.4.29",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "tsc": "^2.0.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.50.0"
+  }
+}

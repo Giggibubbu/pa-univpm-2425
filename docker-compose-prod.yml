@@ -1,0 +1,28 @@
+services:
+    dbpg:
+        container_name: dbpg-web-node
+        image: postgres:16.11-bookworm
+        restart: always
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+          - APPDBUSER=${APPDBUSER}
+          - APPDBUSERPASSWORD=${APPDBUSERPASSWORD}
+        ports:
+          - "${PGPORT}:${PGPORT}"
+        #volumes: 
+        #  - ./sql/.:/docker-entrypoint-initdb.d/.
+    web-node:
+        container_name: web-node
+        build:
+          context: .
+          dockerfile: Dockerfile.web-node
+        env_file:
+          - .env
+        expose:
+          - "${APP_PORT}"
+        ports:
+          - "${APP_PORT}:${APP_PORT}" 
+        depends_on:
+          - dbpg
+        restart: always

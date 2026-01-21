@@ -1,0 +1,10 @@
+package-lock.json
+Dockerfile.*
+docker-compose-*.yml
+.git
+.gitignore
+.dockerignore
+.env*
+README.md
+sql/
+docker-scripts/
