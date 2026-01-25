@@ -1,7 +1,7 @@
 import express from "express";
-import { EnvVariable } from "./utils/env/EnvVariable";
+import { AppParameter } from "./utils/env/AppParameter";
 import loginRoute from "./routes/loginRoute"
-import { catchAllRoutes, httpErrorHandler } from "./middlewares/error_middlewares";
+import { catchAllRoutes, errorHandler, logError } from "./middlewares/error_middlewares";
 
 const app = express();
 
@@ -9,10 +9,10 @@ app.use(express.json());
 
 app.use('/login', loginRoute);
 
-// catchAll di tutte le rotte non definite sopra
 app.use(catchAllRoutes);
-app.use(httpErrorHandler);
+app.use(logError);
+app.use(errorHandler);
 
-app.listen(EnvVariable.APP_PORT, () => {
-  console.log(`Server running on http://localhost:${EnvVariable.APP_PORT}`);
+app.listen(AppParameter.APP_PORT, () => {
+  console.log(`Server running on http://localhost:${AppParameter.APP_PORT}`);
 });
