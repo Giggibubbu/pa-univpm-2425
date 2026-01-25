@@ -1,18 +1,16 @@
+import { HTTPAppMsgMap } from "../../interfaces/HTTPAppMsgMap";
 import { HTTPMsgStructure } from "../../interfaces/HTTPMsgStructure";
 import { getReasonPhrase } from "http-status-codes";
 
 export class HTTPError extends Error
 {
-    readonly statusCode: number;
-
-    constructor(statusCode: number, name: string, message: string)
+    constructor(readonly statusCode: number, name: string, message:string)
     {
         super(message);
-        this.statusCode = statusCode;
-        this.name = getReasonPhrase(statusCode);
+        this.name = name;
     }
     
-    getError(): HTTPMsgStructure {
+    toJSON(): HTTPMsgStructure {
         return {
             statusCode: this.statusCode,
             name:this.name,

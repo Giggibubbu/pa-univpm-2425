@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import { EnvVariable } from '../utils/env/EnvVariable';
+import { AppParameter } from '../utils/env/AppParameter';
 
 export class DatabaseConnection
 {
@@ -8,8 +8,8 @@ export class DatabaseConnection
 
     private constructor()
     {
-        DatabaseConnection.sequelize = new Sequelize(EnvVariable.PGDATABASE, EnvVariable.PGUSER, EnvVariable.PGUSERPSW, {
-            host: EnvVariable.PGHOST,
+        DatabaseConnection.sequelize = new Sequelize(AppParameter.PGDATABASE, AppParameter.PGUSER, AppParameter.PGUSERPSW, {
+            host: AppParameter.PGHOST,
             dialect: 'postgres'
         });
     }

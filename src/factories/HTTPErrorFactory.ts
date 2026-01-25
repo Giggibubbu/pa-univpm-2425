@@ -1,20 +1,12 @@
-import { HTTPError } from "../errors/http/HTTPError";
+import { HTTPError } from "../utils/errors/HTTPError";
 import { appErrorMessages } from "../utils/messages/messages_utils";
 import { HTTPMsgStructure } from "../interfaces/HTTPMsgStructure";
+import { AppErrorName } from "../enum/AppErrorName";
 
 export class HTTPErrorFactory {
     private constructor(){}
-    static getError(appErrorName: string):HTTPError {
-        if(appErrorName !== undefined)
-            {
-                const error: HTTPMsgStructure = appErrorMessages[appErrorName];
-                return new HTTPError(error.statusCode, error.name, error.message);
-            }
-        else
-            {
-                const error: HTTPMsgStructure = appErrorMessages["INTERNAL_SERVER_ERROR"];
-                return new HTTPError(error.statusCode, error.name, error.message);
-            }
+    static getError(name: string):HTTPError {
+        return new HTTPError(appErrorMessages[name].statusCode, appErrorMessages[name].name, appErrorMessages[name].message)
     }
 }
 

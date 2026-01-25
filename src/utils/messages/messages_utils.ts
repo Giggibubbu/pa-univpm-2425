@@ -1,25 +1,37 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import {HTTPAppMsgMap} from "../../interfaces/HTTPAppMsgMap"
+import { HTTPAppMsgMap } from "../../interfaces/HTTPAppMsgMap"
+import { AppErrorMessage } from "../../enum/AppErrorMessage";
+import { AppErrorName } from "../../enum/AppErrorName";
 
 export const appErrorMessages: HTTPAppMsgMap = {
-    "INVALID_CREDENTIALS": {
+    [AppErrorName.INVALID_CREDENTIALS]: {
         statusCode: StatusCodes.UNAUTHORIZED,
-        name: getReasonPhrase(StatusCodes.UNAUTHORIZED),
-        message: "Le credenziali inserite non sono corrette."
+        name: AppErrorName.INVALID_CREDENTIALS,
+        message: AppErrorMessage.INVALID_CREDENTIALS
     },
-    "INTERNAL_SERVER_ERROR": {
+    [AppErrorName.LOGIN_INVALID]: {
+        statusCode: StatusCodes.UNAUTHORIZED,
+        name: AppErrorName.LOGIN_INVALID,
+        message: AppErrorMessage.LOGIN_INVALID
+    },
+    [AppErrorName.INTERNAL_SERVER_ERROR]: {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
-        name: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
-        message: "Impossibile completare l'operazione a causa di un errore interno del sistema."
+        name: AppErrorName.INTERNAL_SERVER_ERROR,
+        message: AppErrorMessage.INTERNAL_SERVER_ERROR
     },
-    "ROUTE_NOT_FOUND": {
+    [AppErrorName.ROUTE_NOT_FOUND]: {
         statusCode: StatusCodes.NOT_FOUND,
-        name: getReasonPhrase(StatusCodes.NOT_FOUND),
-        message: "La rotta richiesta non è stata trovata."
+        name: AppErrorName.ROUTE_NOT_FOUND,
+        message: AppErrorMessage.ROUTE_NOT_FOUND
     },
-    "MALFORMED_REQUEST_BODY": {
+    [AppErrorName.MALFORMED_REQUEST_BODY]: {
         statusCode: StatusCodes.BAD_REQUEST,
-        name: getReasonPhrase(StatusCodes.BAD_REQUEST),
-        message: "Il corpo della richiesta non è valido."
+        name: AppErrorName.MALFORMED_REQUEST_BODY,
+        message: AppErrorMessage.MALFORMED_REQUEST_BODY
+    },
+    [AppErrorName.INVALID_JWT]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.INVALID_JWT,
+        message: AppErrorMessage.INVALID_JWT
     }
 }

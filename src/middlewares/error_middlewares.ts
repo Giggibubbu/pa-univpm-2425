@@ -1,22 +1,44 @@
 import { NextFunction, Request, Response,  } from "express";
-import { HTTPError } from "../errors/http/HTTPError";
 import { HTTPErrorFactory } from "../factories/HTTPErrorFactory";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppLogicError } from "../utils/errors/AppLogicError";
+import { HTTPError } from "../utils/errors/HTTPError";
 
-const logError = (err:Error, req:Request, res:Response, next:NextFunction):void=>{
-  console.log("ahi ahi",err);
+export const logError = (err: Error | AppLogicError | HTTPError, req:Request, res:Response, next:NextFunction):void=>{
+  const logDate:string = new Date().toLocaleString('it-IT');
+  switch(true)
+  {
+    case err instanceof AppLogicError:
+      console.log(`${logDate} Errore generico nella logica applicativa: ${err}`)
+      break;
+    case err instanceof HTTPError:
+      console.log(`${logDate} Errore generico nella logica applicativa: ${err}`)
+      break;
+    case err instanceof Error:
+      console.log(`${logDate} Errore sconosciuto del server: ${err}`)
+      break;
+  }
   next(err);
 }
 
-export const httpErrorHandler = async (err:HTTPError, req:Request, res:Response, next:NextFunction) => {
-  res.status(err.statusCode).json(err.getError());
+export const errorHandler = async (err: Error | HTTPError | AppLogicError, req:Request, res:Response, next:NextFunction) => {
+  switch(true)
+  {
+    case err instanceof HTTPError:
+      res.status(err.statusCode).json(err.toJSON());
+      break;
+    case err instanceof AppLogicError:
+      const httpError = HTTPErrorFactory.getError(err.name);
+      res.status(httpError.statusCode).json(httpError.toJSON());
+      break;
+    case err instanceof Error:
+      const defaultHttpError = HTTPErrorFactory.getError(AppErrorName.INTERNAL_SERVER_ERROR);
+      res.status(defaultHttpError.statusCode).json(defaultHttpError.toJSON());
+      break;
+  }
 }
 
 export const catchAllRoutes = async (req:Request, res:Response, next:NextFunction) => {
-  next(HTTPErrorFactory.getError("ROUTE_NOT_FOUND"));
-}
-
-export const genericErrorHandler = async (err:Error, req:Request, res:Response, next:NextFunction) => {
-  console.log(err);
-  res.status(404).json({statusCode: 404, name: err.name, message: err.message});
+  next(HTTPErrorFactory.getError(AppErrorName.ROUTE_NOT_FOUND));
 }
 
