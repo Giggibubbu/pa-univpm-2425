@@ -21,8 +21,8 @@ CREATE TYPE reqstatus AS ENUM ('pending', 'accepted', 'rejected', 'cancelled');
 -- Create users table
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
     role role NOT NULL,
     tokens smallint NOT null DEFAULT 0
 );

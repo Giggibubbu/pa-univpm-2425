@@ -1,6 +1,6 @@
 import express from "express";
 import { AppParameter } from "./utils/env/AppParameter";
-import loginRoute from "./routes/loginRoute"
+import loginRoute from "./routes/authRoute"
 import { catchAllRoutes, errorHandler, logError } from "./middlewares/error_middlewares";
 
 const app = express();

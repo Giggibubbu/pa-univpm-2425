@@ -3,6 +3,7 @@ import { HTTPErrorFactory } from "../factories/HTTPErrorFactory";
 import { AppErrorName } from "../enum/AppErrorName";
 import { AppLogicError } from "../utils/errors/AppLogicError";
 import { HTTPError } from "../utils/errors/HTTPError";
+import { Console } from "console";
 
 export const logError = (err: Error | AppLogicError | HTTPError, req:Request, res:Response, next:NextFunction):void=>{
   const logDate:string = new Date().toLocaleString('it-IT');
