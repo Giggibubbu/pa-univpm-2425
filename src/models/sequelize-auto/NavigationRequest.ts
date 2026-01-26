@@ -1,82 +1,88 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { User, userId } from './user';
+import type { User, UserId } from './User';
 
-export interface NavReqAttributes {
+export interface NavigationRequestAttributes {
   id: number;
-  user_id: number;
+  userId: number;
   status: "pending" | "accepted" | "rejected" | "cancelled";
-  submitted_at: Date;
-  date_start: Date;
-  date_end: Date;
-  drone_id: string;
-  navigation_plan: any;
+  submittedAt: Date;
+  dateStart: Date;
+  dateEnd: Date;
+  droneId: string;
+  navigationPlan: any;
   motivation?: string;
 }
 
-export type navigation_requestPk = "id";
-export type navigation_requestId = NavigationRequest[navigation_requestPk];
-export type navigation_requestOptionalAttributes = "id" | "status" | "submitted_at" | "motivation";
-export type navigation_requestCreationAttributes = Optional<NavReqAttributes, navigation_requestOptionalAttributes>;
+export type NavigationRequestPk = "id";
+export type NavigationRequestId = NavigationRequest[NavigationRequestPk];
+export type NavigationRequestOptionalAttributes = "id" | "status" | "submittedAt" | "motivation";
+export type NavigationRequestCreationAttributes = Optional<NavigationRequestAttributes, NavigationRequestOptionalAttributes>;
 
-export class NavigationRequest extends Model<NavReqAttributes, navigation_requestCreationAttributes> implements NavReqAttributes {
+export class NavigationRequest extends Model<NavigationRequestAttributes, NavigationRequestCreationAttributes> implements NavigationRequestAttributes {
   id!: number;
-  user_id!: number;
+  userId!: number;
   status!: "pending" | "accepted" | "rejected" | "cancelled";
-  submitted_at!: Date;
-  date_start!: Date;
-  date_end!: Date;
-  drone_id!: string;
-  navigation_plan!: any;
+  submittedAt!: Date;
+  dateStart!: Date;
+  dateEnd!: Date;
+  droneId!: string;
+  navigationPlan!: any;
   motivation?: string;
 
-  // navigation_request belongsTo user via user_id
+  // NavigationRequest belongsTo User via userId
   user!: User;
   getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, userId>;
+  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
   createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof NavigationRequest {
-    return NavigationRequest.init({
+    return sequelize.define('NavigationRequest', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'users',
         key: 'id'
-      }
+      },
+      field: 'user_id'
     },
     status: {
       type: DataTypes.ENUM("pending","accepted","rejected","cancelled"),
       allowNull: false,
       defaultValue: "pending"
     },
-    submitted_at: {
+    submittedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: Sequelize.Sequelize.fn('now')
+      defaultValue: Sequelize.Sequelize.fn('now'),
+      field: 'submitted_at'
     },
-    date_start: {
+    dateStart: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      field: 'date_start'
     },
-    date_end: {
+    dateEnd: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      field: 'date_end'
     },
-    drone_id: {
+    droneId: {
       type: DataTypes.STRING(10),
-      allowNull: false
+      allowNull: false,
+      field: 'drone_id'
     },
-    navigation_plan: {
+    navigationPlan: {
       type: DataTypes.GEOMETRY('POLYGON', 4326),
-      allowNull: false
+      allowNull: false,
+      field: 'navigation_plan'
     },
     motivation: {
       type: DataTypes.STRING(255),
@@ -84,7 +90,6 @@ export class NavigationRequest extends Model<NavReqAttributes, navigation_reques
       defaultValue: "NULL"
     }
   }, {
-    sequelize,
     tableName: 'navigation_requests',
     schema: 'pa2425',
     timestamps: false,
@@ -97,6 +102,6 @@ export class NavigationRequest extends Model<NavReqAttributes, navigation_reques
         ]
       },
     ]
-  });
+  }) as typeof NavigationRequest;
   }
 }

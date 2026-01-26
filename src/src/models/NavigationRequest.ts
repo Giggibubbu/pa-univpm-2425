@@ -1,0 +1,107 @@
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { User, UserId } from './User';
+
+export interface NavigationRequestAttributes {
+  id: number;
+  userId: number;
+  status: "pending" | "accepted" | "rejected" | "cancelled";
+  submittedAt: Date;
+  dateStart: Date;
+  dateEnd: Date;
+  droneId: string;
+  navigationPlan: any;
+  motivation?: string;
+}
+
+export type NavigationRequestPk = "id";
+export type NavigationRequestId = NavigationRequest[NavigationRequestPk];
+export type NavigationRequestOptionalAttributes = "id" | "status" | "submittedAt" | "motivation";
+export type NavigationRequestCreationAttributes = Optional<NavigationRequestAttributes, NavigationRequestOptionalAttributes>;
+
+export class NavigationRequest extends Model<NavigationRequestAttributes, NavigationRequestCreationAttributes> implements NavigationRequestAttributes {
+  id!: number;
+  userId!: number;
+  status!: "pending" | "accepted" | "rejected" | "cancelled";
+  submittedAt!: Date;
+  dateStart!: Date;
+  dateEnd!: Date;
+  droneId!: string;
+  navigationPlan!: any;
+  motivation?: string;
+
+  // NavigationRequest belongsTo User via userId
+  user!: User;
+  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
+  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
+
+  static initModel(sequelize: Sequelize.Sequelize): typeof NavigationRequest {
+    return sequelize.define('NavigationRequest', {
+    id: {
+      autoIncrement: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
+      field: 'user_id'
+    },
+    status: {
+      type: DataTypes.ENUM("pending","accepted","rejected","cancelled"),
+      allowNull: false,
+      defaultValue: "pending"
+    },
+    submittedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('now'),
+      field: 'submitted_at'
+    },
+    dateStart: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'date_start'
+    },
+    dateEnd: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'date_end'
+    },
+    droneId: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      field: 'drone_id'
+    },
+    navigationPlan: {
+      type: DataTypes.GEOMETRY('POLYGON', 4326),
+      allowNull: false,
+      field: 'navigation_plan'
+    },
+    motivation: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      defaultValue: "NULL"
+    }
+  }, {
+    tableName: 'navigation_requests',
+    schema: 'pa2425',
+    timestamps: false,
+    indexes: [
+      {
+        name: "navigation_requests_pkey",
+        unique: true,
+        fields: [
+          { name: "id" },
+        ]
+      },
+    ]
+  }) as typeof NavigationRequest;
+  }
+}

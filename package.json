@@ -9,7 +9,7 @@
     "build": "tsc",
     "dev": "tsx watch src/app.ts*",
     "olddev": "ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
-    "buildUserModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres",
+    "buildModels": "sequelize-auto --sg=true -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres --useDefine --cm=p --cp=c --cf=p --noAlias",
     "buildNavReqModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres -t navigation_requests",
     "buildNoNavModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres -t no_navigation_zones"
   },
