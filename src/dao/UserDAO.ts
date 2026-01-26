@@ -1,4 +1,4 @@
-import { OrmModels } from '../connector/OrmModels';
+import { OrmModels } from '../db/OrmModels';
 import { UserAttributes } from '../models/sequelize-auto/User';
 import { IDao } from './IDAO';
 export class UserDAO implements IDao<UserAttributes>
@@ -13,9 +13,9 @@ export class UserDAO implements IDao<UserAttributes>
         return this.userModel.create({
             id: item.id,
             email: item.email,
+            password: item.password,
             role: item.role,
-            tokens: item.tokens,
-            password: ''
+            tokens: item.tokens
         })
         .then(user => console.log("User created or updated: ", user.toJSON()))
         .catch(error => console.error(error))

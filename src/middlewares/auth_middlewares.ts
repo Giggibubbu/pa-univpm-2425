@@ -22,7 +22,7 @@ const validateAndSanitizePassword: ValidationChain = body('password')
 });
 
 
-export const finalizeLoginValidation = async (req:Request, res:Response, next:NextFunction) => {
+export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunction) => {
     const errors: Result<ValidationError> = validationResult(req);
     if (!errors.isEmpty()) 
         {

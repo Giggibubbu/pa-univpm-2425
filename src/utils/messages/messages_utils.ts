@@ -1,7 +1,7 @@
-import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { HTTPAppMsgMap } from "../../interfaces/HTTPAppMsgMap"
 import { AppErrorMessage } from "../../enum/AppErrorMessage";
 import { AppErrorName } from "../../enum/AppErrorName";
+import { StatusCodes } from "http-status-codes";
 
 export const appErrorMessages: HTTPAppMsgMap = {
     [AppErrorName.INVALID_CREDENTIALS]: {

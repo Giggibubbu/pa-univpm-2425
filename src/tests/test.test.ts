@@ -19,8 +19,8 @@ export class User{
         this._surname = this.validatorStr(surname);
     }
 
-    private validatorStr(value:string, minLen:number=3):string|never{
-        let val:string = value.trim();
+    private validatorStr(value:string, minLen=3):string|never{
+        const val:string = value.trim();
         if(val.length >= minLen)
             return val;        
         throw new Error("invalid name");

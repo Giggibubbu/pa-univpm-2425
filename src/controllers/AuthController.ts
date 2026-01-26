@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { AppParameter } from "../utils/env/AppParameter";
 import { AuthService } from "../services/AuthService";
 export class AuthController
 {
