@@ -1,4 +1,8 @@
-INSERT INTO users (username, email, role, tokens) VALUES
-('alice', 'alice@example.com', 'user', 10),
-('bob', 'bob@example.com', 'operator', 25),
-('charlie', 'charlie@example.com', 'admin', 100);
+-- Connect to database
+\connect pa2425
+
+-- Insert data
+INSERT INTO users (email, password, role, tokens) VALUES
+('alice@example.com', 'pippopluto93', 'user', 100),
+('bob@example.com', 'pippopluto93', 'operator', 100),
+('charlie@example.com', 'pippopluto93', 'admin', 100);

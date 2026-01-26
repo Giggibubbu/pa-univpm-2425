@@ -8,10 +8,15 @@ export class DatabaseConnection
 
     private constructor()
     {
-        DatabaseConnection.sequelize = new Sequelize(AppParameter.PGDATABASE, AppParameter.PGUSER, AppParameter.PGUSERPSW, {
-            host: AppParameter.PGHOST,
-            dialect: 'postgres'
-        });
+        DatabaseConnection.sequelize = new Sequelize(
+            AppParameter.PGDATABASE,
+            AppParameter.PGUSER,
+            AppParameter.PGUSERPSW,
+            {
+                host: AppParameter.PGHOST,
+                dialect: 'postgres'
+            }
+        );
     }
 
     public static getInstance(): Sequelize

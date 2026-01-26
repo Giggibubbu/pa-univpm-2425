@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes, Model } from 'sequelize';
 import { DatabaseConnection } from './DatabaseConnection';
+import { initModels } from '../models/sequelize-auto/init-models';
 
 export class OrmModels
 {
@@ -18,17 +19,17 @@ export class OrmModels
             allowNull: false,
             primaryKey: true
           },
-          username:
-          {
-            type: DataTypes.TEXT,
-            allowNull: false,
-            unique: "users_username_key"
-          },
           email:
           {
             type: DataTypes.TEXT,
             allowNull: false,
             unique: "users_email_key"
+          },
+          password:
+          {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            unique: "users_password_key"
           },
           role:
           {
@@ -61,14 +62,7 @@ export class OrmModels
               fields: [
                 { name: "id" },
               ]
-            },
-            {
-              name: "users_username_key",
-              unique: true,
-              fields: [
-                { name: "username" },
-              ]
-            },
+            }
           ]
         }
       );
@@ -187,23 +181,10 @@ export class OrmModels
   }
 
   public static initModels() {
-    const User = OrmModels.getUserModel();
-    const NavigationPlanRequest = OrmModels.getNavPlanReqModel();
-    const NoNavigationZone = OrmModels.getNoNavZoneModel();
-    
-    NavigationPlanRequest.belongsTo(User, { as: "user", foreignKey: "user_id"});
-    User.hasMany(NavigationPlanRequest, { as: "navigation_requests", foreignKey: "user_id"});
-    NoNavigationZone.belongsTo(User, { as: "operator", foreignKey: "operator_id"});
-    User.hasMany(NoNavigationZone, { as: "no_navigation_zones", foreignKey: "operator_id"});
-    
-    return {
-        navigationRequest: NavigationPlanRequest,
-        noNavigationZone: NoNavigationZone,
-        user: User,
-    };
+    return initModels(this.sequelize);
   }
   public static authenticate():void
   {
-        DatabaseConnection.authenticate;
+        this.sequelize.authenticate;
   }
 }

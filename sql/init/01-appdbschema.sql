@@ -42,8 +42,8 @@ CREATE TABLE navigation_requests (
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     status reqstatus NOT NULL DEFAULT 'pending',
     submitted_at TIMESTAMP NOT NULL DEFAULT now(),
-    date_start TIMESTAMP NOT NULL DEFAULT NULL,
-    date_end TIMESTAMP NOT NULL DEFAULT NULL,
+    date_start TIMESTAMP NOT NULL,
+    date_end TIMESTAMP NOT NULL,
     drone_id VARCHAR(10) NOT NULL,
     navigation_plan GEOMETRY(POLYGON, 4326) NOT NULL,
     motivation VARCHAR(255) DEFAULT NULL
