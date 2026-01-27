@@ -28,6 +28,9 @@ export const errorHandler = async (err: Error | HTTPError | AppLogicError, req:R
     case err instanceof HTTPError:
       res.status(err.statusCode).json(err.toJSON());
       break;
+    case err instanceof AppLogicError && err.name === AppErrorName.LOGIN_NOT_AVAILABLE:
+      httpError = HTTPErrorFactory.getError(err.name);
+      res.status(httpError.statusCode).json(httpError);
     case err instanceof AppLogicError:
       httpError = HTTPErrorFactory.getError(err.name);
       res.status(httpError.statusCode).json(httpError.toJSON());

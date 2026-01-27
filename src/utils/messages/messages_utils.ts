@@ -33,5 +33,10 @@ export const appErrorMessages: HTTPAppMsgMap = {
         statusCode: StatusCodes.BAD_REQUEST,
         name: AppErrorName.INVALID_JWT,
         message: AppErrorMessage.INVALID_JWT
+    },
+    [AppErrorName.LOGIN_NOT_AVAILABLE]: {
+        statusCode: StatusCodes.SERVICE_UNAVAILABLE,
+        name: AppErrorName.LOGIN_NOT_AVAILABLE,
+        message: AppErrorMessage.LOGIN_NOT_AVAILABLE
     }
 }
