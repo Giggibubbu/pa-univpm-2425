@@ -1,9 +1,10 @@
 import { HTTPSuccessMsgStructure } from "../interfaces/messages/success/HTTPSuccessMsgStructure.js";
-import { appErrorMessages, appSuccessMessages } from "../utils/messages/messages_utils.js";
+import { appSuccessMessages } from "../utils/messages/messages_utils.js";
 
 export class HTTPMessageFactory {
     private constructor(){}
     static getMessage(name: string, data:Object):HTTPSuccessMsgStructure {
+        console.log(appSuccessMessages[name]);
         return {
             statusCode: appSuccessMessages[name].statusCode,
             message: appSuccessMessages[name].message,
