@@ -1,6 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { User, UserId } from './User';
+import type { User, UserId } from './User.js';
 
 export interface NoNavigationZoneAttributes {
   id: number;

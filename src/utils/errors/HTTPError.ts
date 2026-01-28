@@ -6,6 +6,8 @@ export class HTTPError extends Error
     {
         super(message);
         this.name = name;
+        this.message = message;
+        Object.setPrototypeOf(this, HTTPError.prototype);
     }
     
     toJSON(): HTTPMsgStructure {

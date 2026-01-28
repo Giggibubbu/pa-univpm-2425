@@ -1,4 +1,4 @@
-import { HTTPMsgStructure } from "./HTTPMsgStructure";
+import { HTTPMsgStructure } from "./HTTPMsgStructure.js";
 
 export interface HTTPAppMsgMap
 {

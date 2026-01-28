@@ -1,6 +1,6 @@
-import { HTTPAppMsgMap } from "../../interfaces/HTTPAppMsgMap"
-import { AppErrorMessage } from "../../enum/AppErrorMessage";
-import { AppErrorName } from "../../enum/AppErrorName";
+import { HTTPAppMsgMap } from "../../interfaces/HTTPAppMsgMap.js"
+import { AppErrorMessage } from "../../enum/AppErrorMessage.js";
+import { AppErrorName } from "../../enum/AppErrorName.js";
 import { StatusCodes } from "http-status-codes";
 
 export const appErrorMessages: HTTPAppMsgMap = {

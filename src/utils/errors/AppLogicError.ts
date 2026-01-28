@@ -4,6 +4,7 @@ export class AppLogicError extends Error
     {
         super();
         this.name = name;
+        Object.setPrototypeOf(this, AppLogicError.prototype);
     }
 }
 

@@ -10,6 +10,6 @@
     "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
     "moduleResolution": "bundler"
   },
-  "include": ["src/**/*.ts", "src/tests/**/*.test.ts"],
+  "include": ["src/**/*.ts", "src/tests/**/*.test.ts", "src/utils/**/*.ts"],
   "exclude": ["dist"]
 }

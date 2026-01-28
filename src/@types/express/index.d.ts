@@ -1,10 +1,8 @@
-// src/@types/express/index.d.ts
-
-import {ILogin} from "../ILogin"
+import {ILogin} from "../ILogin.js"
 declare global {
   namespace Express {
     interface Request {
-      userlogin?: ILogin
+      login?: ILogin
     }
   }
 }

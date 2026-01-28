@@ -1,7 +1,5 @@
-import { HTTPError } from "../utils/errors/HTTPError";
-import { appErrorMessages } from "../utils/messages/messages_utils";
-import { HTTPMsgStructure } from "../interfaces/HTTPMsgStructure";
-import { AppErrorName } from "../enum/AppErrorName";
+import { HTTPError } from "../utils/errors/HTTPError.js";
+import { appErrorMessages } from "../utils/messages/messages_utils.js";
 
 export class HTTPErrorFactory {
     private constructor(){}

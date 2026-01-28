@@ -9,8 +9,8 @@ import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
 
 export class AuthService
 {
-    
-    constructor()
+    private userDao: UserDAO;
+    constructor(userDao: UserDAO)
     {
         this.userDao = userDao;
     }
