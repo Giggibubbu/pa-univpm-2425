@@ -1,6 +1,6 @@
 import { OrmModels } from '../db/OrmModels.js';
 import { UserAttributes } from '../models/sequelize-auto/User.js';
-import { IDao } from '../interfaces/IDAO.js';
+import { IDao } from '../interfaces/dao/IDAO.js';
 export class UserDAO implements IDao<UserAttributes>
 {
     private userModel;

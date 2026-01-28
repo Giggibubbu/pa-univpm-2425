@@ -1,11 +1,11 @@
 import { UserDAO } from "../dao/UserDAO.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
-import { UserJwt } from "../interfaces/UserJWT.js";
+import { UserJwt } from "../interfaces/jwt/UserJwt.js";
 import { UserAttributes } from "../models/sequelize-auto/User.js";
-import { AppLogicError } from "../utils/errors/AppLogicError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
+import { AppLogicError } from "../messages/errors/AppLogicError.js";
 
 export class AuthService
 {

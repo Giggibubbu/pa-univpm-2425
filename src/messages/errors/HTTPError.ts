@@ -1,4 +1,4 @@
-import { HTTPMsgStructure } from "../../interfaces/HTTPMsgStructure";
+import { HTTPErrorMsgStructure } from "../../interfaces/messages/error/HTTPErrorMsgStructure";
 
 export class HTTPError extends Error
 {
@@ -10,7 +10,7 @@ export class HTTPError extends Error
         Object.setPrototypeOf(this, HTTPError.prototype);
     }
     
-    toJSON(): HTTPMsgStructure {
+    toJSON(): HTTPErrorMsgStructure {
         return {
             statusCode: this.statusCode,
             name:this.name,

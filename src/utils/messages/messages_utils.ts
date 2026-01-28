@@ -1,9 +1,11 @@
-import { HTTPAppMsgMap } from "../../interfaces/HTTPAppMsgMap.js"
+import { HTTPAppErrorMsgMap } from "../../interfaces/messages/error/HTTPAppErrorMsgMap.js"
 import { AppErrorMessage } from "../../enum/AppErrorMessage.js";
 import { AppErrorName } from "../../enum/AppErrorName.js";
 import { StatusCodes } from "http-status-codes";
+import { AppSuccessName } from "../../enum/AppSuccessName.js";
+import { HTTPAppSuccessMsgMap } from "../../interfaces/messages/success/HTTPAppSuccessMsgMap.js";
 
-export const appErrorMessages: HTTPAppMsgMap = {
+export const appErrorMessages: HTTPAppErrorMsgMap = {
     [AppErrorName.INVALID_CREDENTIALS]: {
         statusCode: StatusCodes.UNAUTHORIZED,
         name: AppErrorName.INVALID_CREDENTIALS,
@@ -39,4 +41,14 @@ export const appErrorMessages: HTTPAppMsgMap = {
         name: AppErrorName.LOGIN_NOT_AVAILABLE,
         message: AppErrorMessage.LOGIN_NOT_AVAILABLE
     }
+}
+
+export const appSuccessMessages: HTTPAppSuccessMsgMap = 
+{
+    [AppSuccessName.LOGIN_SUCCESS]: {
+        statusCode: StatusCodes.OK,
+        message: AppSuccessName.LOGIN_SUCCESS,
+        data: {}
+    }
+
 }

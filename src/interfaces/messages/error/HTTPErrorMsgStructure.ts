@@ -1,4 +1,4 @@
-export interface HTTPMsgStructure
+export interface HTTPErrorMsgStructure
 {
     statusCode: number;
     name: string;
