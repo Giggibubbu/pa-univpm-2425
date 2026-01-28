@@ -6,4 +6,4 @@ docker-compose-dev.yml
 dist/
 docker-scripts/
 keys/jwtRS256.key
-passwords.txt
+password.txt

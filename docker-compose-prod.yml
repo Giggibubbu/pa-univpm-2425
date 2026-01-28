@@ -1,6 +1,6 @@
 services:
     dbpg:
-        container_name: dbpg-web-node
+        container_name: pa-dbpg-web-node
         image: postgis/postgis:16-master
         restart: always
         environment:
@@ -13,7 +13,7 @@ services:
         #volumes: 
         #  - ./sql/.:/docker-entrypoint-initdb.d/.
     web-node:
-        container_name: web-node
+        container_name: pa-web-node
         build:
           context: .
           dockerfile: Dockerfile.web-node
