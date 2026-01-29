@@ -1,4 +1,4 @@
 export enum AppSuccessMessage
 {
-    LOGIN_SUCCESS="Il login è avvenuto con successo."
+    LOGIN_SUCCESS="Login avvenuto con successo."
 }
