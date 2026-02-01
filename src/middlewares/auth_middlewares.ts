@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { body, checkExact, ContextRunner, Result, ValidationChain, ValidationError, validationResult } from "express-validator";
 import { Middleware } from "express-validator/lib/base";
 import { AppErrorName } from "../enum/AppErrorName.js";
-import { AppLogicError } from "../messages/errors/AppLogicError.js";
+import { AppLogicError } from "../errors/AppLogicError.js";
 
 const validateAndSanitizeEmail: ValidationChain = body('email')
 .notEmpty()

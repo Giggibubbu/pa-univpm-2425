@@ -1,4 +1,4 @@
-import { HTTPError } from "../messages/errors/HTTPError.js";
+import { HTTPError } from "../errors/HTTPError.js";
 import { appErrorMessages } from "../utils/messages/messages_utils.js";
 
 export class HTTPErrorFactory {

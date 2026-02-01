@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import { JWT_KEYS_DIRNAME, JWT_PRIVKEY_NAME, JWT_PUBKEY_NAME } from "../env/app_parameters.js";
 import { AppErrorName } from "../../enum/AppErrorName.js";
-import { AppLogicError } from "../../messages/errors/AppLogicError.js";
+import { AppLogicError } from "../../errors/AppLogicError.js";
 
 export const readJwtKeys = async () => {
     try

@@ -5,7 +5,7 @@ import { UserAttributes } from "../models/sequelize-auto/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
-import { AppLogicError } from "../messages/errors/AppLogicError.js";
+import { AppLogicError } from "../errors/AppLogicError.js";
 
 export class AuthService
 {
@@ -17,7 +17,7 @@ export class AuthService
 
     async loginUser(email:string, password:string): Promise<string>
     {
-        const user:UserAttributes|null = await this.userDao.findByEmail(email);
+        const user:UserAttributes|null|undefined = await this.userDao.read(email);
         if(!user)
         {
             throw new AppLogicError(AppErrorName.INVALID_CREDENTIALS);

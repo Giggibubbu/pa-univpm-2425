@@ -1,4 +1,4 @@
-import { HTTPErrorMsgStructure } from "../../interfaces/messages/error/HTTPErrorMsgStructure";
+import { HTTPErrorMsgStructure } from "../interfaces/messages/error/HTTPErrorMsgStructure";
 
 export class HTTPError extends Error
 {
