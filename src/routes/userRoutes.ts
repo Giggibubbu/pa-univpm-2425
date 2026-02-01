@@ -1,14 +1,18 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/AuthController.js";
-import { finalizeLoginValidation, loginValidationRules } from "../middlewares/auth_middlewares.js";
-import { AuthService } from "../services/AuthService.js";
+import { finalizeLoginValidation, loginValidationRules, verifyJwt } from "../middlewares/noauth_middlewares.js";
 import { UserDAO } from "../dao/UserDAO.js";
+import { NavPlanDAO } from "../dao/NavPlanDAO.js";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
+import { UserRoleService } from "../services/UserRoleService.js";
+import { UserRoleController } from "../controllers/UserRoleController.js";
 
-const authRouter = Router();
+const userRoleRouter = Router();
 const userDao = new UserDAO();
-const authService = new AuthService(userDao);
-const authController = new AuthController(authService);
+const navPlanDao = new NavPlanDAO();
+const noNavZoneDao = new NoNavZoneDAO();
+const userRoleService = new UserRoleService(userDao, navPlanDao, noNavZoneDao);
+const userRoleController = new UserRoleController(userRoleService);
 
-authRouter.post('/', loginValidationRules, finalizeLoginValidation, authController.login);
+userRoleRouter.post('/', verifyJwt, userRoleController.create);
 
-export default authRouter;
+export default userRoleRouter;

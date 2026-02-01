@@ -7,4 +7,4 @@ export const PGUSER = process.env.PGUSER ?? "postgres";
 export const PGUSERPSW = process.env.PGUSERPSW ?? "postgres";
 export const JWT_PRIVKEY_NAME = process.env.JWT_PRIVKEY_NAME ?? "jwtRS256.key";
 export const JWT_KEYS_DIRNAME = process.env.JWT_KEYS_PATH ?? "keys";
-export const JWT_PUBKEY_NAME = process.env.JWT_PUBKEY_NAME ?? "jwtRS256.key.pub";
+export const JWT_PUBKEY_NAME = process.env.JWT_PUBKEY_NAME ?? "jwtRS256.key.pub.pem";

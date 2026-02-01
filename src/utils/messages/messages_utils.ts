@@ -38,10 +38,25 @@ export const appErrorMessages: HTTPAppErrorMsgMap = {
         name: AppErrorName.INVALID_JWT,
         message: AppErrorMessage.INVALID_JWT
     },
+    [AppErrorName.UNAUTHORIZED_JWT]: {
+        statusCode: StatusCodes.UNAUTHORIZED,
+        name: AppErrorName.UNAUTHORIZED_JWT,
+        message: AppErrorMessage.UNAUTHORIZED_JWT
+    },
     [AppErrorName.LOGIN_NOT_AVAILABLE]: {
         statusCode: StatusCodes.SERVICE_UNAVAILABLE,
         name: AppErrorName.LOGIN_NOT_AVAILABLE,
         message: AppErrorMessage.LOGIN_NOT_AVAILABLE
+    },
+    [AppErrorName.AUTH_TOKEN_NOTFOUND]: {
+        statusCode: StatusCodes.UNAUTHORIZED,
+        name: AppErrorName.AUTH_TOKEN_NOTFOUND,
+        message: AppErrorMessage.AUTH_TOKEN_NOTFOUND
+    },
+    [AppErrorName.TOKEN_EXPIRED]: {
+        statusCode: StatusCodes.UNAUTHORIZED,
+        name: AppErrorName.TOKEN_EXPIRED,
+        message: AppErrorMessage.TOKEN_EXPIRED
     }
 }
 

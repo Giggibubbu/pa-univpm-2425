@@ -1,5 +1,6 @@
+import { AuthRoles } from "../../enum/AuthRoles";
+
 export interface UserJwt {
   email: string;
-  role: "user" | "operator" | "admin";
-  tokens: number;
+  role: AuthRoles;
 }
