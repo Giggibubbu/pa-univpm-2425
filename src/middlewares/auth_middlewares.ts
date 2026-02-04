@@ -4,21 +4,29 @@ import { Middleware } from "express-validator/lib/base";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import jwt from "jsonwebtoken";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
-import { nextTick } from "process";
+import { AuthRoles } from "../enum/AuthRoles.js";
+import { UserJwt } from "../interfaces/jwt/UserJwt.js";
 
-const validateAndSanitizeEmail: ValidationChain = body('email')
+export const validateAndSanitizeEmail: ValidationChain = body('email')
 .notEmpty()
 .exists()
 .trim()
 .isEmail()
-.toLowerCase();
+.normalizeEmail();
 
-const validateAndSanitizePassword: ValidationChain = body('password')
+export const validateAndSanitizePassword: ValidationChain = body('password')
+.trim()
+.replace(" ", "")
 .notEmpty()
-.exists();
-
+.exists()
+.isStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1
+});
 
 export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunction) => {
     const errors: Result<ValidationError> = validationResult(req);
@@ -32,7 +40,7 @@ export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunc
 
 export const loginValidationRules: Middleware & ContextRunner = checkExact([validateAndSanitizeEmail, validateAndSanitizePassword])
 
-const checkRole = (role: string) => (req:Request, res:Response, next:NextFunction) =>
+export const checkRole = (role: string) => (req:Request, res:Response, next:NextFunction) =>
 {
     if(req.jwt?.role !== role)
     {
@@ -54,6 +62,7 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
         try
         {
             const decodedJwt= jwt.verify(userAuthToken[1], pubKey);
+            req.jwt = <UserJwt> decodedJwt;
         }
         catch(e)
         {
@@ -72,3 +81,5 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
     }
     next()
 }
+
+export const userRoleValidation = [verifyJwt, checkRole(AuthRoles.USER)]

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { NoAuthController } from "../controllers/NoAuthController.js";
-import { finalizeLoginValidation, loginValidationRules } from "../middlewares/noauth_middlewares.js";
+import { finalizeLoginValidation, loginValidationRules } from "../middlewares/auth_middlewares.js";
 import { NoAuthService } from "../services/NoAuthService.js";
 import { UserDAO } from "../dao/UserDAO.js";
 

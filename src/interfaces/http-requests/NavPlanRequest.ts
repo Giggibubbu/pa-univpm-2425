@@ -1,20 +1,12 @@
-import { Point } from "geojson";
-
-export interface NavPlanRequest
-{
-    id: number;
-    userId: number;
-    status: "pending" | "accepted" | "rejected" | "cancelled";
-    motivation?: string;
-    submittedAt: Date;
-    navPlan: NavPlan;
-}
-
+import { NavPlanReqStatus } from "../../enum/NavPlanReqStatus";
 
 export interface NavPlan
 {
+    status?: NavPlanReqStatus;
+    motivation?: string;
+    submittedAt?: Date;
     dateStart: Date;
     dateEnd: Date;
     droneId: string;
-    route: Point[];
+    route: string;
 }

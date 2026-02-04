@@ -8,5 +8,7 @@ export enum AppErrorMessage {
     LOGIN_NOT_AVAILABLE = "Errore critico: servizio di login del server non disponibile.",
     UNAUTHORIZED_JWT = "Non sei abilitato a inviare richieste sulla rotta corrente.",
     AUTH_TOKEN_NOTFOUND = "Token mancante nell'header della richiesta.",
-    TOKEN_EXPIRED = "Il token utilizzato per l'autenticazione è scaduto."
+    TOKEN_EXPIRED = "Il token utilizzato per l'autenticazione è scaduto.",
+    NAVPLAN_REQ_INVALID = "La richiesta di inserimento del piano di navigazione è invalida.",
+    NAVPLAN_INVALID = "Il piano di navigazione inserito non è valido."
 }

@@ -57,6 +57,11 @@ export const appErrorMessages: HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.UNAUTHORIZED,
         name: AppErrorName.TOKEN_EXPIRED,
         message: AppErrorMessage.TOKEN_EXPIRED
+    },
+    [AppErrorName.NAVPLAN_REQ_INVALID]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.NAVPLAN_REQ_INVALID,
+        message: AppErrorMessage.NAVPLAN_REQ_INVALID
     }
 }
 

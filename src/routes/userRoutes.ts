@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { finalizeLoginValidation, loginValidationRules, verifyJwt } from "../middlewares/noauth_middlewares.js";
+import { userRoleValidation } from "../middlewares/auth_middlewares.js";
 import { UserDAO } from "../dao/UserDAO.js";
 import { NavPlanDAO } from "../dao/NavPlanDAO.js";
 import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
 import { UserRoleService } from "../services/UserRoleService.js";
 import { UserRoleController } from "../controllers/UserRoleController.js";
+import { finalizeNavPlanValidation, navPlanValidator } from "../middlewares/navplan_middlewares.js";
 
 const userRoleRouter = Router();
 const userDao = new UserDAO();
@@ -13,6 +14,7 @@ const noNavZoneDao = new NoNavZoneDAO();
 const userRoleService = new UserRoleService(userDao, navPlanDao, noNavZoneDao);
 const userRoleController = new UserRoleController(userRoleService);
 
-userRoleRouter.post('/', verifyJwt, userRoleController.create);
+userRoleRouter.use(userRoleValidation);
+userRoleRouter.post('/', navPlanValidator, finalizeNavPlanValidation, userRoleController.create);
 
 export default userRoleRouter;
