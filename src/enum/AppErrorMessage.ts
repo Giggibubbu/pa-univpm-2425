@@ -10,5 +10,9 @@ export enum AppErrorMessage {
     AUTH_TOKEN_NOTFOUND = "Token mancante nell'header della richiesta.",
     TOKEN_EXPIRED = "Il token utilizzato per l'autenticazione è scaduto.",
     NAVPLAN_REQ_INVALID = "La richiesta di inserimento del piano di navigazione è invalida.",
-    NAVPLAN_INVALID = "Il piano di navigazione inserito non è valido."
+    NAVPLAN_INVALID = "Il piano di navigazione inserito non è valido.",
+    INSUFFICIENT_TOKENS = "Non hai token sufficienti per completare l'operazione richiesta.",
+    INVALID_NAVPLAN_DATE = "La data di inizio del piano di navigazione deve essere successiva alla data di invio della richiesta.",
+    FORBIDDEN_AREA_ERROR = "Il piano di navigazione attraversa un'area proibita.",
+    NAVPLAN_CONFLICT = "Il piano di navigazione proposto è in conflitto con un piano di navigazione già approvato."
 }

@@ -1,5 +1,5 @@
 interface Point
 {
-    lat: number;
     lon: number;
+    lat: number;
 }

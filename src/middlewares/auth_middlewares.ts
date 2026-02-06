@@ -63,6 +63,7 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
         {
             const decodedJwt= jwt.verify(userAuthToken[1], pubKey);
             req.jwt = <UserJwt> decodedJwt;
+            console.log()
         }
         catch(e)
         {
@@ -72,7 +73,7 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
                     next(new AppLogicError(AppErrorName.INVALID_JWT))
                     break;
                 case e instanceof jwt.TokenExpiredError:
-                    next(new AppLogicError(AppErrorName.TOKEN_EXPIRED))
+                    next(new AppLogicError(AppErrorName.JWT_EXPIRED))
                 default:
                     next(new AppLogicError(AppErrorName.INTERNAL_SERVER_ERROR));
                     break;

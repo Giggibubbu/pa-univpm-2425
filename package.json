@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/Giggibubbu/progetto_progavanzata2425#readme",
   "dependencies": {
+    "@turf/turf": "^7.3.3",
     "@types/bcrypt": "^6.0.0",
     "@types/geojson": "^7946.0.16",
     "bcrypt": "^6.0.0",

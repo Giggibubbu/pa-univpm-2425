@@ -1,27 +1,36 @@
 import { OrmModels } from "../db/OrmModels.js";
 import { IDao } from "../interfaces/dao/IDAO.js";
-import { NavigationRequest } from "../models/sequelize-auto/NavigationRequest.js";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
 
-export class NavPlanDAO implements IDao<NavigationRequest>
+export class NavPlanDAO implements IDao<NavigationRequestAttributes>
 {
     private navReqModel;
     constructor()
     {
         this.navReqModel = OrmModels.initModels().NavigationRequest;
     }
-    create(item: NavigationRequest): Promise<NavigationRequest> {
+    async create(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes> {
+        return await this.navReqModel.create({
+            userId: item.userId,
+            dateStart: item.dateStart,
+            dateEnd: item.dateEnd,
+            droneId: item.droneId,
+            navigationPlan: item.navigationPlan
+        });
+    }
+    read(field: number | string): Promise<NavigationRequestAttributes | null | undefined> {
         throw new Error("Method not implemented.");
     }
-    read(field: number | string): Promise<NavigationRequest | null | undefined> {
-        throw new Error("Method not implemented.");
+    async readAll(item?: NavigationRequestAttributes | undefined, itemKeyName?: string): Promise<NavigationRequestAttributes[]> {
+        const navPlans = await this.navReqModel.findAll();
+        return navPlans;
     }
-    readAll(item?: NavigationRequest | undefined, itemKeyName?: string): Promise<void | NavigationRequest[]> {
-        throw new Error("Method not implemented.");
+    update(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes> {
+        return new Promise((resolve, reject) => {
+            throw new Error("Method not implemented.");
+        });
     }
-    update(item: NavigationRequest): Promise<Boolean> {
-        throw new Error("Method not implemented.");
-    }
-    delete(item: NavigationRequest): Promise<Boolean> {
+    delete(item: NavigationRequestAttributes): Promise<Boolean> {
         throw new Error("Method not implemented.");
     }
 

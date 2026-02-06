@@ -34,7 +34,7 @@ export const appErrorMessages: HTTPAppErrorMsgMap = {
         message: AppErrorMessage.MALFORMED_REQUEST_BODY
     },
     [AppErrorName.INVALID_JWT]: {
-        statusCode: StatusCodes.BAD_REQUEST,
+        statusCode: StatusCodes.UNAUTHORIZED,
         name: AppErrorName.INVALID_JWT,
         message: AppErrorMessage.INVALID_JWT
     },
@@ -53,15 +53,40 @@ export const appErrorMessages: HTTPAppErrorMsgMap = {
         name: AppErrorName.AUTH_TOKEN_NOTFOUND,
         message: AppErrorMessage.AUTH_TOKEN_NOTFOUND
     },
-    [AppErrorName.TOKEN_EXPIRED]: {
+    [AppErrorName.JWT_EXPIRED]: {
         statusCode: StatusCodes.UNAUTHORIZED,
-        name: AppErrorName.TOKEN_EXPIRED,
+        name: AppErrorName.JWT_EXPIRED,
         message: AppErrorMessage.TOKEN_EXPIRED
     },
     [AppErrorName.NAVPLAN_REQ_INVALID]: {
         statusCode: StatusCodes.BAD_REQUEST,
         name: AppErrorName.NAVPLAN_REQ_INVALID,
         message: AppErrorMessage.NAVPLAN_REQ_INVALID
+    },
+    [AppErrorName.NAVPLAN_INVALID]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.NAVPLAN_REQ_INVALID,
+        message: AppErrorMessage.NAVPLAN_REQ_INVALID
+    },
+    [AppErrorName.INSUFFICIENT_TOKENS]: {
+        statusCode: StatusCodes.FORBIDDEN,
+        name: AppErrorName.INSUFFICIENT_TOKENS,
+        message: AppErrorMessage.INSUFFICIENT_TOKENS
+    },
+    [AppErrorName.INVALID_NAVPLAN_DATE]: {
+        statusCode: StatusCodes.FORBIDDEN,
+        name: AppErrorName.INVALID_NAVPLAN_DATE,
+        message: AppErrorMessage.INVALID_NAVPLAN_DATE
+    },
+    [AppErrorName.FORBIDDEN_AREA_ERROR]: {
+        statusCode: StatusCodes.FORBIDDEN,
+        name: AppErrorName.FORBIDDEN_AREA_ERROR,
+        message: AppErrorMessage.FORBIDDEN_AREA_ERROR
+    },
+    [AppErrorName.NAVPLAN_CONFLICT]: {
+        statusCode: StatusCodes.CONFLICT,
+        name: AppErrorName.NAVPLAN_CONFLICT,
+        message: AppErrorMessage.NAVPLAN_CONFLICT
     }
 }
 
@@ -70,6 +95,11 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     [AppSuccessName.LOGIN_SUCCESS]: {
         statusCode: StatusCodes.OK,
         message: AppSuccessMessage.LOGIN_SUCCESS,
+        data: {}
+    },
+    [AppSuccessName.NAVPLAN_REQ_CREATED]: {
+        statusCode: StatusCodes.CREATED,
+        message: AppSuccessMessage.NAVPLAN_REQ_CREATED,
         data: {}
     }
 

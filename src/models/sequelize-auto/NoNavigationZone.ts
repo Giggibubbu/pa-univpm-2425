@@ -1,11 +1,12 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { User, UserId } from './User.js';
+import { GeoJSON, Polygon } from 'geojson';
 
 export interface NoNavigationZoneAttributes {
   id: number;
   operatorId: number;
-  route: any;
+  route: Polygon;
   validityStart?: Date;
   validityEnd?: Date;
 }
@@ -18,7 +19,7 @@ export type NoNavigationZoneCreationAttributes = Optional<NoNavigationZoneAttrib
 export class NoNavigationZone extends Model<NoNavigationZoneAttributes, NoNavigationZoneCreationAttributes> implements NoNavigationZoneAttributes {
   id!: number;
   operatorId!: number;
-  route!: any;
+  route!: Polygon;
   validityStart?: Date;
   validityEnd?: Date;
 
@@ -46,7 +47,7 @@ export class NoNavigationZone extends Model<NoNavigationZoneAttributes, NoNaviga
       field: 'operator_id'
     },
     route: {
-      type: DataTypes.GEOMETRY('POLYGON', 4326),
+      type: DataTypes.JSONB,
       allowNull: false
     },
     validityStart: {

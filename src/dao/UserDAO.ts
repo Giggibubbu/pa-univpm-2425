@@ -1,8 +1,9 @@
 import { OrmModels } from '../db/OrmModels.js';
 import { UserAttributes } from '../models/sequelize-auto/User.js';
 import { IDao } from '../interfaces/dao/IDAO.js';
-import { updateLanguageServiceSourceFile } from 'typescript';
 import { Op } from 'sequelize';
+import { User } from '../tests/test.test.js';
+
 export class UserDAO implements IDao<UserAttributes>
 {
     private userModel;
@@ -13,7 +14,7 @@ export class UserDAO implements IDao<UserAttributes>
 
     async create(item: UserAttributes): Promise<UserAttributes> {
         const user = this.create(item)
-        return this.userModel.create({
+        return await this.userModel.create({
             id: item.id,
             email: item.email,
             password: item.password,
@@ -25,7 +26,7 @@ export class UserDAO implements IDao<UserAttributes>
     async read(id: number): Promise<UserAttributes | null | undefined>;
     async read(email: string): Promise<UserAttributes | null | undefined>;
 
-    async read(field: any): Promise<UserAttributes | null | undefined> {
+    async read(field: number | string): Promise<UserAttributes | null | undefined> {
         let user;
         switch(true)
         {
@@ -38,12 +39,6 @@ export class UserDAO implements IDao<UserAttributes>
             default:
                 return null;
         }
-    }
-
-    async findByEmail(email: string): Promise<UserAttributes | null> {
-        let user: UserAttributes | null = await this.userModel.findOne({
-            where: { email: email }});
-        return user;
     }
 
     async readAll(item?: UserAttributes, itemKeyName?: string): Promise<UserAttributes[] | void> {
@@ -64,9 +59,22 @@ export class UserDAO implements IDao<UserAttributes>
             return users;
         }
     }
-    async update(item: UserAttributes): Promise<Boolean> {
-        this.userModel.update({ email: "example@€xample.it" }, {where: {id: 1}});
-        return !this.create(item);
+
+    async update(item: UserAttributes): Promise<UserAttributes | null> {
+        const [affectedCount, users] = await this.userModel.update({ tokens: item.tokens }, {where: {id: item.id}, returning: true});
+        let userUpdated: UserAttributes | null;
+        if(affectedCount)
+        {
+            for(const user of users)
+            {
+                if(item.id === user.id)
+                {
+                    return user;
+                }
+            }
+
+        }
+        return null;
     }
     async delete(item: UserAttributes): Promise<Boolean>
     {

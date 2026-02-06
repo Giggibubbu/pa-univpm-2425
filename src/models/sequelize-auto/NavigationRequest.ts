@@ -1,16 +1,17 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { User, UserId } from './User.js';
+import { GeoJSON, LineString } from 'geojson';
 
 export interface NavigationRequestAttributes {
-  id: number;
+  id?: number;
   userId: number;
-  status: "pending" | "accepted" | "rejected" | "cancelled";
+  status: "pending" | "approved" | "rejected" | "cancelled";
   submittedAt: Date;
   dateStart: Date;
   dateEnd: Date;
   droneId: string;
-  navigationPlan: any;
+  navigationPlan: LineString;
   motivation?: string;
 }
 
@@ -22,12 +23,12 @@ export type NavigationRequestCreationAttributes = Optional<NavigationRequestAttr
 export class NavigationRequest extends Model<NavigationRequestAttributes, NavigationRequestCreationAttributes> implements NavigationRequestAttributes {
   id!: number;
   userId!: number;
-  status!: "pending" | "accepted" | "rejected" | "cancelled";
+  status!: "pending" | "approved" | "rejected" | "cancelled";
   submittedAt!: Date;
   dateStart!: Date;
   dateEnd!: Date;
   droneId!: string;
-  navigationPlan!: any;
+  navigationPlan!: LineString;
   motivation?: string;
 
   // NavigationRequest belongsTo User via userId
@@ -80,7 +81,7 @@ export class NavigationRequest extends Model<NavigationRequestAttributes, Naviga
       field: 'drone_id'
     },
     navigationPlan: {
-      type: DataTypes.GEOMETRY('POLYGON', 4326),
+      type: DataTypes.JSONB,
       allowNull: false,
       field: 'navigation_plan'
     },

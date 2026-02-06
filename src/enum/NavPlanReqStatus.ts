@@ -1,6 +1,6 @@
 export enum NavPlanReqStatus
 {
     PENDING="pending",
-    ACCEPTED="accepted",
+    APPROVED="approved",
     REJECTED="rejected"
 }

@@ -16,7 +16,7 @@ CREATE EXTENSION postgis SCHEMA pa2425;
 
 -- Create types
 CREATE TYPE role AS ENUM ('user', 'operator', 'admin');
-CREATE TYPE reqstatus AS ENUM ('pending', 'accepted', 'rejected', 'cancelled');
+CREATE TYPE reqstatus AS ENUM ('pending', 'approved', 'rejected', 'cancelled');
 
 -- Create users table
 CREATE TABLE users (
@@ -31,7 +31,7 @@ CREATE TABLE users (
 CREATE TABLE no_navigation_zones (
     id SERIAL PRIMARY KEY,
     operator_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    route GEOMETRY(POLYGON, 4326) NOT NULL,
+    route JSONB NOT NULL,
     validity_start timestamp DEFAULT NULL,
     validity_end timestamp DEFAULT NULL
 );
@@ -45,6 +45,6 @@ CREATE TABLE navigation_requests (
     date_start TIMESTAMP NOT NULL,
     date_end TIMESTAMP NOT NULL,
     drone_id VARCHAR(10) NOT NULL,
-    navigation_plan GEOMETRY(POLYGON, 4326) NOT NULL,
+    navigation_plan JSONB NOT NULL,
     motivation VARCHAR(255) DEFAULT NULL
 );

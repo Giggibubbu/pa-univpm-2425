@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { NoAuthService } from "../services/NoAuthService.js";
 import { HTTPMessageFactory } from "../factories/HTTPSuccessFactory.js";
 import { AppSuccessName } from "../enum/AppSuccessName.js";
-import { HTTPUserLogin } from "../interfaces/http-requests/UserLogin.js";
 export class NoAuthController
 {
     private authService: NoAuthService;

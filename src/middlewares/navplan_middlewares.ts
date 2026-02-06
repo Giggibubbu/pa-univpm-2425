@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { body, checkExact, validationResult } from "express-validator";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
+import { DateCompareConst } from "../enum/DateCompareConst.js";
 
 const validateDateStart = body('dateStart')
 .trim()
@@ -28,8 +29,8 @@ const validateDateEnd = body('dateEnd')
 .toDate()
 
 const validateCompareDates = body('dateEnd').custom((value, {req}) => {
-    return value > req.body.dateStart
-}).withMessage("Il campo data non contiene una data maggiore rispetto al campo dateStart.")
+    return value.getTime() - req.body.dateStart.getTime() > DateCompareConst.TIME_DIFF_30M_TO_MS;
+}).withMessage("Il campo data non contiene una data maggiore di 30 minuti rispetto al campo dateStart.")
 
 const validateDroneId = body('droneId')
 .trim()
@@ -45,51 +46,51 @@ const validateDroneId = body('droneId')
 .withMessage("Il campo contiene una stringa di lunghezza non uguale a 10 caratteri.")
 .toUpperCase()
 
-const transformToPointArray = (value:string): Array<Point> => {
-    let array: Array<Point> = []
-    value = JSON.parse(value)
+const transformToPointArray = (value: any) => {
+    let array: Array<Array<number>> = []
     for(const item of value)
     {
-        if(typeof(item[0]) !== 'number' || typeof(item[1]) !== 'number' || item.length < 2)
+        if(item.length === 2 && typeof(item[0]) === 'number' && typeof(item[1]) === 'number')
         {
-            return []
-        }
-        else {
-            array.push({lat: item[0], lon: item[1]})
+            array.push([item[0], item[1]])
         }
     }
     return array;
 }
 
-const notEqual = (a: Point, b: Point) => {
-    return JSON.stringify(a) !== JSON.stringify(b)
+const equals = (a: Array<number>, b: Array<number>): Boolean => {
+    return JSON.stringify(a) === JSON.stringify(b)
+}
+
+const isLatLon = (a: number, b: number): Boolean => {
+    return a >= -180 && a <= 180 && b >= -90 && b <= 90;
 }
 
 const validateRoute = body('route')
 .exists()
 .notEmpty()
-.isString()
-.replace(" ", "")
+.isArray({min: 3})
 .custom((value) => {
     const array = transformToPointArray(value);
-    const zeroLengthSeg = array.filter((item, index, array) => !notEqual(array[index], array[index+1]) && index < array.length-1)
-    return array.length > 2 && notEqual(array[0], array[array.length-1]) && zeroLengthSeg.length === 0;
+    const zeroLengthSeg = array.filter((item, index, array) => equals(array[index], array[index+1]) && index < array.length-1)
+    let notLatLonElements = array.filter(item => !isLatLon(item[0], item[1]));
+    return equals(array[0], array[array.length-1]) && zeroLengthSeg.length === 0 && notLatLonElements.length === 0;
 })
 
-export const finalizeNavPlanValidation = (req:Request, res:Response, next:NextFunction) => {
+export const verifyNavPlanReq = (req:Request, res:Response, next:NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) 
     {
         console.log(errors)
         next(new AppLogicError(AppErrorName.NAVPLAN_REQ_INVALID))
     }
-    req.body.navPlan = {
+    req.navPlan = {
         dateStart: req.body.dateStart,
         dateEnd: req.body.dateEnd,
         droneId: req.body.droneId,
-        route: req.body.route
+        route: req.body.route,
+        submittedAt: new Date(Date.now())
     }
-    console.log(req.body.navPlan)
     next();
 }
 
