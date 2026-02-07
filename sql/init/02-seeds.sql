@@ -3,7 +3,7 @@
 
 -- Insert data
 INSERT INTO users (email, password, role, tokens) VALUES
-('alice@example.com', '$2b$10$caSKPemnx9SZi3PKPuvGuuXPPwHJl.uM2hiJLgfFPsGjwxmNeNptm', 'user', 100),
+('alice@example.com', '$2b$10$caSKPemnx9SZi3PKPuvGuuXPPwHJl.uM2hiJLgfFPsGjwxmNeNptm', 'user', 5000),
 ('notoken@example.com', '$2b$10$caSKPemnx9SZi3PKPuvGuuXPPwHJl.uM2hiJLgfFPsGjwxmNeNptm', 'user', 2),
 ('bob@example.com', '$2b$10$3CviVz3qOX9E.JpMIaKw1OIqHbhpdRBLYXvDoYXM0TYMNa3me2uoe', 'operator', 0),
 ('charlie@example.com', '$2b$10$Dicjz7Yv9JUigZaD1IMtmO1vwr1XT6/HdidyoGfG3fpJHihBp4Y/6', 'admin', 0);

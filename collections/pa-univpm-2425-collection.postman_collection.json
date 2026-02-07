@@ -1,0 +1,1450 @@
+{
+  "info": {
+    "_postman_id": "dcc57881-e645-4307-a7ec-73e10f934bd0",
+    "name": "pa-univpm-2425-collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50893752",
+    "_collection_link": "https://go.postman.co/collection/50893752-dcc57881-e645-4307-a7ec-73e10f934bd0?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "item": [
+            {
+              "name": "Login fail",
+              "item": [
+                {
+                  "name": "Login validation failed - only email field",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();",
+                          "pm.test(\"Status code is 400\", function () {",
+                          "    pm.response.to.have.status(400);",
+                          "});",
+                          "pm.test(\"Response time is less than 500ms\", function () {",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                          "});",
+                          "pm.test(\"JSON fields type check\", function () {",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400)",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"LOGIN_INVALID\");",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"Errore di validazione nella richiesta di login.\");",
+                          "});",
+                          "",
+                          "",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{USER_ROLE_EMAIL}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}login",
+                      "host": [
+                        "{{BASEURL}}login"
+                      ]
+                    },
+                    "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+                  },
+                  "response": [
+                    {
+                      "name": "Login validation failed - only password field",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"password\": \"{{USER_ROLE_PSW}}\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}login",
+                          "host": [
+                            "{{BASEURL}}login"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Login validation failed - not expected field",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"email\": \"{{USER_ROLE_EMAIL}}\",\n    \"password\": \"{{USER_ROLE_PSW}}\",\n    \"field\": \"value\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}login",
+                          "host": [
+                            "{{BASEURL}}login"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Login validation failed - empty email,psw fields",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"email\": \"\",\n    \"password\": \"\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}login",
+                          "host": [
+                            "{{BASEURL}}login"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Login validation failed - wrong email field",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"email\": \"alice@\",\n    \"password\": \"{{USER_ROLE_PSW}}\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}login",
+                          "host": [
+                            "{{BASEURL}}login"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Login validation failed - password not strong",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"email\": \"{{USER_ROLE_EMAIL}}\",\n    \"password\": \"WrongPassword\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}login",
+                          "host": [
+                            "{{BASEURL}}login"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    }
+                  ]
+                },
+                {
+                  "name": "Invalid credentials - User not found - Wrong user",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();",
+                          "pm.test(\"Status code is 401\", function () {",
+                          "    pm.response.to.have.status(401);",
+                          "});",
+                          "pm.test(\"Response time is less than 500ms\", function () {",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                          "});",
+                          "pm.test(\"JSON fields type check\", function () {",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_CREDENTIALS\");",
+                          "});",
+                          "",
+                          "",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"unknown@example.com\",\n    \"password\": \"{{USER_ROLE_PSW}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}login",
+                      "host": [
+                        "{{BASEURL}}login"
+                      ]
+                    },
+                    "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+                  },
+                  "response": [
+                    {
+                      "name": "Invalid credentials - User not found - Wrong password",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"email\": \"{{USER_ROLE_EMAIL}}\",\n    \"password\": \"WrongPassword97@\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}login",
+                          "host": [
+                            "{{BASEURL}}login"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Login success",
+              "item": [
+                {
+                  "name": "Login user",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();",
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "pm.test(\"Response time is less than 500ms\", function () {",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                          "});",
+                          "pm.test(\"JSON fields type check\", function () {",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200)",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"Login avvenuto con successo.\");",
+                          "    pm.expect(responseBody.data).to.have.all.keys(['token', 'user']);",
+                          "    pm.expect(responseBody.data.token).to.be.a('string');",
+                          "});",
+                          "pm.test(\"Acquired JWT Token\", function () {",
+                          "    pm.environment.set(\"JWT_USER\", responseBody.data.token);",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{USER_ROLE_EMAIL}}\",\n    \"password\": \"{{USER_ROLE_PSW}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}login",
+                      "host": [
+                        "{{BASEURL}}login"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Login low token user",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();",
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "pm.test(\"Response time is less than 500ms\", function () {",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                          "});",
+                          "pm.test(\"JSON fields type check\", function () {",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200)",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"Login avvenuto con successo.\");",
+                          "    pm.expect(responseBody.data).to.have.all.keys(['token', 'user']);",
+                          "    pm.expect(responseBody.data.token).to.be.a('string');",
+                          "});",
+                          "pm.test(\"Acquired JWT Token\", function () {",
+                          "    pm.environment.set(\"JWT_LOW_TOKEN_USER\", responseBody.data.token);",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{USER_ROLE_EMAIL_LOW_TOKEN}}\",\n    \"password\": \"{{USER_ROLE_PSW}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}login",
+                      "host": [
+                        "{{BASEURL}}login"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Login operator",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();",
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "pm.test(\"Response time is less than 500ms\", function () {",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                          "});",
+                          "pm.test(\"JSON fields type check\", function () {",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200)",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"Login avvenuto con successo.\");",
+                          "    pm.expect(responseBody.data).to.have.all.keys(['token', 'user']);",
+                          "    pm.expect(responseBody.data.token).to.be.a('string');",
+                          "});",
+                          "pm.test(\"Acquired JWT Token\", function () {",
+                          "    pm.environment.set(\"JWT_OPERATOR\", responseBody.data.token);",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{OPERATOR_ROLE_EMAIL}}\",\n    \"password\": \"{{OPERATOR_ROLE_PSW}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}login",
+                      "host": [
+                        "{{BASEURL}}login"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Login admin",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();",
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "pm.test(\"Response time is less than 500ms\", function () {",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                          "});",
+                          "pm.test(\"JSON fields type check\", function () {",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200)",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"Login avvenuto con successo.\");",
+                          "    pm.expect(responseBody.data).to.have.all.keys(['token', 'user']);",
+                          "    pm.expect(responseBody.data.token).to.be.a('string');",
+                          "});",
+                          "pm.test(\"Acquired JWT Token\", function () {",
+                          "    pm.environment.set(\"JWT_ADMIN\", responseBody.data.token);",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{ADMIN_ROLE_EMAIL}}\",\n    \"password\": \"{{ADMIN_ROLE_PSW}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}login",
+                      "host": [
+                        "{{BASEURL}}login"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "verifyJwt Middleware",
+          "item": [
+            {
+              "name": "JWT expired",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let responseBody = pm.response.json();\r",
+                      "pm.test(\"Status code is 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "pm.test(\"Response time is less than 500ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                      "});\r",
+                      "pm.test(\"JSON fields type check\", function () {\r",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
+                      "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"TOKEN_EXPIRED\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{EXPIRED_JWT}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASEURL}}navplans",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "JWT invalid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let responseBody = pm.response.json();\r",
+                      "pm.test(\"Status code is 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "pm.test(\"Response time is less than 500ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                      "});\r",
+                      "pm.test(\"JSON fields type check\", function () {\r",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
+                      "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_JWT\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{INVALID_SECRET_JWT}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASEURL}}navplans",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "JWT empty",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let responseBody = pm.response.json();\r",
+                      "pm.test(\"Status code is 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "pm.test(\"Response time is less than 500ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                      "});\r",
+                      "pm.test(\"JSON fields type check\", function () {\r",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
+                      "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"AUTH_TOKEN_NOTFOUND\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASEURL}}navplans",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User routes",
+      "item": [
+        {
+          "name": "Navplan request creation",
+          "item": [
+            {
+              "name": "Request creation fail",
+              "item": [
+                {
+                  "name": "invalid request wrong date format",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NAVPLAN_REQ_INVALID\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"wrong date\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "invalid request past date",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2026-02-07T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "invalid request wrong drone id",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC2\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request wrong route array structure",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,[2]]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request wrong route array structure",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"wrong date\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [{\"lon\": 120, \"lat\": 20},{\"lon\": 20,\"lat\": 20},{\"lon\": 120,\"lat\": 20}]\r\n}\r\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request route too short",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request consecutive equal point",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [105,90], [1,2]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request route is not closed",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [105,90], [1,4]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request wrong lon",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [190,20], [1,2]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "invalid request wrong lat",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [20,180], [1,2]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    }
+                  ]
+                },
+                {
+                  "name": "insufficient tokens",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 403\", function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(403)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INSUFFICIENT_TOKENS\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_LOW_TOKEN_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "invalid navplan date start",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 403\", function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(403)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_NAVPLAN_DATE\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"2026-02-07T19:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "navplan in forbidden area",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 403\", function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(403)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"FORBIDDEN_AREA_ERROR\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [11,41.5], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "navplan date conflict with another",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 409\", function () {\r",
+                          "    pm.response.to.have.status(409);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(409)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NAVPLAN_CONFLICT\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"2027-03-09T15:30:00.000Z\",\r\n    \"dateEnd\": \"2027-03-12T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Request creation success",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let responseBody = pm.response.json();\r",
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "pm.test(\"Response time is less than 500ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                      "});\r",
+                      "pm.test(\"JSON fields type check\", function () {\r",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(201);\r",
+                      "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"La richiesta di navigazione è stata creata con successo.\");\r",
+                      "    pm.expect(responseBody.data).to.have.all.keys(['navplan', 'user']);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{JWT_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"dateStart\": \"2100-03-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-03-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASEURL}}navplans",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cancel navplan request",
+          "item": []
+        },
+        {
+          "name": "View navplan request",
+          "item": []
+        }
+      ]
+    },
+    {
+      "name": "Test unknown route - Route not found error",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let responseBody = pm.response.json();",
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"Response time is less than 500ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});",
+              "pm.test(\"JSON fields type check\", function () {",
+              "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(404)",
+              "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"ROUTE_NOT_FOUND\");",
+              "});",
+              "",
+              "",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASEURL}}tickets",
+          "host": [
+            "{{BASEURL}}tickets"
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+    },
+    {
+      "name": "Test wrong json body",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let responseBody = pm.response.json();",
+              "pm.test(\"Status code is 500\", function () {",
+              "    pm.response.to.have.status(500);",
+              "});",
+              "pm.test(\"Response time is less than 500ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});",
+              "pm.test(\"JSON fields type check\", function () {",
+              "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(500)",
+              "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INTERNAL_SERVER_ERROR\");",
+              "});",
+              "",
+              "",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    ,\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{BASEURL}}",
+          "host": [
+            "{{BASEURL}}"
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+    }
+  ]
+}

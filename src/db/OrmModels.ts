@@ -13,11 +13,10 @@ export class OrmModels
     try
     {
       await SequelizeDbConnection.authenticate();
-      console.log('Connection has been established successfully.');
     }
     catch(e)
     {
-      console.error('Unable to connect to the database:', e);
+      
     }
       
   }

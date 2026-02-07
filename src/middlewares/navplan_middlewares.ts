@@ -4,49 +4,46 @@ import { AppLogicError } from "../errors/AppLogicError.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { DateCompareConst } from "../enum/DateCompareConst.js";
 
-const validateDateStart = body('dateStart')
-.trim()
-.exists()
-.withMessage("Il campo non contiene alcun valore.")
-.notEmpty()
-.withMessage("Il campo contiene una stringa vuota.")
-.isISO8601()
-.withMessage("Il campo non contiene una stringa avente formato ISO8601")
-.isAfter()
-.withMessage("Il campo data non contiene un valore successivo alla data odierna.")
-.toDate()
 
-const validateDateEnd = body('dateEnd')
-.trim()
-.exists()
-.withMessage("Il campo non contiene alcun valore.")
-.notEmpty()
-.withMessage("Il campo contiene una stringa vuota.")
-.isISO8601()
-.withMessage("Il campo non contiene una stringa avente formato ISO8601")
-.isAfter()
-.withMessage("Il campo data non contiene un valore successivo alla data odierna.")
-.toDate()
+const validateDate = (date: string) => {
+    return body(date)
+    .exists()
+    .withMessage("Il campo non contiene alcun valore.").bail()
+    .isString()
+    .withMessage("Il campo non è una stringa.").bail()
+    .notEmpty()
+    .withMessage("Il campo contiene una stringa vuota.").bail()
+    .customSanitizer(value => {
+        return value.replace(/\s/g, '');
+    })
+    .isISO8601()
+    .withMessage("Il campo non contiene una stringa avente formato ISO8601").bail()
+    .toDate()
+    .isAfter()
+    .withMessage("Il campo data non contiene un valore successivo alla data odierna.").bail();
+}
 
-const validateCompareDates = body('dateEnd').custom((value, {req}) => {
-    return value.getTime() - req.body.dateStart.getTime() > DateCompareConst.TIME_DIFF_30M_TO_MS;
-}).withMessage("Il campo data non contiene una data maggiore di 30 minuti rispetto al campo dateStart.")
+const validateCompareDates = (start: Date, end: Date) => {
+    return end.getTime() - start.getTime() > DateCompareConst.TIME_DIFF_30M_TO_MS;
+}
 
 const validateDroneId = body('droneId')
-.trim()
 .exists()
-.withMessage("Il campo non contiene alcun valore.")
+.withMessage("Il campo non contiene alcun valore.").bail()
 .isString()
-.withMessage("Il campo non è una stringa.")
+.withMessage("Il campo non è una stringa.").bail()
 .notEmpty()
-.withMessage("Il campo è una stringa vuota.")
+.withMessage("Il campo è una stringa vuota.").bail()
+.customSanitizer(value => {
+    return value.replace(/\s/g, '');
+})
 .isAlphanumeric()
-.withMessage("Il campo non contiene una stringa alfanumerica.")
+.withMessage("Il campo non contiene una stringa alfanumerica.").bail()
 .isLength({min: 10, max: 10})
-.withMessage("Il campo contiene una stringa di lunghezza non uguale a 10 caratteri.")
+.withMessage("Il campo contiene una stringa di lunghezza non uguale a 10 caratteri.").bail()
 .toUpperCase()
 
-const transformToPointArray = (value: any) => {
+const toNumberArray = (value: any) => {
     let array: Array<Array<number>> = []
     for(const item of value)
     {
@@ -63,7 +60,7 @@ const equals = (a: Array<number>, b: Array<number>): Boolean => {
 }
 
 const isLatLon = (a: number, b: number): Boolean => {
-    return a >= -180 && a <= 180 && b >= -90 && b <= 90;
+    return (a >= -180 && a <= 180) && (b >= -90 && b <= 90);
 }
 
 const validateRoute = body('route')
@@ -71,19 +68,26 @@ const validateRoute = body('route')
 .notEmpty()
 .isArray({min: 3})
 .custom((value) => {
-    const array = transformToPointArray(value);
+    const array = toNumberArray(value);
     const zeroLengthSeg = array.filter((item, index, array) => equals(array[index], array[index+1]) && index < array.length-1)
-    let notLatLonElements = array.filter(item => !isLatLon(item[0], item[1]));
+    const notLatLonElements = array.filter(item => !isLatLon(item[0], item[1]));
     return equals(array[0], array[array.length-1]) && zeroLengthSeg.length === 0 && notLatLonElements.length === 0;
 })
 
-export const verifyNavPlanReq = (req:Request, res:Response, next:NextFunction) => {
+export const verifyNavPlanCreateReq = (req:Request, res:Response, next:NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) 
     {
-        console.log(errors)
+        console.log(errors.array());
         next(new AppLogicError(AppErrorName.NAVPLAN_REQ_INVALID))
     }
+    
+    const isValidDates = validateCompareDates(req.body.dateStart, req.body.dateEnd);
+    if(!isValidDates)
+    {
+        next(new AppLogicError(AppErrorName.NAVPLAN_REQ_INVALID));
+    }
+
     req.navPlan = {
         dateStart: req.body.dateStart,
         dateEnd: req.body.dateEnd,
@@ -92,6 +96,7 @@ export const verifyNavPlanReq = (req:Request, res:Response, next:NextFunction) =
         submittedAt: new Date(Date.now())
     }
     next();
+
 }
 
-export const navPlanValidator = checkExact([validateDateStart, validateDateEnd, validateCompareDates, validateDroneId, validateRoute])
+export const navPlanReqCreationValidator = checkExact([validateDate('dateStart'), validateDate('dateEnd'), validateDroneId, validateRoute])

@@ -11,12 +11,9 @@ export class NoAuthController
     }
 
     login = async (req: Request, res: Response) => {
-        if(req.login?.email && req.login?.password)
-        {
-            const loginObject = await this.authService.loginUser(req.login.email, req.login.password);
-            const message = HTTPMessageFactory.getMessage(AppSuccessName.LOGIN_SUCCESS, loginObject);
-            res.status(message.statusCode).json(message);
-        }
+        const loginObject = await this.authService.loginUser(req.login!.email, req.login!.password);
+        const message = HTTPMessageFactory.getMessage(AppSuccessName.LOGIN_SUCCESS, loginObject);
+        res.status(message.statusCode).json(message);
     }
 
 }

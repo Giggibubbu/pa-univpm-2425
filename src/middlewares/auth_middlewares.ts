@@ -9,24 +9,37 @@ import { AuthRoles } from "../enum/AuthRoles.js";
 import { UserJwt } from "../interfaces/jwt/UserJwt.js";
 
 export const validateAndSanitizeEmail: ValidationChain = body('email')
-.notEmpty()
 .exists()
-.trim()
+.withMessage("Il campo non contiene alcun valore.").bail()
+.isString()
+.withMessage("Il campo non è una stringa.").bail()
+.notEmpty()
+.withMessage("Il campo è una stringa vuota.").bail()
+.customSanitizer(value => {
+    return value.replace(/\s/g, '');
+})
 .isEmail()
+.withMessage("Il campo non contiene una stringa avente formato email.").bail()
 .normalizeEmail();
 
 export const validateAndSanitizePassword: ValidationChain = body('password')
-.trim()
-.replace(" ", "")
-.notEmpty()
 .exists()
+.withMessage("Il campo non contiene alcun valore.").bail()
+.isString()
+.withMessage("Il campo non è una stringa.").bail()
+.notEmpty()
+.withMessage("Il campo è una stringa vuota.").bail()
+.customSanitizer(value => {
+    return value.replace(/\s/g, '');
+})
 .isStrongPassword({
     minLength: 8,
     minLowercase: 1,
     minUppercase: 1,
     minNumbers: 1,
     minSymbols: 1
-});
+})
+.withMessage("Il campo non contiene una stringa avente formato password forte.").bail();
 
 export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunction) => {
     const errors: Result<ValidationError> = validationResult(req);
@@ -38,7 +51,7 @@ export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunc
     next();
 }
 
-export const loginValidationRules: Middleware & ContextRunner = checkExact([validateAndSanitizeEmail, validateAndSanitizePassword])
+export const loginValidationRules = checkExact([validateAndSanitizeEmail, validateAndSanitizePassword])
 
 export const checkRole = (role: string) => (req:Request, res:Response, next:NextFunction) =>
 {
@@ -63,17 +76,18 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
         {
             const decodedJwt= jwt.verify(userAuthToken[1], pubKey);
             req.jwt = <UserJwt> decodedJwt;
-            console.log()
         }
         catch(e)
         {
+            console.log(e);
             switch(true)
             {
+                case e instanceof jwt.TokenExpiredError:
+                    next(new AppLogicError(AppErrorName.JWT_EXPIRED))
+                    break;
                 case e instanceof jwt.JsonWebTokenError:
                     next(new AppLogicError(AppErrorName.INVALID_JWT))
                     break;
-                case e instanceof jwt.TokenExpiredError:
-                    next(new AppLogicError(AppErrorName.JWT_EXPIRED))
                 default:
                     next(new AppLogicError(AppErrorName.INTERNAL_SERVER_ERROR));
                     break;
@@ -84,3 +98,7 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
 }
 
 export const userRoleValidation = [verifyJwt, checkRole(AuthRoles.USER)]
+
+export const operatorRoleValidation = [verifyJwt, checkRole(AuthRoles.OPERATOR)]
+
+export const adminRoleValidation = [verifyJwt, checkRole(AuthRoles.ADMIN)]

@@ -33,7 +33,9 @@ export class NoAuthService
             email: user.email,
             role: user.role as AuthRoles
         }
+        
         const jwtToken:string = await this.generateJwt(userJwt);
+
         const loginResponseObject: HTTPUserLogin = {
             token: jwtToken,
             user: {

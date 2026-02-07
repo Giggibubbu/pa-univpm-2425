@@ -18,7 +18,7 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
             navigationPlan: item.navigationPlan
         });
     }
-    read(field: number | string): Promise<NavigationRequestAttributes | null | undefined> {
+    read(field: number | string): Promise<NavigationRequestAttributes | null> {
         throw new Error("Method not implemented.");
     }
     async readAll(item?: NavigationRequestAttributes | undefined, itemKeyName?: string): Promise<NavigationRequestAttributes[]> {

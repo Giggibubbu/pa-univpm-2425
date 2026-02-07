@@ -125,11 +125,11 @@ export class UserRoleService
 
     private checkUserNavPlanConflict = async (user: UserAttributes, navPlan: NavPlan): Promise<Boolean> =>
     {
-        const noNavZones = await this.navPlanDao.readAll();
+        const navPlans = await this.navPlanDao.readAll();
         const navZoneBySameUser = []
-        if(noNavZones.length > 0)
+        if(navPlans.length > 0)
         {
-            for(const item of noNavZones)
+            for(const item of navPlans)
             {
                 if(item.userId === user.id)
                 {
@@ -140,13 +140,10 @@ export class UserRoleService
 
         for(const item of navZoneBySameUser)
         {
-            if(navPlan.dateStart <= item.dateEnd && navPlan.dateEnd >= item.dateStart && item.status === NavPlanReqStatus.APPROVED)
+            if(navPlan.dateStart <= item.dateEnd && navPlan.dateEnd >= item.dateStart
+                && (item.status === NavPlanReqStatus.APPROVED || item.status === NavPlanReqStatus.PENDING))
             {
                 return true;
-            }
-            else
-            {
-                return false;
             }
         }
         return false;
@@ -189,7 +186,7 @@ export class UserRoleService
             this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
             throw new AppLogicError(AppErrorName.FORBIDDEN_AREA_ERROR);
         }
-
+        
         const isNavPlanInConflict = await this.checkUserNavPlanConflict(userDecreasedTokens, navPlan);
         if(isNavPlanInConflict)
         {

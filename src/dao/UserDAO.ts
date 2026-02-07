@@ -23,10 +23,10 @@ export class UserDAO implements IDao<UserAttributes>
         });
     }
 
-    async read(id: number): Promise<UserAttributes | null | undefined>;
-    async read(email: string): Promise<UserAttributes | null | undefined>;
+    async read(id: number): Promise<UserAttributes | null>;
+    async read(email: string): Promise<UserAttributes | null>;
 
-    async read(field: number | string): Promise<UserAttributes | null | undefined> {
+    async read(field: number | string): Promise<UserAttributes | null> {
         let user;
         switch(true)
         {
@@ -84,7 +84,6 @@ export class UserDAO implements IDao<UserAttributes>
                 console.error("Impossibile cancellare l'utente con item id: "+`${item.id}`)
                 return false;
         }
-        console.log("Utente " + `${item.id}` + "cancellato con successo.")
         return true;
     }
 
