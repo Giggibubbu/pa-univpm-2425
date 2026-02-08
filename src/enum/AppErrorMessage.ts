@@ -14,5 +14,8 @@ export enum AppErrorMessage {
     INSUFFICIENT_TOKENS = "Non hai token sufficienti per completare l'operazione richiesta.",
     INVALID_NAVPLAN_DATE = "La data di inizio del piano di navigazione deve essere successiva alla data di invio della richiesta.",
     FORBIDDEN_AREA_ERROR = "Il piano di navigazione attraversa un'area proibita.",
-    NAVPLAN_CONFLICT = "Il piano di navigazione proposto è in conflitto con un piano di navigazione già approvato o in attesa di approvazione."
+    NAVPLAN_CONFLICT = "Il piano di navigazione proposto è in conflitto con un piano di navigazione già approvato o in attesa di approvazione.",
+    FORBIDDEN_NAVPLAN_DELETE = "Non sei autorizzato a cancellare questo piano di navigazione.",
+    NAVPLAN_DEL_NOT_FOUND = "Il piano di navigazione richiesto per la cancellazione non è stato trovato.",
+    NAVPLAN_DEL_REQ_INVALID = "La richiesta di cancellazione del piano di navigazione è invalida.",
 }

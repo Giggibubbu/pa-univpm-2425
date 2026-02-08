@@ -1,4 +1,5 @@
 import { OrmModels } from "../db/OrmModels.js";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { IDao } from "../interfaces/dao/IDAO.js";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
 
@@ -18,20 +19,38 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
             navigationPlan: item.navigationPlan
         });
     }
-    read(field: number | string): Promise<NavigationRequestAttributes | null> {
-        throw new Error("Method not implemented.");
+    async read(field: number): Promise<NavigationRequestAttributes | null> {
+        return await this.navReqModel.findOne({where: {id: field}});
     }
-    async readAll(item?: NavigationRequestAttributes | undefined, itemKeyName?: string): Promise<NavigationRequestAttributes[]> {
-        const navPlans = await this.navReqModel.findAll();
-        return navPlans;
+    async readAll(): Promise<NavigationRequestAttributes[]> {
+        return await this.navReqModel.findAll();
     }
-    update(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes> {
-        return new Promise((resolve, reject) => {
-            throw new Error("Method not implemented.");
-        });
+    async update(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes | null> {
+        const [affectedCount, navPlans] = await this.navReqModel.update({ status: item.status }, {where: {id: item.id}, returning: true});
+        if(affectedCount)
+        {
+            for(const navPlan of navPlans)
+            {
+                if(item.id === navPlan.id)
+                {
+                    return navPlan;
+                }
+            }
+
+        }
+        return null;
     }
-    delete(item: NavigationRequestAttributes): Promise<Boolean> {
-        throw new Error("Method not implemented.");
+
+ 
+    async delete(item: NavigationRequestAttributes | number): Promise<Boolean> {
+        switch(true)
+        {
+            case typeof(item) === "number":
+                const affectedCount = await this.navReqModel.destroy({where: {id: item, status: NavPlanReqStatus.PENDING}});
+                return affectedCount? true : false;
+             default:
+                return await this.navReqModel.destroy({where: {id: item.id}})? true : false;
+        }
     }
 
 }

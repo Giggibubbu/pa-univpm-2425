@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { body, checkExact, validationResult } from "express-validator";
+import { body, checkExact, param, validationResult } from "express-validator";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { DateCompareConst } from "../enum/DateCompareConst.js";
+import { verify } from "crypto";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
 
 
 const validateDate = (date: string) => {
@@ -74,7 +76,9 @@ const validateRoute = body('route')
     return equals(array[0], array[array.length-1]) && zeroLengthSeg.length === 0 && notLatLonElements.length === 0;
 })
 
-export const verifyNavPlanCreateReq = (req:Request, res:Response, next:NextFunction) => {
+
+
+export const finalizeNavPlanCreateReq = (req:Request, res:Response, next:NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) 
     {
@@ -98,5 +102,30 @@ export const verifyNavPlanCreateReq = (req:Request, res:Response, next:NextFunct
     next();
 
 }
+
+const validateId = param('id')
+.isInt({gt: 0}).bail()
+.withMessage("Il campo non contiene un numero intero positivo.").bail()
+.toInt()
+
+export const finalizeDelNavPlanReq = (req:Request, res:Response, next:NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) 
+    {
+        console.log(errors.array());
+        next(new AppLogicError(AppErrorName.NAVPLAN_DEL_REQ_INVALID))
+    }
+
+    if(typeof(req.params.id) === "number")
+    {
+        req.navPlan = {} as NavPlan;
+        req.navPlan.id = req.params.id;
+        console.log(req.navPlan)
+    }
+    
+    next();
+}
+
+export const navPlanDelReqValidator = checkExact([validateId])
 
 export const navPlanReqCreationValidator = checkExact([validateDate('dateStart'), validateDate('dateEnd'), validateDroneId, validateRoute])

@@ -15,8 +15,8 @@ export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
     create(item: NoNavigationZoneAttributes): Promise<NoNavigationZoneAttributes> {
         throw new Error("Method not implemented.");
     }
-    read(field: number | string): Promise<NoNavigationZoneAttributes | null | undefined> {
-        throw new Error("Method not implemented.");
+    async read(field: number | string): Promise<NoNavigationZoneAttributes | null> {
+        return null;
     }
     async readAll(item?: NoNavigationZoneAttributes): Promise<NoNavigationZoneAttributes[]> {
         const noNavZones = await this.noNavZoneModel.findAll();

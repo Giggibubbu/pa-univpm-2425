@@ -62,7 +62,6 @@ export class UserDAO implements IDao<UserAttributes>
 
     async update(item: UserAttributes): Promise<UserAttributes | null> {
         const [affectedCount, users] = await this.userModel.update({ tokens: item.tokens }, {where: {id: item.id}, returning: true});
-        let userUpdated: UserAttributes | null;
         if(affectedCount)
         {
             for(const user of users)

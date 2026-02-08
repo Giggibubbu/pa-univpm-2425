@@ -53,13 +53,18 @@ export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunc
 
 export const loginValidationRules = checkExact([validateAndSanitizeEmail, validateAndSanitizePassword])
 
-export const checkRole = (role: string) => (req:Request, res:Response, next:NextFunction) =>
+export const checkRole = (role: string | string[]) => (req:Request, res:Response, next:NextFunction) =>
 {
-    if(req.jwt?.role !== role)
+    if(typeof(role) === "string" && req.jwt?.role !== role)
     {
-        next(new AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+        next(new AppLogicError(AppErrorName.UNAUTHORIZED_JWT));
     }
-    else next()
+    else if(Array.isArray(role) && !role.includes(req.jwt?.role!))
+    {
+        next(new AppLogicError(AppErrorName.UNAUTHORIZED_JWT));
+    }
+    
+    next()
 }
 
 export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>

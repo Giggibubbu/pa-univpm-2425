@@ -87,6 +87,21 @@ export const appErrorMessages: HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.CONFLICT,
         name: AppErrorName.NAVPLAN_CONFLICT,
         message: AppErrorMessage.NAVPLAN_CONFLICT
+    },
+    [AppErrorName.FORBIDDEN_NAVPLAN_DELETE]: {
+        statusCode: StatusCodes.FORBIDDEN,
+        name: AppErrorName.FORBIDDEN_NAVPLAN_DELETE,
+        message: AppErrorMessage.FORBIDDEN_NAVPLAN_DELETE
+    },
+    [AppErrorName.NAVPLAN_DEL_NOT_FOUND]: {
+        statusCode: StatusCodes.NOT_FOUND,
+        name: AppErrorName.NAVPLAN_DEL_NOT_FOUND,
+        message: AppErrorMessage.NAVPLAN_DEL_NOT_FOUND
+    },
+    [AppErrorName.NAVPLAN_DEL_REQ_INVALID]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.NAVPLAN_DEL_REQ_INVALID,
+        message: AppErrorMessage.NAVPLAN_DEL_REQ_INVALID
     }
 }
 
@@ -99,6 +114,11 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     },
     [AppSuccessName.NAVPLAN_REQ_CREATED]: {
         statusCode: StatusCodes.CREATED,
+        message: AppSuccessMessage.NAVPLAN_REQ_CREATED,
+        data: {}
+    },
+    [AppSuccessName.NAVPLAN_REQ_DELETED]: {
+        statusCode: StatusCodes.NO_CONTENT,
         message: AppSuccessMessage.NAVPLAN_REQ_CREATED,
         data: {}
     }

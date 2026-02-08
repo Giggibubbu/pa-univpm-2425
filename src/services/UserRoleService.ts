@@ -226,5 +226,39 @@ export class UserRoleService
         ];
         
     }
-    
+
+    deleteNavPlan = async (email: string, navPlanId: number): Promise<void> =>
+    {
+        const userDeletionReq = await this.userDao.read(email);
+        const navPlanToDelete = await this.navPlanDao.read(navPlanId);
+
+        if(userDeletionReq !== null && navPlanToDelete !== null)
+        {
+            if(navPlanToDelete.userId === userDeletionReq.id)
+            {
+                if(navPlanToDelete.status === NavPlanReqStatus.PENDING)
+                {
+                    navPlanToDelete.status = NavPlanReqStatus.CANCELLED;
+                    await this.navPlanDao.update(navPlanToDelete);
+                    return;
+                }
+                else
+                {
+                    throw new AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE);
+                }
+                
+            }
+            else
+            {
+                throw new AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE);
+            }
+            
+        }
+        else
+        {
+            throw new AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND);
+        }
+
+
+    }
 }

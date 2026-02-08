@@ -17,4 +17,10 @@ export class UserRoleController
         res.status(message.statusCode).json(message)
     }
 
+    delete = async (req: Request, res: Response) =>
+    {
+        await this.userRoleService.deleteNavPlan(req.jwt!.email, req.navPlan!.id!);
+        const message = HTTPMessageFactory.getMessage(AppSuccessName.NAVPLAN_REQ_DELETED, {});
+        res.status(message.statusCode).json()
+    }
 }
