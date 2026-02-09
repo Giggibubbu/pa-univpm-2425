@@ -139,6 +139,16 @@ export const appErrorMessages:HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.BAD_REQUEST,
         name: AppErrorName.NONAVPLAN_DEL_REQ_INVALID,
         message: AppErrorMessage.NONAVPLAN_DEL_REQ_INVALID
+    },
+    [AppErrorName.USER_NOT_FOUND]: {
+        statusCode: StatusCodes.NOT_FOUND,
+        name: AppErrorName.USER_NOT_FOUND,
+        message: AppErrorMessage.USER_NOT_FOUND
+    },
+    [AppErrorName.INVALID_TOKEN_CHARGE_REQ]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.INVALID_TOKEN_CHARGE_REQ,
+        message: AppErrorMessage.INVALID_TOKEN_CHARGE_REQ
     }
 }
 
@@ -178,6 +188,11 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     {
         statusCode: StatusCodes.NO_CONTENT,
         message: AppSuccessMessage.NONAVZONE_DELETED,
+        data: {}
+    },
+    [AppSuccessName.TOKENS_CHARGED_SUCCESSFULLY]:{
+        statusCode: StatusCodes.OK,
+        message: AppSuccessMessage.TOKENS_CHARGED_SUCCESSFULLY,
         data: {}
     }
 

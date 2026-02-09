@@ -4,12 +4,14 @@ import noAuthRouter from "./routes/noAuthRoutes.js"
 import { catchAllRoutes, errorHandler, logError } from "./middlewares/error_middlewares.js";
 import navPlanRouter from "./routes/navPlanRoutes.js";
 import noNavZoneRouter from "./routes/noNavZoneRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 
 // app initialization
 const app = express();
 
 app.use(express.json());
 
+app.use('/users', adminRouter)
 app.use('/login', noAuthRouter);
 app.use('/navplans', navPlanRouter)
 app.use('/nonavzones', noNavZoneRouter)

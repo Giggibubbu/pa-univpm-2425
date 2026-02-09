@@ -6,7 +6,7 @@ import type { NoNavigationZone, NoNavigationZoneId } from './NoNavigationZone';
 export interface UserAttributes {
   id: number;
   email: string;
-  password: string;
+  password?: string;
   role: "user" | "operator" | "admin";
   tokens: number;
 }
