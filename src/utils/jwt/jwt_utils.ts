@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import { JWT_KEYS_DIRNAME, JWT_PRIVKEY_NAME, JWT_PUBKEY_NAME } from "../env/app_parameters.js";
 import { AppErrorName } from "../../enum/AppErrorName.js";
 import { AppLogicError } from "../../errors/AppLogicError.js";
+import { error } from "console";
 
 export interface JwtKeysCouple
 {
@@ -18,6 +19,7 @@ export const readJwtKeys = async (): Promise<JwtKeysCouple> => {
     }
     catch(e)
     {
+        console.log(error.name);
         throw new AppLogicError(AppErrorName.LOGIN_NOT_AVAILABLE);
     }
 }

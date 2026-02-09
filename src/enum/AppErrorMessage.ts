@@ -18,4 +18,6 @@ export enum AppErrorMessage {
     FORBIDDEN_NAVPLAN_DELETE = "Non sei autorizzato a cancellare questo piano di navigazione.",
     NAVPLAN_DEL_NOT_FOUND = "Il piano di navigazione richiesto per la cancellazione non è stato trovato.",
     NAVPLAN_DEL_REQ_INVALID = "La richiesta di cancellazione del piano di navigazione è invalida.",
+    NAVPLAN_VIEW_REQ_INVALID = "La richiesta di visualizzazione dei piani di navigazione è invalida.",
+    NAVPLAN_VIEW_NOT_FOUND = "Non sono stati trovati piani di navigazione che soddisfano i criteri di ricerca specificati.",
 }

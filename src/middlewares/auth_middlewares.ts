@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { body, checkExact, ContextRunner, Result, ValidationChain, ValidationError, validationResult } from "express-validator";
-import { Middleware } from "express-validator/lib/base";
+import { body, checkExact, matchedData, Result, ValidationChain, ValidationError, validationResult } from "express-validator";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import jwt from "jsonwebtoken";
@@ -15,7 +14,7 @@ export const validateAndSanitizeEmail: ValidationChain = body('email')
 .withMessage("Il campo non è una stringa.").bail()
 .notEmpty()
 .withMessage("Il campo è una stringa vuota.").bail()
-.customSanitizer(value => {
+.customSanitizer((value:string) => {
     return value.replace(/\s/g, '');
 })
 .isEmail()
@@ -29,7 +28,7 @@ export const validateAndSanitizePassword: ValidationChain = body('password')
 .withMessage("Il campo non è una stringa.").bail()
 .notEmpty()
 .withMessage("Il campo è una stringa vuota.").bail()
-.customSanitizer(value => {
+.customSanitizer((value:string) => {
     return value.replace(/\s/g, '');
 })
 .isStrongPassword({
@@ -47,19 +46,25 @@ export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunc
         {
             next(new AppLogicError(AppErrorName.LOGIN_INVALID))
         }
-    req.login = {email: req.body.email, password: req.body.password};
+    const data = matchedData(req);
+    
+        req.login = {
+        email: data.email as string,
+        password: data.password as string
+    };
+
     next();
 }
 
 export const loginValidationRules = checkExact([validateAndSanitizeEmail, validateAndSanitizePassword])
 
-export const checkRole = (role: string | string[]) => (req:Request, res:Response, next:NextFunction) =>
+export const checkRole = (role: AuthRoles | AuthRoles[]) => (req:Request, res:Response, next:NextFunction) =>
 {
     if(typeof(role) === "string" && req.jwt?.role !== role)
     {
         next(new AppLogicError(AppErrorName.UNAUTHORIZED_JWT));
     }
-    else if(Array.isArray(role) && !role.includes(req.jwt?.role!))
+    else if(req.jwt?.role && Array.isArray(role) && !role.includes(req.jwt.role))
     {
         next(new AppLogicError(AppErrorName.UNAUTHORIZED_JWT));
     }
@@ -80,7 +85,7 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
         try
         {
             const decodedJwt= jwt.verify(userAuthToken[1], pubKey);
-            req.jwt = <UserJwt> decodedJwt;
+            req.jwt = decodedJwt as UserJwt;
         }
         catch(e)
         {
@@ -107,3 +112,5 @@ export const userRoleValidation = [verifyJwt, checkRole(AuthRoles.USER)]
 export const operatorRoleValidation = [verifyJwt, checkRole(AuthRoles.OPERATOR)]
 
 export const adminRoleValidation = [verifyJwt, checkRole(AuthRoles.ADMIN)]
+
+export const userOpRoleValidation = [verifyJwt, checkRole([AuthRoles.USER, AuthRoles.OPERATOR])]

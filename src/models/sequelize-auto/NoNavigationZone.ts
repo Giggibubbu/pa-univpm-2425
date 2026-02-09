@@ -1,7 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { User, UserId } from './User.js';
-import { GeoJSON, Polygon } from 'geojson';
+import { Polygon } from 'geojson';
 
 export interface NoNavigationZoneAttributes {
   id: number;

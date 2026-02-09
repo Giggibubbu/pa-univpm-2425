@@ -24,7 +24,7 @@ export class NoAuthService
         {
             throw new AppLogicError(AppErrorName.INVALID_CREDENTIALS);
         }
-        const isPasswordOk: Boolean = await this.comparePassword(password, user.password);
+        const isPasswordOk: boolean = await this.comparePassword(password, user.password);
         if(!isPasswordOk)
         {
             throw new AppLogicError(AppErrorName.INVALID_CREDENTIALS);
@@ -55,7 +55,7 @@ export class NoAuthService
         return jwtToken;
     }
 
-    private async comparePassword(password: string, dbUserPassword:string): Promise<Boolean>
+    private async comparePassword(password: string, dbUserPassword:string): Promise<boolean>
     {
         return await bcrypt.compare(password, dbUserPassword);
     }

@@ -1,13 +1,15 @@
 import { StatusCodes } from "http-status-codes"
 import { AppErrorName } from "../../enum/AppErrorName.js"
-import { HTTPAppErrorMsgMap } from "../../interfaces/messages/error/HTTPAppErrorMsgMap.js"
 import { AppErrorMessage } from "../../enum/AppErrorMessage.js"
-import { HTTPAppSuccessMsgMap } from "../../interfaces/messages/success/HTTPAppSuccessMsgMap.js"
 import { AppSuccessName } from "../../enum/AppSuccessName.js"
 import { AppSuccessMessage } from "../../enum/AppSuccessMessage.js"
+import { HTTPErrorMsgStructure } from "../../interfaces/messages/error/HTTPErrorMsgStructure.js"
+import { HTTPSuccessMsgStructure } from "../../interfaces/messages/success/HTTPSuccessMsgStructure.js"
 
+type HTTPAppErrorMsgMap = Record<AppErrorName, HTTPErrorMsgStructure>;
+type HTTPAppSuccessMsgMap = Record<AppSuccessName, HTTPSuccessMsgStructure>
 
-export const appErrorMessages: HTTPAppErrorMsgMap = {
+export const appErrorMessages:HTTPAppErrorMsgMap = {
     [AppErrorName.INVALID_CREDENTIALS]: {
         statusCode: StatusCodes.UNAUTHORIZED,
         name: AppErrorName.INVALID_CREDENTIALS,
@@ -102,6 +104,16 @@ export const appErrorMessages: HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.BAD_REQUEST,
         name: AppErrorName.NAVPLAN_DEL_REQ_INVALID,
         message: AppErrorMessage.NAVPLAN_DEL_REQ_INVALID
+    },
+    [AppErrorName.NAVPLAN_VIEW_REQ_INVALID]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.NAVPLAN_VIEW_REQ_INVALID,
+        message: AppErrorMessage.NAVPLAN_VIEW_REQ_INVALID
+    },
+    [AppErrorName.NAVPLAN_VIEW_NOT_FOUND]: {
+        statusCode: StatusCodes.NOT_FOUND,
+        name: AppErrorName.NAVPLAN_VIEW_NOT_FOUND,
+        message: AppErrorMessage.NAVPLAN_VIEW_NOT_FOUND
     }
 }
 
@@ -120,6 +132,11 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     [AppSuccessName.NAVPLAN_REQ_DELETED]: {
         statusCode: StatusCodes.NO_CONTENT,
         message: AppSuccessMessage.NAVPLAN_REQ_CREATED,
+        data: {}
+    },
+    [AppSuccessName.NAVPLAN_VIEW_SUCCESS]: {
+        statusCode: StatusCodes.OK,
+        message: AppSuccessMessage.NAVPLAN_VIEW_SUCCESS,
         data: {}
     }
 

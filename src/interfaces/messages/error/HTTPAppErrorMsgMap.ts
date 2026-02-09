@@ -1,8 +1,9 @@
+import { AppErrorName } from "../../../enum/AppErrorName.js";
 import { HTTPErrorMsgStructure } from "./HTTPErrorMsgStructure.js";
 
 export interface HTTPAppErrorMsgMap
 {
-    [index: string]: HTTPErrorMsgStructure;
+    messageMap: Record<AppErrorName, HTTPErrorMsgStructure>;
 }
 
 

@@ -14,6 +14,7 @@ import { DateCompareConst } from "../enum/DateCompareConst.js";
 import { TokenPayment } from "../enum/TokenPayment.js";
 import { UserTokenInterface } from "../interfaces/UserTokenInterface.js";
 import { LineString } from "geojson";
+import { ViewNavPlansQS } from "../interfaces/http-requests/ViewNavPlansQS.js";
 
 /**
  * Service class for managing user roles functionality.
@@ -47,9 +48,9 @@ export class UserRoleService
      */
     private checkAndDecreaseToken = async (user:UserJwt, cost: TokenPayment):Promise<UserAttributes> =>
     {
-        let userUpdated: UserAttributes|null|undefined = await this.userDao.read(user.email);
+        let userUpdated: UserAttributes|null= await this.userDao.read(user.email);
         
-        if(userUpdated !== undefined && userUpdated !== null)
+        if(userUpdated !== null)
         {
             if(userUpdated.tokens < 7)
             {
@@ -59,7 +60,7 @@ export class UserRoleService
             {
                 userUpdated.tokens = userUpdated.tokens - cost;
                 userUpdated = await this.userDao.update(userUpdated);
-                if(userUpdated !== undefined && userUpdated !== null)
+                if(userUpdated !== null)
                 {
                     return userUpdated;
                 }
@@ -75,19 +76,26 @@ export class UserRoleService
         }
     }
 
-    private checkInNoNavZone = async (navPlan: NavPlan):Promise<Boolean> =>
+    private checkInNoNavZone = async (navPlan: NavPlan):Promise<boolean> =>
     {
         const noNavZones = await this.noNavZoneDao.readAll();
-        let validNoNavZonesByDate: Array<NoNavigationZoneAttributes> = []
+        const validNoNavZonesByDate: NoNavigationZoneAttributes[] = []
         if(noNavZones.length > 0)
         {
             for(const noNavZone of noNavZones)
             {
-                if((noNavZone.validityEnd === null && noNavZone.validityStart === null)
-                    || (noNavZone.validityStart! <= navPlan.dateEnd && noNavZone.validityEnd! >= navPlan.dateStart))
+                if(noNavZone.validityEnd && noNavZone.validityStart)
                 {
-                    validNoNavZonesByDate.push(noNavZone);
+                    if((noNavZone.validityStart <= navPlan.dateEnd && noNavZone.validityEnd >= navPlan.dateStart))
+                    {
+                        validNoNavZonesByDate.push(noNavZone);
+                    }
                 }
+                else
+                {
+                    validNoNavZonesByDate.push(noNavZone)
+                }
+                
             }
 
             if(validNoNavZonesByDate.length === 0)
@@ -109,12 +117,14 @@ export class UserRoleService
         return false;
     }
 
-    private checkReqDateStart = (navPlan: NavPlan):Boolean =>
+    private checkReqDateStart = (navPlan: NavPlan):boolean =>
     {
-        let isReqDateValid: Boolean;
-        if(navPlan !== undefined && navPlan.dateStart !== undefined && navPlan.submittedAt !== undefined)
+        let isReqDateValid: boolean;
+        
+        if(navPlan.submittedAt)
         {
-            isReqDateValid = navPlan.dateStart.getTime() - navPlan.submittedAt.getTime() > DateCompareConst.TIME_DIFF_48H_TO_MS
+            const timeValue: DateCompareConst = navPlan.dateStart.getTime() - navPlan.submittedAt.getTime()
+            isReqDateValid =  timeValue > DateCompareConst.TIME_DIFF_48H_TO_MS
         }
         else
         {
@@ -123,7 +133,7 @@ export class UserRoleService
         return isReqDateValid;
     }
 
-    private checkUserNavPlanConflict = async (user: UserAttributes, navPlan: NavPlan): Promise<Boolean> =>
+    private checkUserNavPlanConflict = async (user: UserAttributes, navPlan: NavPlan): Promise<boolean> =>
     {
         const navPlans = await this.navPlanDao.readAll();
         const navZoneBySameUser = []
@@ -160,15 +170,14 @@ export class UserRoleService
     }
 
     createNavPlan = async (user: UserJwt, navPlan: NavPlan): Promise<[NavPlan, UserTokenInterface]> => {
-        let navPlanReqToCreate: NavigationRequestAttributes;
-        let navPlanToReturn: NavigationRequestAttributes;
+        
 
         const userDecreasedTokens: UserAttributes = await this.checkAndDecreaseToken(user, TokenPayment.REQ_TOTAL_COST);
 
         Object.keys(navPlan).forEach(key => {
             if(navPlan[key as keyof NavPlan] === undefined)
             {
-                this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
+                void this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
                 throw new AppLogicError(AppErrorName.INTERNAL_SERVER_ERROR);
             }
         });
@@ -176,21 +185,21 @@ export class UserRoleService
         const isReqDateValid = this.checkReqDateStart(navPlan);
         if(!isReqDateValid)
         {
-            this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
+            void this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
             throw new AppLogicError(AppErrorName.INVALID_NAVPLAN_DATE);
         }
 
         const isInNoNavZone = await this.checkInNoNavZone(navPlan);
         if(isInNoNavZone)
         {
-            this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
+            void this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
             throw new AppLogicError(AppErrorName.FORBIDDEN_AREA_ERROR);
         }
         
         const isNavPlanInConflict = await this.checkUserNavPlanConflict(userDecreasedTokens, navPlan);
         if(isNavPlanInConflict)
         {
-            this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
+            void this.addToken(userDecreasedTokens, TokenPayment.NAVPLAN_INVALID_REFUND);
             throw new AppLogicError(AppErrorName.NAVPLAN_CONFLICT);
         }
 
@@ -199,25 +208,26 @@ export class UserRoleService
             coordinates: navPlan.route
         }
 
-        navPlanReqToCreate = {
+        const navPlanReqToCreate = {
             userId: userDecreasedTokens.id,
             status: NavPlanReqStatus.PENDING,
-            submittedAt: navPlan.submittedAt!,
-            dateStart: navPlan.dateStart!,
-            dateEnd: navPlan.dateEnd!,
+            submittedAt: navPlan.submittedAt as Date,
+            dateStart: navPlan.dateStart,
+            dateEnd: navPlan.dateEnd,
             navigationPlan: lineString,
             droneId: navPlan.droneId
         }
 
-        navPlanToReturn = await this.navPlanDao.create(navPlanReqToCreate)
+        const navPlanToReturn: NavigationRequestAttributes = await this.navPlanDao.create(navPlanReqToCreate)
 
         return [{
-                id: navPlanToReturn.id!,
+                id: navPlanToReturn.id,
+                submittedAt: navPlanToReturn.submittedAt,
+                status: navPlanToReturn.status,
                 dateStart: navPlanToReturn.dateStart,
                 dateEnd: navPlanToReturn.dateEnd,
                 droneId: navPlanToReturn.droneId,
-                route: (navPlanToReturn.navigationPlan as LineString).coordinates,
-                submittedAt: navPlanToReturn.submittedAt
+                route: navPlanToReturn.navigationPlan.coordinates,
             },
             {
                 email: userDecreasedTokens.email,
@@ -260,5 +270,38 @@ export class UserRoleService
         }
 
 
+    }
+
+    viewNavPlan = async (email: string, query: ViewNavPlansQS):Promise<NavPlan[]> => {
+        const user = await this.userDao.read(email);
+        query.userId = user?.id;
+
+        const navPlans = await this.navPlanDao.readAll(undefined,query);
+        const navPlansToReturn: NavPlan[] = [];
+
+        if(!navPlans.length)
+        {
+            throw new AppLogicError(AppErrorName.NAVPLAN_VIEW_NOT_FOUND);
+        }
+
+
+        for(const navPlan of navPlans)
+        {
+            navPlansToReturn.push({
+                        id: navPlan.id,
+                        submittedAt: navPlan.submittedAt,
+                        status: navPlan.status,
+                        motivation: navPlan.motivation,
+                        dateStart: navPlan.dateStart,
+                        dateEnd: navPlan.dateEnd,
+                        droneId: navPlan.droneId,
+                        route: navPlan.navigationPlan.coordinates
+                    });
+            }
+
+        return navPlansToReturn;
+        
+        
+        
     }
 }

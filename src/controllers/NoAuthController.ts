@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { NoAuthService } from "../services/NoAuthService.js";
-import { HTTPMessageFactory } from "../factories/HTTPSuccessFactory.js";
+import { successFactory } from "../factories/HTTPSuccessFactory.js";
 import { AppSuccessName } from "../enum/AppSuccessName.js";
 export class NoAuthController
 {
@@ -11,9 +11,12 @@ export class NoAuthController
     }
 
     login = async (req: Request, res: Response) => {
-        const loginObject = await this.authService.loginUser(req.login!.email, req.login!.password);
-        const message = HTTPMessageFactory.getMessage(AppSuccessName.LOGIN_SUCCESS, loginObject);
-        res.status(message.statusCode).json(message);
+        if(req.login?.email && req.login.password)
+        {
+            const loginObject = await this.authService.loginUser(req.login.email, req.login.password);
+            const message = successFactory(AppSuccessName.LOGIN_SUCCESS, loginObject);
+            res.status(message.statusCode).json(message);
+        }
     }
 
 }

@@ -1,6 +1,8 @@
+import { AppErrorName } from "../enum/AppErrorName";
+
 export class AppLogicError extends Error
 {
-    constructor(name:string)
+    constructor(name:AppErrorName)
     {
         super();
         this.name = name;

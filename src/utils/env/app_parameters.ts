@@ -1,5 +1,4 @@
-import fs from "fs";
-export const APP_PORT = process.env.APP_PORT ?? 3000;
+export const APP_PORT = process.env.APP_PORT ?? "3000";
 export const PGDATABASE = process.env.PGDATABASE ?? "pa2425";
 export const PGHOST = process.env.PGHOST ?? "localhost";
 export const PGPORT = process.env.PGPORT ?? 5432;

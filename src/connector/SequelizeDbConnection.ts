@@ -3,12 +3,12 @@ import { PGDATABASE, PGUSER, PGUSERPSW, PGHOST} from '../utils/env/app_parameter
 
 export class SequelizeDbConnection
 {
-    private static instance:SequelizeDbConnection;
-    private static sequelize: Sequelize;
+    private static instance:SequelizeDbConnection|null = null;
+    private sequelize: Sequelize;
 
     private constructor()
     {
-        SequelizeDbConnection.sequelize = new Sequelize(
+        this.sequelize = new Sequelize(
             PGDATABASE,
             PGUSER,
             PGUSERPSW,
@@ -24,10 +24,12 @@ export class SequelizeDbConnection
         if(!SequelizeDbConnection.instance) {
             SequelizeDbConnection.instance = new SequelizeDbConnection();
         }
-        return SequelizeDbConnection.sequelize;
+        return SequelizeDbConnection.instance.sequelize;
     }
     public static async authenticate(): Promise<void>
     {
-        await SequelizeDbConnection.sequelize.authenticate();
+        await this.instance?.sequelize.authenticate();
     }
 }
+
+export const sequelize = SequelizeDbConnection.getInstance();

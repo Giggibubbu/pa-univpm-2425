@@ -30,8 +30,6 @@ export class User{
     }
 }
 
-const p1 = new User("adriano","mancini");
-
 describe("user test", () =>{
     let p1:User;
     beforeEach( ()=>{

@@ -1,12 +1,13 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { User, UserId } from './User.js';
-import { GeoJSON, LineString } from 'geojson';
+import { LineString } from 'geojson';
+import { NavPlanReqStatus } from '../../enum/NavPlanReqStatus.js';
 
 export interface NavigationRequestAttributes {
   id?: number;
   userId: number;
-  status: "pending" | "approved" | "rejected" | "cancelled";
+  status: NavPlanReqStatus;
   submittedAt: Date;
   dateStart: Date;
   dateEnd: Date;
@@ -23,7 +24,7 @@ export type NavigationRequestCreationAttributes = Optional<NavigationRequestAttr
 export class NavigationRequest extends Model<NavigationRequestAttributes, NavigationRequestCreationAttributes> implements NavigationRequestAttributes {
   id!: number;
   userId!: number;
-  status!: "pending" | "approved" | "rejected" | "cancelled";
+  status!: NavPlanReqStatus;
   submittedAt!: Date;
   dateStart!: Date;
   dateEnd!: Date;

@@ -1,5 +1,6 @@
 export enum DateCompareConst
 {
-    TIME_DIFF_48H_TO_MS = 48 * 60 * 60 * 1000,
-    TIME_DIFF_30M_TO_MS = 30 * 60 * 1000
+    TIME_DIFF_48H_TO_MS = 172800000,
+    TIME_DIFF_30M_TO_MS = 1800000,
+    TIME_DIFF_24H_TO_MS = 86400000
 }

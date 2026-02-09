@@ -1,20 +1,21 @@
 import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
-import tseslint, { parser } from 'typescript-eslint';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig(
+  {ignores: ['dist/**', 'node_modules/**']},
+
   eslint.configs.recommended,
-  tseslint.configs.stylisticTypeChecked,
   tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  tseslint.configs.strictTypeChecked,
   {
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['./*/*.ts','eslint.config.mjs','*.ts']
+          allowDefaultProject: ['tsconfig.json','eslint.config.mjs', 'jest.config.js']
         }
       },
     },
-  },
-  tseslint.configs.strict,
-  tseslint.configs.stylistic
+  }
 );
