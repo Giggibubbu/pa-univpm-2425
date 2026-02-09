@@ -14,7 +14,8 @@ import { DateCompareConst } from "../enum/DateCompareConst.js";
 import { TokenPayment } from "../enum/TokenPayment.js";
 import { UserTokenInterface } from "../interfaces/UserTokenInterface.js";
 import { LineString } from "geojson";
-import { ViewNavPlansQS } from "../interfaces/http-requests/ViewNavPlansQS.js";
+import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS.js";
+import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
 
 /**
  * Service class for managing user roles functionality.
@@ -135,28 +136,16 @@ export class UserRoleService
 
     private checkUserNavPlanConflict = async (user: UserAttributes, navPlan: NavPlan): Promise<boolean> =>
     {
-        const navPlans = await this.navPlanDao.readAll();
-        const navZoneBySameUser = []
-        if(navPlans.length > 0)
-        {
-            for(const item of navPlans)
-            {
-                if(item.userId === user.id)
-                {
-                    navZoneBySameUser.push(item);
-                }
-            }
+        const navPlanFilters: NavPlanQueryFilter = {
+            userId: user.id,
+            dateStart: navPlan.dateStart,
+            dateEnd: navPlan.dateEnd,
+            status: [NavPlanReqStatus.APPROVED, NavPlanReqStatus.PENDING]
         }
+        const navPlans = await this.navPlanDao.readAll(navPlanFilters);
 
-        for(const item of navZoneBySameUser)
-        {
-            if(navPlan.dateStart <= item.dateEnd && navPlan.dateEnd >= item.dateStart
-                && (item.status === NavPlanReqStatus.APPROVED || item.status === NavPlanReqStatus.PENDING))
-            {
-                return true;
-            }
-        }
-        return false;
+        
+        return navPlans.length > 0;
     }
 
     private addToken = async (user: UserAttributes, tokens: TokenPayment): Promise<void> => 
@@ -272,11 +261,12 @@ export class UserRoleService
 
     }
 
-    viewNavPlan = async (email: string, query: ViewNavPlansQS):Promise<NavPlan[]> => {
+    viewNavPlan = async (email: string, query: ViewNavPlanQS):Promise<NavPlan[]> => {
         const user = await this.userDao.read(email);
-        query.userId = user?.id;
 
-        const navPlans = await this.navPlanDao.readAll(undefined,query);
+        const queryFilters: NavPlanQueryFilter = query as NavPlanQueryFilter;
+        queryFilters.userId = user?.id
+        const navPlans = await this.navPlanDao.readAll(queryFilters);
         const navPlansToReturn: NavPlan[] = [];
 
         if(!navPlans.length)

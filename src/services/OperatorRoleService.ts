@@ -3,7 +3,7 @@ import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
-import { ViewNavPlansQS } from "../interfaces/http-requests/ViewNavPlansQS";
+import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
 
 export class OperatorRoleService
@@ -17,7 +17,7 @@ export class OperatorRoleService
         this.noNavZoneDao = noNavZoneDao;
     }
 
-    viewNavPlan = async (query: ViewNavPlansQS): Promise<NavPlan[]> => {
+    viewNavPlan = async (query: ViewNavPlanQS): Promise<NavPlan[]> => {
         const navPlans: NavigationRequestAttributes[] = await this.navPlanDao.readAll(undefined, query);
         const navPlansToReturn: NavPlan[] = []
 

@@ -1,6 +1,6 @@
 import {ILogin} from "../../interfaces/http-requests/ILogin.js"
 import { NavPlan } from "../../interfaces/http-requests/NavPlanRequest.js"
-import { ViewNavPlansQS } from "../../interfaces/http-requests/ViewNavPlansQS.js"
+import { ViewNavPlanQS } from "../../interfaces/http-requests/ViewNavPlanQS.js"
 import { UserJwt } from "../../interfaces/jwt/UserJwt.js"
 declare global {
   namespace Express {
@@ -8,7 +8,7 @@ declare global {
       login?: ILogin;
       jwt?: UserJwt;
       navPlan?: NavPlan;
-      viewNavPlanQS?:ViewNavPlansQS;
+      viewNavPlanQS?:ViewNavPlanQS;
     }
   }
 }

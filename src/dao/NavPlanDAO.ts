@@ -3,7 +3,8 @@ import { OrmModels } from "../db/OrmModels.js";
 import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { IDao } from "../interfaces/dao/IDAO.js";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
-import { ViewNavPlansQS } from "../interfaces/http-requests/ViewNavPlansQS.js";
+import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
+import { isArray } from "util";
 
 export class NavPlanDAO implements IDao<NavigationRequestAttributes>
 {
@@ -24,31 +25,40 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
     async read(field: number): Promise<NavigationRequestAttributes | null> {
         return await this.navReqModel.findOne({where: {id: field}});
     }
-    async readAll(item?: NavigationRequestAttributes, filters?:ViewNavPlansQS): Promise<NavigationRequestAttributes[]> {
-        filters = filters?? {}
+    async readAll(item?: NavPlanQueryFilter): Promise<NavigationRequestAttributes[]> {
+        item = item?? {}
         const whereClause: WhereOptions<NavigationRequestAttributes> = {};
-        switch(Object.keys(filters).length > 0)
+        switch(Object.keys(item).length > 0)
         {
             case true:
-                if(filters.dateFrom && filters.dateTo)
+                if(item.dateEnd && item.dateStart)
                 {
-                    whereClause.submittedAt = {[Op.between]: [filters.dateFrom, filters.dateTo]};
+                    whereClause.dateEnd = {[Op.gte]: item.dateStart}
+                    whereClause.dateStart = {[Op.lte]: item.dateEnd}
                 }
-                else if(filters.dateFrom)
+                if(item.dateFrom && item.dateTo)
                 {
-                    whereClause.submittedAt = {[Op.gte]: filters.dateFrom}
+                    whereClause.submittedAt = {[Op.between]: [item.dateFrom, item.dateTo]};
                 }
-                else if(filters.dateTo)
+                else if(item.dateFrom)
                 {
-                    whereClause.submittedAt = {[Op.lte]: filters.dateTo}
+                    whereClause.submittedAt = {[Op.gte]: item.dateFrom}
                 }
-                if(filters.status)
+                else if(item.dateTo)
                 {
-                    whereClause.status = filters.status;
+                    whereClause.submittedAt = {[Op.lte]: item.dateTo}
                 }
-                if(filters.userId)
+                if(Array.isArray(item.status))
                 {
-                    whereClause.userId = filters.userId;
+                    whereClause.status = {[Op.in]: item.status}
+                }
+                else if(item.status)
+                {
+                    whereClause.status = {[Op.eq]: item.status}
+                }
+                if(item.userId)
+                {
+                    whereClause.userId = {[Op.eq]: item.userId}
                 }
                 console.log(whereClause)
                 return await this.navReqModel.findAll({where: whereClause});
