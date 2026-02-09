@@ -1,6 +1,8 @@
+import { Op, WhereOptions } from "sequelize";
 import { OrmModels } from "../db/OrmModels.js";
 import { IDao } from "../interfaces/dao/IDAO.js";
 import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
 export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
 {
     private noNavZoneModel;
@@ -15,9 +17,48 @@ export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
         throw new Error("Method not implemented.");
     }
 
-    async readAll(): Promise<NoNavigationZoneAttributes[]> {
-        const noNavZones = await this.noNavZoneModel.findAll();
-        return noNavZones;
+    async readAll(item?: NoNavigationZoneAttributes | NavigationRequestAttributes): Promise<NoNavigationZoneAttributes[] | undefined> {
+
+        if(item != undefined)
+        {
+            let whereClause: WhereOptions<NoNavigationZoneAttributes> = {}
+            if('userId' in item)
+            {
+                if(item.dateStart && item.dateEnd)
+                {
+                    if(item.dateEnd && item.dateStart)
+                    {
+                        whereClause = {[Op.and]: [{
+                            [Op.or]: [
+                                { validityEnd: { [Op.gte]: item.dateStart } },
+                                { validityEnd: { [Op.eq]: null } }
+                            ]
+                        },
+                        {
+                            [Op.or]: [
+                                { validityStart: { [Op.lte]: item.dateEnd } },
+                                { validityStart: { [Op.eq]: null } }
+                            ]
+                        }
+                        ]
+                        };
+                        return this.noNavZoneModel.findAll({where: whereClause});
+                    } 
+                }
+            }
+            else
+            {
+                return this.noNavZoneModel.findAll({where: whereClause});
+
+            }
+
+        }
+        else
+        {
+            const noNavZones = await this.noNavZoneModel.findAll();
+            return noNavZones;
+        }
+        
     }
     update(): Promise<NoNavigationZoneAttributes | null> {
         throw new Error("Method not implemented.");

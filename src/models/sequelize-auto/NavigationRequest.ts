@@ -13,7 +13,7 @@ export interface NavigationRequestAttributes {
   dateEnd: Date;
   droneId: string;
   navigationPlan: LineString;
-  motivation?: string;
+  motivation?: string|null;
 }
 
 export type NavigationRequestPk = "id";

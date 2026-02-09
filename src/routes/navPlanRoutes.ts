@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userRoleValidation } from "../middlewares/auth_middlewares.js";
+import { userOpRoleValidation, userRoleValidation } from "../middlewares/auth_middlewares.js";
 import { UserDAO } from "../dao/UserDAO.js";
 import { NavPlanDAO } from "../dao/NavPlanDAO.js";
 import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
@@ -18,10 +18,9 @@ const userRoleController = new UserRoleController(userRoleService);
 const opRoleService = new OperatorRoleService(navPlanDao, noNavZoneDao);
 const userOpRoleController = new UserOpRoleController(userRoleService, opRoleService);
 
-navPlanRouter.use(userRoleValidation);
-navPlanRouter.post('/', navPlanReqCreationValidator, finalizeNavPlanCreateReq, userRoleController.create);
-navPlanRouter.delete('/:id', navPlanDelReqValidator, finalizeDelNavPlanReq, userRoleController.delete);
-navPlanRouter.get('/', navPlanViewReqValidator, finalizeViewNavPlanReq, userOpRoleController.view);
+navPlanRouter.post('/', userRoleValidation, navPlanReqCreationValidator, finalizeNavPlanCreateReq, userRoleController.create);
+navPlanRouter.delete('/:id', userRoleValidation, navPlanDelReqValidator, finalizeDelNavPlanReq, userRoleController.delete);
+navPlanRouter.get('/', userOpRoleValidation, navPlanViewReqValidator, finalizeViewNavPlanReq, userOpRoleController.view);
 
 
 

@@ -150,9 +150,17 @@ const validateFormatQuery = query('format').optional()
 
 
 const validateCompareDatesQuery = query(["dateTo"]).custom((value: string, {req}) => {
-    const dateFrom = new Date(req.query?.dateFrom as string);
-    const dateTo = new Date(value);
-    return dateTo.getTime() - dateFrom.getTime() >= 0 || !req.query?.dateFrom;
+    if(req.query?.dateTo === undefined || req.query.dateFrom === undefined)
+    {
+        return true
+    }
+    else
+    {
+        const dateFrom = new Date(req.query?.dateFrom as string);
+        const dateTo = new Date(value);
+        return dateTo.getTime() - dateFrom.getTime() >= 0;
+    }
+    
 })
 
 export const finalizeViewNavPlanReq = (req:Request, res:Response, next:NextFunction) => {
@@ -181,7 +189,6 @@ export const finalizeViewNavPlanReq = (req:Request, res:Response, next:NextFunct
 
     req.viewNavPlanQS = 
     {
-        userId: undefined,
         dateFrom: data.dateFrom as Date,
         dateTo: data.dateTo as Date,
         status: data.status as NavPlanReqStatus,

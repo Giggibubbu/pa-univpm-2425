@@ -1,6 +1,7 @@
 import { NavPlanDAO } from "../dao/NavPlanDAO";
 import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
 import { AppErrorName } from "../enum/AppErrorName.js";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
 import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
@@ -18,7 +19,9 @@ export class OperatorRoleService
     }
 
     viewNavPlan = async (query: ViewNavPlanQS): Promise<NavPlan[]> => {
-        const navPlans: NavigationRequestAttributes[] = await this.navPlanDao.readAll(undefined, query);
+
+        console.log(query.status)
+        const navPlans: NavigationRequestAttributes[] = await this.navPlanDao.readAll({status: [query.status as NavPlanReqStatus]});
         const navPlansToReturn: NavPlan[] = []
 
         if(!navPlans.length)

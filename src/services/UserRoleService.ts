@@ -7,7 +7,6 @@ import { AppLogicError } from "../errors/AppLogicError.js";
 import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
 import { UserJwt } from "../interfaces/jwt/UserJwt.js";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
-import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
 import { UserAttributes } from "../models/sequelize-auto/User.js";
 import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { DateCompareConst } from "../enum/DateCompareConst.js";
@@ -79,36 +78,25 @@ export class UserRoleService
 
     private checkInNoNavZone = async (navPlan: NavPlan):Promise<boolean> =>
     {
-        const noNavZones = await this.noNavZoneDao.readAll();
-        const validNoNavZonesByDate: NoNavigationZoneAttributes[] = []
-        if(noNavZones.length > 0)
+        const noNavZoneQueryFilters: NavigationRequestAttributes = {
+            userId: 0,
+            status: navPlan.status as NavPlanReqStatus,
+            submittedAt: navPlan.submittedAt as Date,
+            dateStart: navPlan.dateStart,
+            dateEnd: navPlan.dateEnd,
+            droneId: navPlan.droneId,
+            navigationPlan: turf.lineString(navPlan.route).geometry
+        }
+        const noNavZones = await this.noNavZoneDao.readAll(noNavZoneQueryFilters);
+        
+        if(noNavZones)
         {
-            for(const noNavZone of noNavZones)
-            {
-                if(noNavZone.validityEnd && noNavZone.validityStart)
-                {
-                    if((noNavZone.validityStart <= navPlan.dateEnd && noNavZone.validityEnd >= navPlan.dateStart))
-                    {
-                        validNoNavZonesByDate.push(noNavZone);
-                    }
-                }
-                else
-                {
-                    validNoNavZonesByDate.push(noNavZone)
-                }
-                
-            }
-
-            if(validNoNavZonesByDate.length === 0)
-            {
-                return false;
-            }
-            else
+            if(noNavZones.length > 0)
             {
                 let nPointsInPolygon: number;
                 const lineString: LineString = {type: "LineString", coordinates: navPlan.route};
                 const navPlanPoints = turf.explode(lineString);
-                for(const item of validNoNavZonesByDate)
+                for(const item of noNavZones)
                 {
                     nPointsInPolygon = turf.pointsWithinPolygon(navPlanPoints, item.route).features.length;  
                     return nPointsInPolygon === 0? false : true;
@@ -200,6 +188,7 @@ export class UserRoleService
         const navPlanReqToCreate = {
             userId: userDecreasedTokens.id,
             status: NavPlanReqStatus.PENDING,
+            motivation: undefined,
             submittedAt: navPlan.submittedAt as Date,
             dateStart: navPlan.dateStart,
             dateEnd: navPlan.dateEnd,

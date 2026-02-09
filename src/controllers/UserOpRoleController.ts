@@ -7,6 +7,8 @@ import { appSuccessMessages } from "../utils/messages/messages_utils.js";
 import { AppSuccessName } from "../enum/AppSuccessName.js";
 import { successFactory } from "../factories/HTTPSuccessFactory.js";
 import { create } from "xmlbuilder2";
+import { AppLogicError } from "../errors/AppLogicError.js";
+import { AppErrorName } from "../enum/AppErrorName.js";
 
 
 export class UserOpRoleController
@@ -26,14 +28,18 @@ export class UserOpRoleController
             navPlans = await this.userRoleService.viewNavPlan(req.jwt.email, req.viewNavPlanQS);
         }
         else if(req.jwt?.role === AuthRoles.OPERATOR && req.viewNavPlanQS){
+            if(req.viewNavPlanQS.dateFrom || req.viewNavPlanQS.dateTo || req.viewNavPlanQS.format)
+            {
+                throw new AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID);
+            }
             navPlans = await this.opRoleService.viewNavPlan(req.viewNavPlanQS);
         }
         else
         {
-            navPlans = []
+            throw new AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
         }
 
-        if(req.viewNavPlanQS?.format)
+        if(req.viewNavPlanQS?.format && req.jwt?.role === AuthRoles.USER)
         {
             res.header('Content-Type', `application/${req.viewNavPlanQS.format}`);
             res.attachment(`navigation-plan.${req.viewNavPlanQS.format}`);
@@ -50,12 +56,12 @@ export class UserOpRoleController
                             dateStart: item.dateStart.toISOString(),
                             dateEnd: item.dateEnd.toISOString(),
                             droneId: item.droneId,
-                            route: (item.route.map(point => ({
-                                point: {
+                            route: {
+                                point: item.route.map(point => ({
                                     lon: point[0],
                                     lat: point[1]
-                                }
-                            }))),
+                                }))
+                            }
                         })),
                 }};
                 const data = create(dataForXml);
@@ -66,7 +72,6 @@ export class UserOpRoleController
             {
                 res.status(appSuccessMessages[AppSuccessName.NAVPLAN_VIEW_SUCCESS].statusCode).send(JSON.stringify(navPlans, null, 2));
             }
-
         }
         else
         {

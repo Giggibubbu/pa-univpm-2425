@@ -4,7 +4,6 @@ import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { IDao } from "../interfaces/dao/IDAO.js";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
 import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
-import { isArray } from "util";
 
 export class NavPlanDAO implements IDao<NavigationRequestAttributes>
 {
@@ -16,6 +15,7 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
     async create(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes> {
         return await this.navReqModel.create({
             userId: item.userId,
+            motivation: null,
             dateStart: item.dateStart,
             dateEnd: item.dateEnd,
             droneId: item.droneId,
@@ -26,9 +26,10 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
         return await this.navReqModel.findOne({where: {id: field}});
     }
     async readAll(item?: NavPlanQueryFilter): Promise<NavigationRequestAttributes[]> {
+        console.log(item, item?.status)
         item = item?? {}
         const whereClause: WhereOptions<NavigationRequestAttributes> = {};
-        switch(Object.keys(item).length > 0)
+        switch(true)
         {
             case true:
                 if(item.dateEnd && item.dateStart)
@@ -50,7 +51,18 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
                 }
                 if(Array.isArray(item.status))
                 {
-                    whereClause.status = {[Op.in]: item.status}
+                    let condition: boolean = true;
+
+                    for(const element of item.status)
+                    {
+                        condition = element? true && condition: false;
+                    }
+
+                    if(condition)
+                    {
+                        whereClause.status = {[Op.in]: item.status}
+                    }
+                    
                 }
                 else if(item.status)
                 {
@@ -60,7 +72,6 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
                 {
                     whereClause.userId = {[Op.eq]: item.userId}
                 }
-                console.log(whereClause)
                 return await this.navReqModel.findAll({where: whereClause});
             default:
                 return await this.navReqModel.findAll();

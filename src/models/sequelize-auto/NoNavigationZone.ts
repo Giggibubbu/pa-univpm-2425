@@ -7,8 +7,8 @@ export interface NoNavigationZoneAttributes {
   id: number;
   operatorId: number;
   route: Polygon;
-  validityStart?: Date;
-  validityEnd?: Date;
+  validityStart?: Date | null;
+  validityEnd?: Date | null;
 }
 
 export type NoNavigationZonePk = "id";
