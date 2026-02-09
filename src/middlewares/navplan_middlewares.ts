@@ -1,35 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { body, checkExact, FieldValidationError, matchedData, param, query, validationResult } from "express-validator";
+import { body, checkExact, FieldValidationError, matchedData, query, validationResult } from "express-validator";
 import { AppLogicError } from "../errors/AppLogicError.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
-import { DateCompareConst } from "../enum/DateCompareConst.js";
 import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
 import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { AuthRoles } from "../enum/AuthRoles.js";
-
-
-const validateDate = (date: string) => {
-    return body(date)
-    .exists()
-    .withMessage("Il campo non contiene alcun valore.").bail()
-    .isString()
-    .withMessage("Il campo non è una stringa.").bail()
-    .notEmpty()
-    .withMessage("Il campo contiene una stringa vuota.").bail()
-    .customSanitizer((value:string) => {
-        return value.replace(/\s/g, '');
-    })
-    .isISO8601()
-    .withMessage("Il campo non contiene una stringa avente formato ISO8601").bail()
-    .toDate()
-    .isAfter()
-    .withMessage("Il campo data non contiene un valore successivo alla data odierna.").bail();
-}
-
-const validateCompareDates = (start: Date, end: Date) => {
-    const diff: DateCompareConst = end.getTime() - start.getTime() 
-    return  diff > DateCompareConst.TIME_DIFF_30M_TO_MS;
-}
+import { validateCompareDates, validateDate, validateId } from "./generic_middlewares.js";
 
 const validateDroneId = body('droneId')
 .exists()
@@ -91,11 +67,6 @@ export const finalizeNavPlanCreateReq = (req:Request, res:Response, next:NextFun
     next();
 
 }
-
-const validateId = param('id')
-.isInt({gt: 0}).bail()
-.withMessage("Il campo non contiene un numero intero positivo.").bail()
-.toInt()
 
 export const finalizeDelNavPlanReq = (req:Request, res:Response, next:NextFunction) => {
     const errors = validationResult(req);
@@ -177,11 +148,8 @@ export const finalizeViewNavPlanReq = (req:Request, res:Response, next:NextFunct
     }
     else if(req.jwt?.role === AuthRoles.OPERATOR)
     {
-        if(errors.array().length === 1 && errors.array()[0].path === "status")
-        {
-            next(new AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID));
-        }
-        else if(errors.array().length > 1)
+        console.log(req.jwt?.role)
+        if(errors.array().length > 0)
         {
             next(new AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID));
         }

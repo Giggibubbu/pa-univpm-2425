@@ -4,7 +4,7 @@ import type { User, UserId } from './User.js';
 import { Polygon } from 'geojson';
 
 export interface NoNavigationZoneAttributes {
-  id: number;
+  id?: number;
   operatorId: number;
   route: Polygon;
   validityStart?: Date | null;

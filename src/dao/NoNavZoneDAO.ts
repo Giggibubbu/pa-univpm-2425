@@ -10,8 +10,13 @@ export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
     {
         this.noNavZoneModel = OrmModels.initModels().NoNavigationZone;
     }
-    create(): Promise<NoNavigationZoneAttributes> {
-        throw new Error("Method not implemented.");
+    async create(item: NoNavigationZoneAttributes): Promise<NoNavigationZoneAttributes> {
+        return await this.noNavZoneModel.create({
+            operatorId: item.operatorId,
+            route: item.route,
+            validityStart: item.validityStart,
+            validityEnd: item.validityEnd
+        })
     }
     read(): Promise<NoNavigationZoneAttributes> {
         throw new Error("Method not implemented.");
@@ -46,12 +51,15 @@ export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
                     } 
                 }
             }
-            else
+            else if('operatorId' in item)
             {
+                if(item.route)
+                {
+                    whereClause = { route: {[Op.eq]: item.route }}
+                }
                 return this.noNavZoneModel.findAll({where: whereClause});
 
             }
-
         }
         else
         {

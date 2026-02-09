@@ -1,5 +1,6 @@
 import {ILogin} from "../../interfaces/http-requests/ILogin.js"
 import { NavPlan } from "../../interfaces/http-requests/NavPlanRequest.js"
+import { NoNavZone } from "../../interfaces/http-requests/NoNavZoneRequest.js";
 import { ViewNavPlanQS } from "../../interfaces/http-requests/ViewNavPlanQS.js"
 import { UserJwt } from "../../interfaces/jwt/UserJwt.js"
 declare global {
@@ -9,6 +10,7 @@ declare global {
       jwt?: UserJwt;
       navPlan?: NavPlan;
       viewNavPlanQS?:ViewNavPlanQS;
+      noNavZone?: NoNavZone
     }
   }
 }

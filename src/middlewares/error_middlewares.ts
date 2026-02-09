@@ -11,7 +11,6 @@ export const logError = (err: Error | AppLogicError | HTTPError, req:Request, re
   {
     case err instanceof AppLogicError:
       console.log(`[${logDate}] Errore generico nella logica applicativa: ${err}`)
-      console.log("err")
       break;
     case err instanceof HTTPError:
       console.log(`[${logDate}] Errore generico nella logica applicativa: ${err}`)
@@ -28,7 +27,6 @@ export const errorHandler = (err: Error | AppLogicError | HTTPError, req:Request
   switch(true)
   {
     case err instanceof AppLogicError:
-      console.log("pippo")
       httpError = errorFactory(err.name as AppErrorName);
       res.status(httpError.statusCode).json(httpError);
       break;

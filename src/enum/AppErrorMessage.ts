@@ -20,4 +20,6 @@ export enum AppErrorMessage {
     NAVPLAN_DEL_REQ_INVALID = "La richiesta di cancellazione del piano di navigazione è invalida.",
     NAVPLAN_VIEW_REQ_INVALID = "La richiesta di visualizzazione dei piani di navigazione è invalida.",
     NAVPLAN_VIEW_NOT_FOUND = "Non sono stati trovati piani di navigazione che soddisfano i criteri di ricerca specificati.",
+    INVALID_NONAVPLAN_CREATE_REQ = "La richiesta di creazione di una zona vietata è invalida.",
+    NONAVZONE_CONFLICT = "La zona vietata di cui è stata richiesta la creazione è in conflitto con un'altra già esistente."
 }

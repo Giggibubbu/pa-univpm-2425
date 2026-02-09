@@ -28,10 +28,6 @@ export class UserOpRoleController
             navPlans = await this.userRoleService.viewNavPlan(req.jwt.email, req.viewNavPlanQS);
         }
         else if(req.jwt?.role === AuthRoles.OPERATOR && req.viewNavPlanQS){
-            if(req.viewNavPlanQS.dateFrom || req.viewNavPlanQS.dateTo || req.viewNavPlanQS.format)
-            {
-                throw new AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID);
-            }
             navPlans = await this.opRoleService.viewNavPlan(req.viewNavPlanQS);
         }
         else

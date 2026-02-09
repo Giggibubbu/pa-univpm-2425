@@ -114,6 +114,16 @@ export const appErrorMessages:HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.NOT_FOUND,
         name: AppErrorName.NAVPLAN_VIEW_NOT_FOUND,
         message: AppErrorMessage.NAVPLAN_VIEW_NOT_FOUND
+    },
+    [AppErrorName.INVALID_NONAVPLAN_CREATE_REQ]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.INVALID_NONAVPLAN_CREATE_REQ,
+        message: AppErrorMessage.INVALID_NONAVPLAN_CREATE_REQ
+    },
+    [AppErrorName.NONAVZONE_CONFLICT]: {
+        statusCode: StatusCodes.CONFLICT,
+        name: AppErrorName.NONAVZONE_CONFLICT,
+        message: AppErrorMessage.NONAVZONE_CONFLICT
     }
 }
 
@@ -137,6 +147,11 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     [AppSuccessName.NAVPLAN_VIEW_SUCCESS]: {
         statusCode: StatusCodes.OK,
         message: AppSuccessMessage.NAVPLAN_VIEW_SUCCESS,
+        data: {}
+    },
+    [AppSuccessName.NONAVZONE_CREATED]: {
+        statusCode: StatusCodes.CREATED,
+        message: AppSuccessMessage.NONAVZONE_CREATED,
         data: {}
     }
 
