@@ -68,10 +68,27 @@ export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
         }
         
     }
-    update(): Promise<NoNavigationZoneAttributes | null> {
-        throw new Error("Method not implemented.");
+    async update(item: NoNavigationZoneAttributes): Promise<NoNavigationZoneAttributes | null> {
+        console.log(item)
+        if(item.id)
+        {
+            if((item.validityEnd === null && item.validityStart === null) || (item.validityEnd && item.validityStart))
+            {
+                const [affectedCount, noNavPlan] = await this.noNavZoneModel.update({ validityStart: item.validityStart, validityEnd: item.validityEnd }, {where: {id: item.id}, returning: true});
+                return noNavPlan[0];
+            }
+
+        }
+        return null
     }
-    delete(): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async delete(item: NoNavigationZoneAttributes): Promise<boolean | number> {
+        if(item.id)
+        {
+            return await this.noNavZoneModel.destroy({where: {id: item.id}})
+        }
+        else
+        {
+            return false;
+        }
     }
 }

@@ -8,12 +8,18 @@ import { AppLogicError } from "../errors/AppLogicError.js";
 import { AuthRoles } from "../enum/AuthRoles.js";
 import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
 import { HTTPUserLogin } from "../interfaces/http-requests/UserLogin.js";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
+import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
+import { transformPolygonToArray } from "../utils/geojson_utils.js";
 
 export class NoAuthService
 {
     private userDao: UserDAO;
-    constructor(userDao: UserDAO)
+    private noNavZoneDao: NoNavZoneDAO
+    constructor(userDao: UserDAO, noNavZoneDao: NoNavZoneDAO)
     {
+        this.noNavZoneDao = noNavZoneDao;
         this.userDao = userDao;
     }
 
@@ -46,6 +52,32 @@ export class NoAuthService
             }
         }
         return loginResponseObject
+    }
+
+    viewNoNavZones = async ():Promise<NoNavZone[]> =>
+    {
+        const noNavZones: NoNavigationZoneAttributes[]|undefined = await this.noNavZoneDao.readAll();
+        let arrayNoNavZone: NoNavZone[] = []
+        if(noNavZones)
+        {
+            for(const item of noNavZones)
+            {
+                arrayNoNavZone.push({
+                    id: item.id,
+                    operatorId: item.operatorId,
+                    validityStart: item.validityStart,
+                    validityEnd: item.validityEnd,
+                    route: item.route? transformPolygonToArray(item.route) : []
+                })
+            }
+        }
+        else
+        {
+            throw new AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND);
+        }
+        return arrayNoNavZone;
+        
+
     }
 
     private async generateJwt(userJwt: UserJwt):Promise<string>

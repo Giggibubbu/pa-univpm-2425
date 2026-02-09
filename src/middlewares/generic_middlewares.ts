@@ -24,6 +24,14 @@ export const validateCompareDates = (start: Date, end: Date) => {
     return  diff > DateCompareConst.TIME_DIFF_30M_TO_MS;
 }
 
+export const equals = (a: number[], b: number[]):boolean => {
+    return JSON.stringify(a) === JSON.stringify(b)
+}
+
+export const isLatLon = (a: number, b: number):boolean => {
+    return (a >= -180 && a <= 180) && (b >= -90 && b <= 90);
+}
+
 
 export const validateId = param('id')
 .isInt({gt: 0}).bail()

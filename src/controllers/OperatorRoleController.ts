@@ -5,6 +5,7 @@ import { AppLogicError } from "../errors/AppLogicError.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { successFactory } from "../factories/HTTPSuccessFactory.js";
 import { AppSuccessName } from "../enum/AppSuccessName.js";
+import { appSuccessMessages } from "../utils/messages/messages_utils.js";
 
 
 export class OperatorRoleController
@@ -18,6 +19,7 @@ export class OperatorRoleController
 
     createNoNavZone = async (req: Request, res: Response) => {
         let noNavZone: NoNavZone;
+        console.log("pippo")
         if(req.jwt?.email && req.noNavZone)
         {
             noNavZone = await this.opRoleService.createNoNavZone(req.jwt?.email, req.noNavZone);
@@ -34,15 +36,31 @@ export class OperatorRoleController
     }
 
     updateNoNavZone = async (req: Request, res: Response) => {
-        res.status(200).json()
-    }
-
-    viewNoNavZone = async (req: Request, res: Response) => {
+        if(req.noNavZone)
+        {
+            const noNavZoneCreated = await this.opRoleService.updateNoNavZone(req.noNavZone);
+            if(noNavZoneCreated)
+            {
+                const message = successFactory(AppSuccessName.NONAVZONE_UPDATED, noNavZoneCreated)
+                res.status(message.statusCode).json(message)
+            }
+        }
+        
         res.status(200).json()
     }
 
     deleteNoNavZone = async (req: Request, res: Response) => {
-        res.status(200).json()
+        if(req.noNavZone && req.jwt)
+        {
+            const deleted: boolean = await this.opRoleService.deleteNoNavZone(req.noNavZone, req.jwt?.email)
+            if(deleted)
+            {
+                const message = successFactory(AppSuccessName.NONAVZONE_DELETED, {deleted});
+                res.status(message.statusCode).json();
+            }
+            res.status(200).json()
+        }
+        
     }
 
     updateNavPlan = async (req: Request, res: Response) => {

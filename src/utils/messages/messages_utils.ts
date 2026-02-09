@@ -124,6 +124,21 @@ export const appErrorMessages:HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.CONFLICT,
         name: AppErrorName.NONAVZONE_CONFLICT,
         message: AppErrorMessage.NONAVZONE_CONFLICT
+    },
+    [AppErrorName.INVALID_NONAVPLAN_UPDATE_REQ]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.INVALID_NONAVPLAN_UPDATE_REQ,
+        message: AppErrorMessage.INVALID_NONAVPLAN_UPDATE_REQ
+    },
+    [AppErrorName.NONAVZONE_NOT_FOUND]: {
+        statusCode: StatusCodes.NOT_FOUND,
+        name: AppErrorName.NONAVZONE_NOT_FOUND,
+        message: AppErrorMessage.NONAVZONE_NOT_FOUND
+    },
+    [AppErrorName.NONAVPLAN_DEL_REQ_INVALID]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.NONAVPLAN_DEL_REQ_INVALID,
+        message: AppErrorMessage.NONAVPLAN_DEL_REQ_INVALID
     }
 }
 
@@ -152,6 +167,17 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     [AppSuccessName.NONAVZONE_CREATED]: {
         statusCode: StatusCodes.CREATED,
         message: AppSuccessMessage.NONAVZONE_CREATED,
+        data: {}
+    },
+    [AppSuccessName.NONAVZONE_UPDATED]: {
+        statusCode: StatusCodes.OK,
+        message: AppSuccessMessage.NONAVZONE_UPDATED,
+        data: {}
+    },
+    [AppSuccessName.NONAVZONE_DELETED]:
+    {
+        statusCode: StatusCodes.NO_CONTENT,
+        message: AppSuccessMessage.NONAVZONE_DELETED,
         data: {}
     }
 

@@ -5,8 +5,8 @@ import { Polygon } from 'geojson';
 
 export interface NoNavigationZoneAttributes {
   id?: number;
-  operatorId: number;
-  route: Polygon;
+  operatorId?: number;
+  route?: Polygon;
   validityStart?: Date | null;
   validityEnd?: Date | null;
 }

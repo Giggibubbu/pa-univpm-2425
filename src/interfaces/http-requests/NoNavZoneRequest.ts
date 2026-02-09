@@ -4,5 +4,5 @@ export interface NoNavZone
     operatorId?: number;
     validityStart?: Date | null
     validityEnd?: Date | null
-    route: number[][]
+    route?: number[][]
 }

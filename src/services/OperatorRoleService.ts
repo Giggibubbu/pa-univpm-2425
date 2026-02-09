@@ -1,3 +1,4 @@
+import { Polygon } from "geojson";
 import { NavPlanDAO } from "../dao/NavPlanDAO";
 import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
 import { UserDAO } from "../dao/UserDAO";
@@ -10,7 +11,7 @@ import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
 import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
 import { UserAttributes } from "../models/sequelize-auto/User";
-import * as turf from "@turf/turf";
+import {transformArrayToPolygon, transformPolygonToArray} from "../utils/geojson_utils.js"
 
 export class OperatorRoleService
 {
@@ -55,54 +56,112 @@ export class OperatorRoleService
 
     createNoNavZone = async (email: string, noNavZone: NoNavZone):Promise<NoNavZone> =>
     {
+        let routeBBoxPolygon: Polygon;
+        let navPlanToSearch: NoNavigationZoneAttributes;
         const user: UserAttributes|null = await this.userDao.read(email);
 
-        const routeFlat: number[] = [noNavZone.route[0][0], noNavZone.route[0][1], noNavZone.route[1][0], noNavZone.route[1][1]]
-        const routeBBoxPolygon = turf.bboxPolygon(routeFlat as [number, number, number, number]).geometry
-        
-        let navPlanToSearch: NoNavigationZoneAttributes;
-
-        if(user?.id)
+        if(noNavZone.route)
         {
-            navPlanToSearch = {
-                id: 0,
-                operatorId: user?.id,
-                route: routeBBoxPolygon,
-                validityStart: noNavZone.validityStart,
-                validityEnd: noNavZone.validityEnd
-            }
+            routeBBoxPolygon = transformArrayToPolygon(noNavZone.route);
 
-            const navPlansConflicts: NoNavigationZoneAttributes[]|undefined = await this.noNavZoneDao.readAll(navPlanToSearch);
-            
-            if(navPlansConflicts && navPlansConflicts.length > 0)
+            if(user?.id && routeBBoxPolygon)
             {
-                throw new AppLogicError(AppErrorName.NONAVZONE_CONFLICT);
+                navPlanToSearch = {
+                    id: 0,
+                    operatorId: user?.id,
+                    route: routeBBoxPolygon,
+                    validityStart: noNavZone.validityStart,
+                    validityEnd: noNavZone.validityEnd
+                }
+
+                const navPlansConflicts: NoNavigationZoneAttributes[]|undefined = await this.noNavZoneDao.readAll(navPlanToSearch);
+                
+                if(navPlansConflicts && navPlansConflicts.length > 0)
+                {
+                    throw new AppLogicError(AppErrorName.NONAVZONE_CONFLICT);
+                }
+                
+                const noNavZoneToCreate: NoNavigationZoneAttributes = 
+                {
+                    operatorId: user.id,
+                    route: routeBBoxPolygon,
+                    validityStart: noNavZone.validityStart,
+                    validityEnd: noNavZone.validityEnd
+                }
+
+                const noNavZoneCreated: NoNavigationZoneAttributes = await this.noNavZoneDao.create(noNavZoneToCreate);
+
+                if(noNavZoneCreated.route)
+                {
+                    const pointBBoxArray: number[][] = transformPolygonToArray(noNavZoneCreated.route)
+
+                    return {
+                        id: noNavZoneCreated.id,
+                        operatorId: noNavZoneCreated.operatorId,
+                        validityStart: noNavZoneCreated.validityStart,
+                        validityEnd: noNavZoneCreated.validityEnd,
+                        route: pointBBoxArray
+                    }
+                }
+                
+
             }
-            
-            const noNavZoneToCreate: NoNavigationZoneAttributes = 
-            {
-                operatorId: user.id,
-                route: routeBBoxPolygon,
-                validityStart: noNavZone.validityStart,
-                validityEnd: noNavZone.validityEnd
-            }
-
-            const noNavZoneCreated: NoNavigationZoneAttributes = await this.noNavZoneDao.create(noNavZoneToCreate);
-
-            const bbox = turf.bbox(noNavZoneCreated.route);
-            const pointBBoxArray:number[][] = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]];
-
-            return {
-                id: noNavZoneCreated.id,
-                operatorId: noNavZoneCreated.operatorId,
-                validityStart: noNavZoneCreated.validityStart,
-                validityEnd: noNavZoneCreated.validityEnd,
-                route: pointBBoxArray
-            }
-
         }
+        
         return noNavZone;
 
+    }
+
+    updateNoNavZone = async (noNavZone: NoNavZone):Promise<NoNavZone> => {
+        const noNavZoneToSearch: NoNavigationZoneAttributes = {
+            id: noNavZone.id,
+            validityStart: noNavZone.validityStart,
+            validityEnd: noNavZone.validityEnd
+        }
+
+        const noNavZoneSearched: NoNavigationZoneAttributes | null = await this.noNavZoneDao.update(noNavZoneToSearch);
+        console.log()
+        if(!noNavZoneSearched)
+        {
+            throw new AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND);
+        }
+
+        if(noNavZoneSearched.route)
+        {
+            const pointBBoxArray = transformPolygonToArray(noNavZoneSearched.route)
+
+            noNavZone = {
+                id: noNavZoneSearched.id,
+                operatorId: noNavZoneSearched.operatorId,
+                validityStart: noNavZoneSearched.validityStart,
+                validityEnd: noNavZoneSearched.validityEnd,
+                route: pointBBoxArray
+            }
+        }
+
+        
+
+        return noNavZone
+    }
+
+    deleteNoNavZone = async (noNavZone: NoNavZone, email: string):Promise<boolean> => {
+        const user: UserAttributes| null = await this.userDao.read(email);
+
+        const noNavZoneToDelete: NoNavigationZoneAttributes = {
+            id: noNavZone.id,
+            operatorId: user?.id
+        }
+        const deletion = await this.noNavZoneDao.delete(noNavZoneToDelete);
+
+
+        if(deletion === 1)
+        {
+            return true;
+        }
+        else
+        {
+            throw new AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND);
+        }
     }
     
 }

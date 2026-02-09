@@ -6,5 +6,5 @@ export interface IDao<T>{
     read(field: number | string | T): Promise<T | null>;
     readAll(item?: T | NavPlanQueryFilter | NavigationRequestAttributes): Promise<T[] | undefined>; 
     update(item: T, field?: number): Promise<T | null>;
-    delete(item:T): Promise<boolean>;
+    delete(item:T): Promise<boolean|number>;
 }

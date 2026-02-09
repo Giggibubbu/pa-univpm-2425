@@ -5,7 +5,7 @@ import { AppErrorName } from "../enum/AppErrorName.js";
 import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
 import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { AuthRoles } from "../enum/AuthRoles.js";
-import { validateCompareDates, validateDate, validateId } from "./generic_middlewares.js";
+import { equals, isLatLon, validateCompareDates, validateDate, validateId } from "./generic_middlewares.js";
 
 const validateDroneId = body('droneId')
 .exists()
@@ -22,14 +22,6 @@ const validateDroneId = body('droneId')
 .isLength({min: 10, max: 10})
 .withMessage("Il campo contiene una stringa di lunghezza non uguale a 10 caratteri.").bail()
 .toUpperCase()
-
-const equals = (a: number[], b: number[]):boolean => {
-    return JSON.stringify(a) === JSON.stringify(b)
-}
-
-const isLatLon = (a: number, b: number):boolean => {
-    return (a >= -180 && a <= 180) && (b >= -90 && b <= 90);
-}
 
 const validateRoute = body('route')
 .exists()
