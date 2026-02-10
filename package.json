@@ -7,7 +7,7 @@
     "test": "jest",
     "start": "node dist/server.js",
     "build": "npx tsc",
-    "dev": "nodemon --watch dist dist/app.js",
+    "dev": "nodemon --watch dist dist/server.js",
     "buildModels": "sequelize-auto --sg=true -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres --useDefine --cm=p --cp=c --cf=p --noAlias"
   },
   "repository": {

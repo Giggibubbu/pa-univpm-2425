@@ -2,7 +2,6 @@ import fs from "fs/promises";
 import { JWT_KEYS_DIRNAME, JWT_PRIVKEY_NAME, JWT_PUBKEY_NAME } from "../env/app_parameters";
 import { AppErrorName } from "../../enum/AppErrorName";
 import { AppLogicError } from "../../errors/AppLogicError";
-import { error } from "console";
 
 export interface JwtKeysCouple
 {

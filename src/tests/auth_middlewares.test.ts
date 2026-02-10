@@ -13,7 +13,7 @@ let next: NextFunction;
 
 describe("verifyJwt Middleware testing", () => {
     let keys:JwtKeysCouple;
-    let userJwt: UserJwt = {
+    const userJwt: UserJwt = {
         email: "email@email.it",
         role: AuthRoles.USER
     }
@@ -31,8 +31,9 @@ describe("verifyJwt Middleware testing", () => {
     it("caso token non presente", async () => {
 
         await verifyJwt(req as Request, res as Response, next);
+        
 
-        const err = (next as jest.Mock).mock.calls[0][0];
+        const err:AppLogicError = (next as jest.Mock).mock.calls[0][0];
 
         expect(err).toBeInstanceOf(AppLogicError)
         expect(err.name).toBe(AppErrorName.AUTH_TOKEN_NOTFOUND)
@@ -63,14 +64,14 @@ describe("verifyJwt Middleware testing", () => {
 
         await verifyJwt(req as Request, res as Response, next);
 
-        const err = (next as jest.Mock).mock.calls[0][0];
+        const err = (next as jest.Mock).mock.calls[0]?.[0];
 
         expect(err).toBeInstanceOf(AppLogicError)
         expect(err.name).toBe(AppErrorName.INVALID_JWT)
     })
 
     it("caso token valido", async () => {
-        let jwtToken: string = jwt.sign(userJwt, keys.privKey, {algorithm: "RS256", expiresIn: "1h"});
+        const jwtToken: string = jwt.sign(userJwt, keys.privKey, {algorithm: "RS256", expiresIn: "1h"});
 
         req = { headers: {authorization: `Bearer ${jwtToken}`}}
 

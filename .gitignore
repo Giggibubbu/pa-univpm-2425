@@ -10,3 +10,7 @@ password.txt
 collections/pa-univpm-2425-*env*
 keys.old
 .dockerignore
+*eslint*
+eslint*
+eslint.config.mjs
+.gitignore
