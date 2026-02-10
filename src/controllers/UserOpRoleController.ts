@@ -49,11 +49,11 @@ export class UserOpRoleController
                             submittedAt: item.submittedAt?.toISOString(),
                             status: item.status,
                             motivation: item.motivation,
-                            dateStart: item.dateStart.toISOString(),
-                            dateEnd: item.dateEnd.toISOString(),
+                            dateStart: item.dateStart?.toISOString(),
+                            dateEnd: item.dateEnd?.toISOString(),
                             droneId: item.droneId,
                             route: {
-                                point: item.route.map(point => ({
+                                point: item.route?.map(point => ({
                                     lon: point[0],
                                     lat: point[1]
                                 }))

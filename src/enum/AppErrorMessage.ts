@@ -23,8 +23,11 @@ export enum AppErrorMessage {
     INVALID_NONAVPLAN_CREATE_REQ = "La richiesta di creazione di una zona vietata è invalida.",
     NONAVZONE_CONFLICT = "La zona vietata di cui è stata richiesta la creazione è in conflitto con un'altra già esistente.",
     INVALID_NONAVPLAN_UPDATE_REQ = "La richiesta di aggiornamento della zona vietata è invalida.",
-    NONAVZONE_NOT_FOUND = "La zona vietata da aggiornare non è stata trovata.",
+    NONAVZONE_NOT_FOUND = "La zona vietata da aggiornare o eliminare non è stata trovata.",
     NONAVPLAN_DEL_REQ_INVALID = "La richiesta di cancellazione della zona vietata è invalida.",
     USER_NOT_FOUND = "L'utente selezionato non è esistente.",
-    INVALID_TOKEN_CHARGE_REQ = "La richiesta di ricarica dei token utente è invalida."
+    INVALID_TOKEN_CHARGE_REQ = "La richiesta di ricarica dei token utente è invalida.",
+    INVALID_NAVPLAN_UPDATE_REQ = "La richiesta di aggiornamento del piano di navigazione è invalida.",
+    NAVPLAN_UPD_NOT_FOUND = "Il piano di navigazione da aggiornare non è stato trovato.",
+    FORBIDDEN_NAVPLAN_UPDATE = "Non è permesso accettare / rigettare piani di navigazione che si trovano in stato di approved, rejected o cancelled."
 }

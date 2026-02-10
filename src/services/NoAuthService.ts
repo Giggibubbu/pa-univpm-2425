@@ -30,7 +30,7 @@ export class NoAuthService
         {
             throw new AppLogicError(AppErrorName.INVALID_CREDENTIALS);
         }
-        const isPasswordOk: boolean = await this.comparePassword(password, user.password);
+        const isPasswordOk: boolean = await this.comparePassword(password, user.password as string);
         if(!isPasswordOk)
         {
             throw new AppLogicError(AppErrorName.INVALID_CREDENTIALS);

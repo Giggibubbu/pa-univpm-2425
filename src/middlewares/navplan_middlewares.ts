@@ -96,6 +96,7 @@ const validateStatusQuery = query('status')
 .withMessage("Il campo è una stringa vuota.").bail()
 .isString()
 .withMessage("Il campo non è una stringa.").bail()
+.toLowerCase()
 .isIn([NavPlanReqStatus.APPROVED, NavPlanReqStatus.REJECTED, NavPlanReqStatus.PENDING, NavPlanReqStatus.CANCELLED])
 .withMessage("Il campo non contiene uno status valido.").bail()
 
@@ -156,6 +157,63 @@ export const finalizeViewNavPlanReq = (req:Request, res:Response, next:NextFunct
     }
     next();
 }
+
+const validateStatusUpdate = body('status')
+.exists()
+.withMessage("Il campo non contiene alcun valore.").bail()
+.notEmpty()
+.withMessage("Il campo è una stringa vuota.").bail()
+.isString()
+.toLowerCase()
+.withMessage("Il campo non è una stringa.").bail()
+.isIn([NavPlanReqStatus.APPROVED, NavPlanReqStatus.REJECTED])
+.withMessage("Il campo non contiene uno status valido.").bail()
+.custom((value:string, {req}) => {
+    if(!req.body.motivation && value === NavPlanReqStatus.REJECTED)
+    {
+        return false;
+    }
+    else if(req.body.motivation && value!==NavPlanReqStatus.REJECTED){
+        return false;
+    }
+    return true;
+})
+
+const validateMotivation = body('motivation')
+.optional()
+.exists()
+.notEmpty()
+.isString()
+.isLength({min: 4, max: 255})
+.toUpperCase()
+
+
+export const finalizeNavPlanUpd = (req:Request, res:Response, next:NextFunction) =>{
+    const errors = validationResult(req);
+
+
+    const data = matchedData(req);
+
+    if(errors.array().length > 0)
+    {
+        next(new AppLogicError(AppErrorName.INVALID_NAVPLAN_UPDATE_REQ))
+    }
+    else{
+        req.navPlan = {
+            motivation: data.motivation,
+            id: data.id,
+            status: data.status
+        }
+        next()
+    }
+
+    console.log(errors)
+
+    console.log(data)
+}
+
+
+export const navPlanUpdReqValidator = checkExact([validateId, validateStatusUpdate, validateMotivation])
 
 export const navPlanDelReqValidator = checkExact([validateId])
 

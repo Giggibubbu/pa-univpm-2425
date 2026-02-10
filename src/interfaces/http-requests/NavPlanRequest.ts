@@ -6,10 +6,10 @@ export interface NavPlan
     submittedAt?: Date;
     status?: NavPlanReqStatus;
     motivation?: string|null;
-    dateStart: Date;
-    dateEnd: Date;
-    droneId: string;
-    route: number[][];
+    dateStart?: Date;
+    dateEnd?: Date;
+    droneId?: string;
+    route?: number[][];
 }
 
 

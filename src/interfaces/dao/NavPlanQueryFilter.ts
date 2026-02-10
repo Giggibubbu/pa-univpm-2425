@@ -5,7 +5,7 @@ export interface NavPlanQueryFilter
     userId?: number
     dateFrom?: Date;
     dateTo?: Date;
-    status?: NavPlanReqStatus[];
+    status?: NavPlanReqStatus[]|NavPlanReqStatus;
     format?: string;
     id?: number;
     submittedAt?: Date;

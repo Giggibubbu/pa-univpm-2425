@@ -5,7 +5,7 @@ import { AppLogicError } from "../errors/AppLogicError.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
 import { successFactory } from "../factories/HTTPSuccessFactory.js";
 import { AppSuccessName } from "../enum/AppSuccessName.js";
-import { appSuccessMessages } from "../utils/messages/messages_utils.js";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
 
 
 export class OperatorRoleController
@@ -64,6 +64,12 @@ export class OperatorRoleController
     }
 
     updateNavPlan = async (req: Request, res: Response) => {
+        if(req.navPlan)
+        {
+            const navPlan: NavPlan = await this.opRoleService.updateNavPlan(req.navPlan);
+            const message = successFactory(AppSuccessName.NAVPLAN_UPDATED, {navplan: navPlan})
+            res.status(message.statusCode).json(message)
+        }
         res.status(200).json()
     }
 

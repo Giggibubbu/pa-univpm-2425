@@ -1,17 +1,18 @@
 import { Polygon } from "geojson";
-import { NavPlanDAO } from "../dao/NavPlanDAO";
-import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
-import { UserDAO } from "../dao/UserDAO";
+import { NavPlanDAO } from "../dao/NavPlanDAO.js";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
+import { UserDAO } from "../dao/UserDAO.js";
 import { AppErrorName } from "../enum/AppErrorName.js";
-import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { AppLogicError } from "../errors/AppLogicError.js";
-import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
-import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
 import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
-import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
-import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
-import { UserAttributes } from "../models/sequelize-auto/User";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
+import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
+import { UserAttributes } from "../models/sequelize-auto/User.js";
 import {transformArrayToPolygon, transformPolygonToArray} from "../utils/geojson_utils.js"
+import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
 
 export class OperatorRoleService
 {
@@ -162,6 +163,71 @@ export class OperatorRoleService
         {
             throw new AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND);
         }
+    }
+
+    updateNavPlan = async (navPlan: NavPlan):Promise<NavPlan> => {
+
+        if(navPlan.status)
+        {
+            let navPlanToUpdate: NavPlanQueryFilter;
+            let navPlanToSearch: NavigationRequestAttributes|null;
+
+            if(navPlan.id){
+                navPlanToSearch = await this.navPlanDao.read(navPlan.id)
+                const allowedStatuses = [
+                    NavPlanReqStatus.CANCELLED,
+                    NavPlanReqStatus.REJECTED,
+                    NavPlanReqStatus.APPROVED
+                    ];
+                if(navPlanToSearch)
+                {
+                    if(allowedStatuses.includes(navPlanToSearch.status))
+                    {
+                        throw new AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_UPDATE)
+                    }
+                }
+            }
+            
+
+            navPlanToUpdate = {
+                id: navPlan.id,
+                status: navPlan.status,
+            }
+
+            if(navPlan.motivation)
+            {
+                navPlanToUpdate = {
+                    id: navPlan.id,
+                    status: navPlan.status,
+                    motivation: navPlan.motivation
+                }
+            }
+            
+            const navPlanUpdated: NavigationRequestAttributes|null = await this.navPlanDao.update(navPlanToUpdate);
+
+            if(navPlanUpdated)
+            {
+                const navPlanToReturn: NavPlan = {
+                    id: navPlanUpdated.id,
+                    submittedAt: navPlanUpdated.submittedAt,
+                    status: navPlanUpdated.status,
+                    dateStart: navPlanUpdated.dateStart,
+                    dateEnd: navPlanUpdated.dateEnd,
+                    droneId: navPlanUpdated.droneId,
+                    route: navPlanUpdated.navigationPlan.coordinates,
+                }
+                return navPlanToReturn;
+            }
+            else
+            {
+                throw new AppLogicError(AppErrorName.NAVPLAN_UPD_NOT_FOUND)
+            }
+
+
+        }
+
+        return navPlan;
+
     }
     
 }

@@ -149,6 +149,21 @@ export const appErrorMessages:HTTPAppErrorMsgMap = {
         statusCode: StatusCodes.BAD_REQUEST,
         name: AppErrorName.INVALID_TOKEN_CHARGE_REQ,
         message: AppErrorMessage.INVALID_TOKEN_CHARGE_REQ
+    },
+    [AppErrorName.INVALID_NAVPLAN_UPDATE_REQ]: {
+        statusCode: StatusCodes.BAD_REQUEST,
+        name: AppErrorName.INVALID_NAVPLAN_UPDATE_REQ,
+        message: AppErrorMessage.INVALID_NAVPLAN_UPDATE_REQ
+    },
+    [AppErrorName.NAVPLAN_UPD_NOT_FOUND]: {
+        statusCode: StatusCodes.NOT_FOUND,
+        name: AppErrorName.NAVPLAN_UPD_NOT_FOUND,
+        message: AppErrorMessage.NAVPLAN_UPD_NOT_FOUND
+    },
+    [AppErrorName.FORBIDDEN_NAVPLAN_UPDATE]: {
+        statusCode: StatusCodes.FORBIDDEN,
+        name: AppErrorName.FORBIDDEN_NAVPLAN_UPDATE,
+        message: AppErrorMessage.FORBIDDEN_NAVPLAN_UPDATE
     }
 }
 
@@ -193,6 +208,11 @@ export const appSuccessMessages: HTTPAppSuccessMsgMap =
     [AppSuccessName.TOKENS_CHARGED_SUCCESSFULLY]:{
         statusCode: StatusCodes.OK,
         message: AppSuccessMessage.TOKENS_CHARGED_SUCCESSFULLY,
+        data: {}
+    },
+    [AppSuccessName.NAVPLAN_UPDATED]: {
+        statusCode: StatusCodes.OK,
+        message: AppSuccessMessage.NAVPLAN_UPDATED,
         data: {}
     }
 

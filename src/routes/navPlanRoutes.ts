@@ -5,7 +5,7 @@ import { NavPlanDAO } from "../dao/NavPlanDAO.js";
 import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
 import { UserRoleService } from "../services/UserRoleService.js";
 import { UserRoleController } from "../controllers/UserRoleController.js";
-import { finalizeDelNavPlanReq, finalizeNavPlanCreateReq, navPlanDelReqValidator, navPlanReqCreationValidator, navPlanViewReqValidator, finalizeViewNavPlanReq } from "../middlewares/navplan_middlewares.js";
+import { finalizeDelNavPlanReq, finalizeNavPlanCreateReq, navPlanDelReqValidator, navPlanReqCreationValidator, navPlanViewReqValidator, finalizeViewNavPlanReq, navPlanUpdReqValidator, finalizeNavPlanUpd } from "../middlewares/navplan_middlewares.js";
 import { OperatorRoleService } from "../services/OperatorRoleService.js";
 import { UserOpRoleController } from "../controllers/UserOpRoleController.js";
 import { OperatorRoleController } from "../controllers/OperatorRoleController.js";
@@ -16,7 +16,7 @@ const navPlanDao = new NavPlanDAO();
 const noNavZoneDao = new NoNavZoneDAO();
 const userRoleService = new UserRoleService(userDao, navPlanDao, noNavZoneDao);
 const userRoleController = new UserRoleController(userRoleService);
-const opRoleService = new OperatorRoleService(navPlanDao, noNavZoneDao);
+const opRoleService = new OperatorRoleService(userDao, navPlanDao, noNavZoneDao);
 const userOpRoleController = new UserOpRoleController(userRoleService, opRoleService);
 const opRoleController = new OperatorRoleController(opRoleService);
 
@@ -28,7 +28,7 @@ navPlanRouter.delete('/:id', userRoleValidation, navPlanDelReqValidator, finaliz
 navPlanRouter.get('/', userOpRoleValidation, navPlanViewReqValidator, finalizeViewNavPlanReq, userOpRoleController.view);
 
 // operator
-navPlanRouter.patch('/', operatorRoleValidation, opRoleController.updateNavPlan)
+navPlanRouter.patch('/:id', operatorRoleValidation, navPlanUpdReqValidator, finalizeNavPlanUpd, opRoleController.updateNavPlan)
 
 
 

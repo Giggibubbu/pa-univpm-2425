@@ -78,18 +78,38 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
         }
     }
 
-    async update(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes | null> {
-        const [affectedCount, navPlans] = await this.navReqModel.update({ status: item.status }, {where: {id: item.id}, returning: true});
-        if(affectedCount)
+    async update(item: NavigationRequestAttributes|NavPlanQueryFilter): Promise<NavigationRequestAttributes | null> {
+        if('dateFrom' in item && !Array.isArray(item.status) && item.motivation)
         {
-            for(const navPlan of navPlans)
+            const [affectedCount, navPlans] = await this.navReqModel.update({ status: item.status, motivation: item.motivation }, {where: {id: item.id}, returning: true});
+            if(affectedCount)
             {
-                if(item.id === navPlan.id)
+                for(const navPlan of navPlans)
                 {
-                    return navPlan;
+                    if(item.id === navPlan.id)
+                    {
+                        return navPlan;
+                    }
                 }
-            }
 
+            }
+            return null;
+        }
+        else if(!Array.isArray(item.status))
+        {
+            const [affectedCount, navPlans] = await this.navReqModel.update({ status: item.status }, {where: {id: item.id}, returning: true});
+            if(affectedCount)
+            {
+                for(const navPlan of navPlans)
+                {
+                    if(item.id === navPlan.id)
+                    {
+                        return navPlan;
+                    }
+                }
+
+            }
+            return null;
         }
         return null;
     }

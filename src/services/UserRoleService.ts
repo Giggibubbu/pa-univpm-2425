@@ -12,7 +12,7 @@ import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
 import { DateCompareConst } from "../enum/DateCompareConst.js";
 import { TokenPayment } from "../enum/TokenPayment.js";
 import { UserTokenInterface } from "../interfaces/UserTokenInterface.js";
-import { LineString } from "geojson";
+import { LineString, Position } from "geojson";
 import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS.js";
 import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
 
@@ -82,24 +82,28 @@ export class UserRoleService
             userId: 0,
             status: navPlan.status as NavPlanReqStatus,
             submittedAt: navPlan.submittedAt as Date,
-            dateStart: navPlan.dateStart,
-            dateEnd: navPlan.dateEnd,
-            droneId: navPlan.droneId,
-            navigationPlan: turf.lineString(navPlan.route).geometry
+            dateStart: navPlan.dateStart as Date,
+            dateEnd: navPlan.dateEnd as Date,
+            droneId: navPlan.droneId as string,
+            navigationPlan: turf.lineString(navPlan.route? navPlan.route:[]).geometry
         }
         const noNavZones = await this.noNavZoneDao.readAll(noNavZoneQueryFilters);
         
         if(noNavZones)
         {
-            if(noNavZones.length > 0)
+            if(noNavZones.length > 0 && navPlan.route)
             {
                 let nPointsInPolygon: number;
-                const lineString: LineString = {type: "LineString", coordinates: navPlan.route};
+                const lineString: LineString = {type: "LineString", coordinates:navPlan.route};
                 const navPlanPoints = turf.explode(lineString);
                 for(const item of noNavZones)
                 {
-                    nPointsInPolygon = turf.pointsWithinPolygon(navPlanPoints, item.route).features.length;  
-                    return nPointsInPolygon === 0? false : true;
+                    if(item.route)
+                    {
+                        nPointsInPolygon = turf.pointsWithinPolygon(navPlanPoints, item.route).features.length;  
+                        return nPointsInPolygon === 0? false : true;
+                    }
+                    
                 }
             }
         }
@@ -110,7 +114,7 @@ export class UserRoleService
     {
         let isReqDateValid: boolean;
         
-        if(navPlan.submittedAt)
+        if(navPlan.submittedAt && navPlan.dateStart)
         {
             const timeValue: DateCompareConst = navPlan.dateStart.getTime() - navPlan.submittedAt.getTime()
             isReqDateValid =  timeValue > DateCompareConst.TIME_DIFF_48H_TO_MS
@@ -180,20 +184,21 @@ export class UserRoleService
             throw new AppLogicError(AppErrorName.NAVPLAN_CONFLICT);
         }
 
+
         const lineString: LineString = {
             type: "LineString",
-            coordinates: navPlan.route
+            coordinates: navPlan.route? navPlan.route:[]
         }
 
-        const navPlanReqToCreate = {
+        const navPlanReqToCreate: NavigationRequestAttributes = {
             userId: userDecreasedTokens.id,
             status: NavPlanReqStatus.PENDING,
             motivation: undefined,
             submittedAt: navPlan.submittedAt as Date,
-            dateStart: navPlan.dateStart,
-            dateEnd: navPlan.dateEnd,
+            dateStart: navPlan.dateStart as Date,
+            dateEnd: navPlan.dateEnd as Date,
             navigationPlan: lineString,
-            droneId: navPlan.droneId
+            droneId: navPlan.droneId as string
         }
 
         const navPlanToReturn: NavigationRequestAttributes = await this.navPlanDao.create(navPlanReqToCreate)
