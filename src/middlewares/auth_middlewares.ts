@@ -84,7 +84,7 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
         const pubKey = (await readJwtKeys()).pubKey;
         try
         {
-            const decodedJwt= jwt.verify(userAuthToken[1], pubKey);
+            const decodedJwt = jwt.verify(userAuthToken[1], pubKey);
             req.jwt = decodedJwt as UserJwt;
         }
         catch(e)
@@ -94,11 +94,8 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
                 case e instanceof jwt.TokenExpiredError:
                     next(new AppLogicError(AppErrorName.JWT_EXPIRED))
                     break;
-                case e instanceof jwt.JsonWebTokenError:
-                    next(new AppLogicError(AppErrorName.INVALID_JWT))
-                    break;
                 default:
-                    next(new AppLogicError(AppErrorName.INTERNAL_SERVER_ERROR));
+                    next(new AppLogicError(AppErrorName.INVALID_JWT))
                     break;
             }
         }

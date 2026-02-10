@@ -1,10 +1,9 @@
 import express from "express";
-import { APP_PORT } from ;
-import noAuthRouter from 
-import { catchAllRoutes, errorHandler, logError } from ;
-import navPlanRouter from ;
-import noNavZoneRouter from ;
-import adminRouter from ;
+import { catchAllRoutes, logError, errorHandler } from "./middlewares/error_middlewares";
+import adminRouter from "./routes/adminRoutes";
+import navPlanRouter from "./routes/navPlanRoutes";
+import noAuthRouter from "./routes/noAuthRoutes";
+import noNavZoneRouter from "./routes/noNavZoneRoutes";
 
 // app initialization
 export const app = express();
@@ -19,7 +18,3 @@ app.use('/nonavzones', noNavZoneRouter)
 app.use(catchAllRoutes);
 app.use(logError);
 app.use(errorHandler);
-
-app.listen(APP_PORT, () => {
-  console.log(`Server running on http://localhost:${APP_PORT}`);
-});
