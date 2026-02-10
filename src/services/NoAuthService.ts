@@ -1,17 +1,17 @@
-import { UserDAO } from "../dao/UserDAO.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { UserJwt } from "../interfaces/jwt/UserJwt.js";
-import { UserAttributes } from "../models/sequelize-auto/User.js";
+import { UserDAO } from "../dao/UserDAO";
+import { AppErrorName } from "../enum/AppErrorName";
+import { UserJwt } from "../interfaces/jwt/UserJwt";
+import { UserAttributes } from "../models/sequelize-auto/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AuthRoles } from "../enum/AuthRoles.js";
-import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
-import { HTTPUserLogin } from "../interfaces/http-requests/UserLogin.js";
-import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
-import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
-import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
-import { transformPolygonToArray } from "../utils/geojson_utils.js";
+import { AppLogicError } from "../errors/AppLogicError";
+import { AuthRoles } from "../enum/AuthRoles";
+import { readJwtKeys } from "../utils/jwt/jwt_utils";
+import { HTTPUserLogin } from "../interfaces/http-requests/UserLogin";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
+import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
+import { transformPolygonToArray } from "../utils/geojson_utils";
 
 export class NoAuthService
 {

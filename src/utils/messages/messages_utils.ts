@@ -1,10 +1,10 @@
 import { StatusCodes } from "http-status-codes"
-import { AppErrorName } from "../../enum/AppErrorName.js"
-import { AppErrorMessage } from "../../enum/AppErrorMessage.js"
-import { AppSuccessName } from "../../enum/AppSuccessName.js"
-import { AppSuccessMessage } from "../../enum/AppSuccessMessage.js"
-import { HTTPErrorMsgStructure } from "../../interfaces/messages/error/HTTPErrorMsgStructure.js"
-import { HTTPSuccessMsgStructure } from "../../interfaces/messages/success/HTTPSuccessMsgStructure.js"
+import { AppErrorName } from "../../enum/AppErrorName"
+import { AppErrorMessage } from "../../enum/AppErrorMessage"
+import { AppSuccessName } from "../../enum/AppSuccessName"
+import { AppSuccessMessage } from "../../enum/AppSuccessMessage"
+import { HTTPErrorMsgStructure } from "../../interfaces/messages/error/HTTPErrorMsgStructure"
+import { HTTPSuccessMsgStructure } from "../../interfaces/messages/success/HTTPSuccessMsgStructure"
 
 type HTTPAppErrorMsgMap = Record<AppErrorName, HTTPErrorMsgStructure>;
 type HTTPAppSuccessMsgMap = Record<AppSuccessName, HTTPSuccessMsgStructure>

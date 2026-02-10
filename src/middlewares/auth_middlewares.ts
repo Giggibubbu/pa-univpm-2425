@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { body, checkExact, matchedData, Result, ValidationChain, ValidationError, validationResult } from "express-validator";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { AppLogicError } from "../errors/AppLogicError.js";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppLogicError } from "../errors/AppLogicError";
 import jwt from "jsonwebtoken";
-import { readJwtKeys } from "../utils/jwt/jwt_utils.js";
-import { AuthRoles } from "../enum/AuthRoles.js";
-import { UserJwt } from "../interfaces/jwt/UserJwt.js";
+import { readJwtKeys } from "../utils/jwt/jwt_utils";
+import { AuthRoles } from "../enum/AuthRoles";
+import { UserJwt } from "../interfaces/jwt/UserJwt";
 
 export const validateAndSanitizeEmail: ValidationChain = body('email')
 .exists()
@@ -89,7 +89,6 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
         }
         catch(e)
         {
-            console.log(e);
             switch(true)
             {
                 case e instanceof jwt.TokenExpiredError:

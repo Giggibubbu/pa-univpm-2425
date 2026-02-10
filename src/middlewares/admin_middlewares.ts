@@ -1,8 +1,8 @@
 import { body, checkExact, matchedData, validationResult } from "express-validator";
-import { validateId } from "./generic_middlewares.js";
+import { validateId } from "./generic_middlewares";
 import { NextFunction, Request, Response } from "express";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
+import { AppLogicError } from "../errors/AppLogicError";
+import { AppErrorName } from "../enum/AppErrorName";
 
 const validateTokens = body("tokenToAdd")
 .exists()

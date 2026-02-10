@@ -1,8 +1,9 @@
+import { AppSuccessName } from "../enum/AppSuccessName";
+import { successFactory } from "../factories/HTTPSuccessFactory";
+import { HTTPUser } from "../interfaces/http-requests/UserLogin";
+import { AdminRoleService } from "../services/AdminRoleService";
 import { Request, Response } from "express";
-import { AdminRoleService } from "../services/AdminRoleService.js";
-import { HTTPUser } from "../interfaces/http-requests/UserLogin.js";
-import { successFactory } from "../factories/HTTPSuccessFactory.js";
-import { AppSuccessName } from "../enum/AppSuccessName.js";
+
 
 export class AdminRoleController
 {

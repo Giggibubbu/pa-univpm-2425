@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { UserRoleService } from "../services/UserRoleService.js";
-import { successFactory } from "../factories/HTTPSuccessFactory.js";
-import { AppSuccessName } from "../enum/AppSuccessName.js";
+import { AppSuccessName } from "../enum/AppSuccessName";
+import { successFactory } from "../factories/HTTPSuccessFactory";
+import { UserRoleService } from "../services/UserRoleService";
+
 export class UserRoleController
 {
     private userRoleService: UserRoleService;

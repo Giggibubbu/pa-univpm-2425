@@ -8,3 +8,5 @@ docker-scripts/
 keys/jwtRS256.key
 password.txt
 collections/pa-univpm-2425-*env*
+keys.old
+.dockerignore

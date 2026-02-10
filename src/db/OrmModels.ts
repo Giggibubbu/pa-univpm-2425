@@ -1,5 +1,6 @@
-import { sequelize } from '../connector/SequelizeDbConnection.js';
-import { initModels } from '../models/sequelize-auto/init-models.js';
+import { sequelize } from "../connector/SequelizeDbConnection";
+import { initModels } from "../models/sequelize-auto/init-models";
+
 
 export class OrmModels
 {

@@ -1,10 +1,10 @@
 import { body, checkExact, matchedData, validationResult } from "express-validator";
-import { isLatLon, validateCompareDates, validateId } from "./generic_middlewares.js";
+import { isLatLon, validateCompareDates, validateId } from "./generic_middlewares";
 import { NextFunction, Request, Response } from "express";
 import { start } from "repl";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
+import { AppLogicError } from "../errors/AppLogicError";
+import { AppErrorName } from "../enum/AppErrorName";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
 
 const validateRoute = body('route')
 .exists()
@@ -101,7 +101,7 @@ export const finalizeNoNavZoneDelete = (req: Request, res: Response, next: NextF
     const errors = validationResult(req);
     if (!errors.isEmpty()) 
     {
-        console.log(errors.array());
+
         next(new AppLogicError(AppErrorName.NONAVPLAN_DEL_REQ_INVALID))
     }
     if(typeof(req.params.id) === "number")

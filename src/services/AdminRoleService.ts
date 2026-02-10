@@ -1,11 +1,11 @@
 import { Console } from "console";
 import { UserDAO } from "../dao/UserDAO";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { AuthRoles } from "../enum/AuthRoles.js";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AdminChargeToken } from "../interfaces/http-requests/AdminChargeToken.js";
-import { HTTPUser } from "../interfaces/http-requests/UserLogin.js";
-import { UserAttributes } from "../models/sequelize-auto/User.js";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AuthRoles } from "../enum/AuthRoles";
+import { AppLogicError } from "../errors/AppLogicError";
+import { AdminChargeToken } from "../interfaces/http-requests/AdminChargeToken";
+import { HTTPUser } from "../interfaces/http-requests/UserLogin";
+import { UserAttributes } from "../models/sequelize-auto/User";
 
 export class AdminRoleService
 {
@@ -18,7 +18,7 @@ export class AdminRoleService
     chargeToken = async (user: AdminChargeToken):Promise<HTTPUser> => {
         
         let userToSearch: UserAttributes|null = await this.userDao.read(user.userId);
-        console.log(userToSearch)
+
         if(userToSearch?.tokens)
         {
             const newBalance: number = user.tokenToAdd + userToSearch.tokens

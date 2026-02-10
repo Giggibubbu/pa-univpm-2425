@@ -1,8 +1,8 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { User, UserId } from './User.js';
+import type { User, UserId } from './User";
 import { LineString } from 'geojson';
-import { NavPlanReqStatus } from '../../enum/NavPlanReqStatus.js';
+import { NavPlanReqStatus } from '../../enum/NavPlanReqStatus";
 
 export interface NavigationRequestAttributes {
   id?: number;

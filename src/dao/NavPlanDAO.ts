@@ -1,9 +1,10 @@
 import { Op, WhereOptions } from "sequelize";
-import { OrmModels } from "../db/OrmModels.js";
-import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
-import { IDao } from "../interfaces/dao/IDAO.js";
-import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
-import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
+import { OrmModels } from "../db/OrmModels";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
+import { IDao } from "../interfaces/dao/IDAO";
+import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
+
 
 export class NavPlanDAO implements IDao<NavigationRequestAttributes>
 {
@@ -26,7 +27,6 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
         return await this.navReqModel.findOne({where: {id: field}});
     }
     async readAll(item?: NavPlanQueryFilter): Promise<NavigationRequestAttributes[]> {
-        console.log(item, item?.status)
         item = item?? {}
         const whereClause: WhereOptions<NavigationRequestAttributes> = {};
         switch(true)

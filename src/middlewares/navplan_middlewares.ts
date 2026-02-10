@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { body, checkExact, FieldValidationError, matchedData, query, validationResult } from "express-validator";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
-import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
-import { AuthRoles } from "../enum/AuthRoles.js";
-import { equals, isLatLon, validateCompareDates, validateDate, validateId } from "./generic_middlewares.js";
+import { AppLogicError } from "../errors/AppLogicError";
+import { AppErrorName } from "../enum/AppErrorName";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
+import { AuthRoles } from "../enum/AuthRoles";
+import { equals, isLatLon, validateCompareDates, validateDate, validateId } from "./generic_middlewares";
 
 const validateDroneId = body('droneId')
 .exists()
@@ -37,7 +37,7 @@ export const finalizeNavPlanCreateReq = (req:Request, res:Response, next:NextFun
     const errors = validationResult(req);
     if (!errors.isEmpty()) 
     {
-        console.log(errors.array());
+
         next(new AppLogicError(AppErrorName.NAVPLAN_REQ_INVALID))
     }
 
@@ -64,7 +64,7 @@ export const finalizeDelNavPlanReq = (req:Request, res:Response, next:NextFuncti
     const errors = validationResult(req);
     if (!errors.isEmpty()) 
     {
-        console.log(errors.array());
+
         next(new AppLogicError(AppErrorName.NAVPLAN_DEL_REQ_INVALID))
     }
 
@@ -72,7 +72,7 @@ export const finalizeDelNavPlanReq = (req:Request, res:Response, next:NextFuncti
     {
         req.navPlan = {} as NavPlan;
         req.navPlan.id = req.params.id;
-        console.log(req.navPlan)
+
     }
     
     next();
@@ -130,7 +130,7 @@ const validateCompareDatesQuery = query(["dateTo"]).custom((value: string, {req}
 export const finalizeViewNavPlanReq = (req:Request, res:Response, next:NextFunction) => {
     const errors = validationResult(req).formatWith(msg => msg as FieldValidationError)
     const data = matchedData(req)
-    console.log(errors.array());
+
 
     if(req.jwt?.role === AuthRoles.USER)
     {
@@ -141,7 +141,7 @@ export const finalizeViewNavPlanReq = (req:Request, res:Response, next:NextFunct
     }
     else if(req.jwt?.role === AuthRoles.OPERATOR)
     {
-        console.log(req.jwt?.role)
+
         if(errors.array().length > 0)
         {
             next(new AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID));
@@ -207,9 +207,9 @@ export const finalizeNavPlanUpd = (req:Request, res:Response, next:NextFunction)
         next()
     }
 
-    console.log(errors)
 
-    console.log(data)
+
+
 }
 
 

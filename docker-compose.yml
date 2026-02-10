@@ -1,18 +1,17 @@
 services:
-    dbpg:
+    pa-dbpg:
         container_name: pa-dbpg-web-node
-        image: postgis/postgis:16-master
+        image: postgres:16-bookworm
         restart: always
         environment:
-          - POSTGRES_USER=postgres
-          - POSTGRES_PASSWORD=postgres
-          - APPDBUSER=${APPDBUSER}
-          - APPDBUSERPASSWORD=${APPDBUSERPASSWORD}
+          - POSTGRES_USER=${PGUSER}
+          - POSTGRES_PASSWORD=${PGPASSWORD}
         ports:
           - "${PGPORT}:${PGPORT}"
-        #volumes: 
-        #  - ./sql/.:/docker-entrypoint-initdb.d/.
-    web-node:
+        volumes: 
+          - ./sql/init:/docker-entrypoint-initdb.d/.:ro
+
+    pa-web-node:
         container_name: pa-web-node
         build:
           context: .
@@ -22,7 +21,7 @@ services:
         expose:
           - "${APP_PORT}"
         ports:
-          - "${APP_PORT}:${APP_PORT}" 
+          - "${APP_PORT}:${APP_PORT}"
         depends_on:
-          - dbpg
+          - pa-dbpg
         restart: always

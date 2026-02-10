@@ -1,18 +1,18 @@
 import { Polygon } from "geojson";
-import { NavPlanDAO } from "../dao/NavPlanDAO.js";
-import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
-import { UserDAO } from "../dao/UserDAO.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
-import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
+import { NavPlanDAO } from "../dao/NavPlanDAO";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
+import { UserDAO } from "../dao/UserDAO";
+import { AppErrorName } from "../enum/AppErrorName";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
+import { AppLogicError } from "../errors/AppLogicError";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
 import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
-import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
-import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
-import { UserAttributes } from "../models/sequelize-auto/User.js";
-import {transformArrayToPolygon, transformPolygonToArray} from "../utils/geojson_utils.js"
-import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
+import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
+import { UserAttributes } from "../models/sequelize-auto/User";
+import {transformArrayToPolygon, transformPolygonToArray} from "../utils/geojson_utils"
+import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter";
 
 export class OperatorRoleService
 {
@@ -28,7 +28,7 @@ export class OperatorRoleService
 
     viewNavPlan = async (query: ViewNavPlanQS): Promise<NavPlan[]> => {
 
-        console.log(query.status)
+
         const navPlans: NavigationRequestAttributes[] = await this.navPlanDao.readAll({status: [query.status as NavPlanReqStatus]});
         const navPlansToReturn: NavPlan[] = []
 
@@ -121,7 +121,7 @@ export class OperatorRoleService
         }
 
         const noNavZoneSearched: NoNavigationZoneAttributes | null = await this.noNavZoneDao.update(noNavZoneToSearch);
-        console.log()
+
         if(!noNavZoneSearched)
         {
             throw new AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND);

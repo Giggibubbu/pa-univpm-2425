@@ -1,20 +1,20 @@
 import * as turf from "@turf/turf";
-import { NavPlanDAO } from "../dao/NavPlanDAO.js";
-import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
-import { UserDAO } from "../dao/UserDAO.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
-import { UserJwt } from "../interfaces/jwt/UserJwt.js";
-import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
-import { UserAttributes } from "../models/sequelize-auto/User.js";
-import { NavPlanReqStatus } from "../enum/NavPlanReqStatus.js";
-import { DateCompareConst } from "../enum/DateCompareConst.js";
-import { TokenPayment } from "../enum/TokenPayment.js";
-import { UserTokenInterface } from "../interfaces/UserTokenInterface.js";
+import { NavPlanDAO } from "../dao/NavPlanDAO";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
+import { UserDAO } from "../dao/UserDAO";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppLogicError } from "../errors/AppLogicError";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
+import { UserJwt } from "../interfaces/jwt/UserJwt";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
+import { UserAttributes } from "../models/sequelize-auto/User";
+import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
+import { DateCompareConst } from "../enum/DateCompareConst";
+import { TokenPayment } from "../enum/TokenPayment";
+import { UserTokenInterface } from "../interfaces/UserTokenInterface";
 import { LineString, Position } from "geojson";
-import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS.js";
-import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter.js";
+import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
+import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter";
 
 /**
  * Service class for managing user roles functionality.

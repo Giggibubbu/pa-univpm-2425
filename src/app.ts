@@ -1,13 +1,13 @@
 import express from "express";
-import { APP_PORT } from "./utils/env/app_parameters.js";
-import noAuthRouter from "./routes/noAuthRoutes.js"
-import { catchAllRoutes, errorHandler, logError } from "./middlewares/error_middlewares.js";
-import navPlanRouter from "./routes/navPlanRoutes.js";
-import noNavZoneRouter from "./routes/noNavZoneRoutes.js";
-import adminRouter from "./routes/adminRoutes.js";
+import { APP_PORT } from ;
+import noAuthRouter from 
+import { catchAllRoutes, errorHandler, logError } from ;
+import navPlanRouter from ;
+import noNavZoneRouter from ;
+import adminRouter from ;
 
 // app initialization
-const app = express();
+export const app = express();
 
 app.use(express.json());
 

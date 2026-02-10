@@ -1,5 +1,5 @@
 import { body, param } from "express-validator";
-import { DateCompareConst } from "../enum/DateCompareConst.js";
+import { DateCompareConst } from "../enum/DateCompareConst";
 
 export const validateDate = (date: string) => {
     return body(date)

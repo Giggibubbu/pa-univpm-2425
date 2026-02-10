@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { NavPlanDAO } from "../dao/NavPlanDAO.js";
-import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
-import { OperatorRoleService } from "../services/OperatorRoleService.js";
-import { OperatorRoleController } from "../controllers/OperatorRoleController.js";
-import { operatorRoleValidation } from "../middlewares/auth_middlewares.js";
-import { finalizeNoNavZoneCreation, finalizeNoNavZoneDelete, finalizeNoNavZoneUpdate, noNavZoneCreationValidation, noNavZoneDeleteValidation, noNavZoneUpdateValidation } from "../middlewares/nonavzones_middlewares.js";
-import { UserDAO } from "../dao/UserDAO.js";
-import { NoAuthService } from "../services/NoAuthService.js";
-import { NoAuthController } from "../controllers/NoAuthController.js";
+import { NavPlanDAO } from "../dao/NavPlanDAO";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
+import { OperatorRoleService } from "../services/OperatorRoleService";
+import { OperatorRoleController } from "../controllers/OperatorRoleController";
+import { operatorRoleValidation } from "../middlewares/auth_middlewares";
+import { finalizeNoNavZoneCreation, finalizeNoNavZoneDelete, finalizeNoNavZoneUpdate, noNavZoneCreationValidation, noNavZoneDeleteValidation, noNavZoneUpdateValidation } from "../middlewares/nonavzones_middlewares";
+import { UserDAO } from "../dao/UserDAO";
+import { NoAuthService } from "../services/NoAuthService";
+import { NoAuthController } from "../controllers/NoAuthController";
 
 const noNavZoneRouter = Router();
 const userDao = new UserDAO();

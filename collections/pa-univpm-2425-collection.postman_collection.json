@@ -9,7 +9,7 @@
   },
   "item": [
     {
-      "name": "Authentication",
+      "name": "All user routes",
       "item": [
         {
           "name": "Login",
@@ -576,29 +576,146 @@
                   "response": []
                 }
               ]
+            },
+            {
+              "name": "verifyJwt Middleware",
+              "item": [
+                {
+                  "name": "JWT invalid",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 401\", function () {\r",
+                          "    pm.response.to.have.status(401);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_JWT\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{INVALID_SECRET_JWT}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "JWT empty",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 401\", function () {\r",
+                          "    pm.response.to.have.status(401);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"AUTH_TOKEN_NOTFOUND\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
             }
           ]
         },
         {
-          "name": "verifyJwt Middleware",
+          "name": "Show all nonavzones",
           "item": [
             {
-              "name": "JWT expired",
+              "name": "Success show all nonavzones",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
                       "let responseBody = pm.response.json();\r",
-                      "pm.test(\"Status code is 401\", function () {\r",
-                      "    pm.response.to.have.status(401);\r",
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "pm.test(\"Response time is less than 500ms\", function () {\r",
                       "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
                       "});\r",
                       "pm.test(\"JSON fields type check\", function () {\r",
-                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
-                      "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"TOKEN_EXPIRED\");\r",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200)\r",
+                      "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"La richiesta di visualizzazione dei piani di navigazione è terminata con successo.\");\r",
                       "});"
                     ],
                     "type": "text/javascript",
@@ -609,142 +726,14 @@
               ],
               "request": {
                 "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{EXPIRED_JWT}}",
-                      "type": "string"
-                    }
-                  ]
+                  "type": "noauth"
                 },
-                "method": "POST",
+                "method": "GET",
                 "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
                 "url": {
-                  "raw": "{{BASEURL}}navplans",
+                  "raw": "{{BASEURL}}nonavzones",
                   "host": [
-                    "{{BASEURL}}navplans"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "JWT invalid",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "let responseBody = pm.response.json();\r",
-                      "pm.test(\"Status code is 401\", function () {\r",
-                      "    pm.response.to.have.status(401);\r",
-                      "});\r",
-                      "pm.test(\"Response time is less than 500ms\", function () {\r",
-                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
-                      "});\r",
-                      "pm.test(\"JSON fields type check\", function () {\r",
-                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
-                      "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_JWT\");\r",
-                      "});"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{INVALID_SECRET_JWT}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{BASEURL}}navplans",
-                  "host": [
-                    "{{BASEURL}}navplans"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "JWT empty",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "let responseBody = pm.response.json();\r",
-                      "pm.test(\"Status code is 401\", function () {\r",
-                      "    pm.response.to.have.status(401);\r",
-                      "});\r",
-                      "pm.test(\"Response time is less than 500ms\", function () {\r",
-                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
-                      "});\r",
-                      "pm.test(\"JSON fields type check\", function () {\r",
-                      "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401)\r",
-                      "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"AUTH_TOKEN_NOTFOUND\");\r",
-                      "});"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"dateStart\": \"2026-02-23 15:30\",\r\n    \"dateEnd\": \"2026-02-24 15:50\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,105], [1,2]]\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{BASEURL}}navplans",
-                  "host": [
-                    "{{BASEURL}}navplans"
+                    "{{BASEURL}}nonavzones"
                   ]
                 }
               },
@@ -909,7 +898,7 @@
                         "header": [],
                         "body": {
                           "mode": "raw",
-                          "raw": "{\r\n    \"dateStart\": \"wrong date\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [{\"lon\": 120, \"lat\": 20},{\"lon\": 20,\"lat\": 20},{\"lon\": 120,\"lat\": 20}]\r\n}\r\n",
+                          "raw": "{\r\n    \"dateStart\": \"2100-02-23T16:02:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [{\"lon\": 120, \"lat\": 20},{\"lon\": 20,\"lat\": 20},{\"lon\": 120,\"lat\": 20}]\r\n}\r\n",
                           "options": {
                             "raw": {
                               "language": "json"
@@ -1083,6 +1072,13 @@
                         "packages": {},
                         "requests": {}
                       }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "packages": {},
+                        "type": "text/javascript"
+                      }
                     }
                   ],
                   "request": {
@@ -1100,7 +1096,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"dateStart\": \"2100-02-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                      "raw": "{\r\n    \"dateStart\": \"2100-02-23T16:02:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -1139,6 +1135,18 @@
                         "packages": {},
                         "requests": {}
                       }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "const todayDate = (new Date(Date.now()+3600000))\r",
+                          "pm.variables.set(\"todayDate\", todayDate)"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     }
                   ],
                   "request": {
@@ -1156,7 +1164,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"dateStart\": \"2026-02-07T19:30:00.000Z\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                      "raw": "{\r\n    \"dateStart\": \"{{todayDate}}\",\r\n    \"dateEnd\": \"2100-02-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -1327,7 +1335,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"dateStart\": \"2100-03-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-03-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
+                  "raw": "{\r\n    \"dateStart\": \"2100-06-23T15:30:00.000Z\",\r\n    \"dateEnd\": \"2100-06-24T16:02:00.000Z\",\r\n    \"droneId\": \"D423DMXC22\",\r\n    \"route\": [[1,2], [105,90], [1,2]]\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1347,11 +1355,2866 @@
         },
         {
           "name": "Cancel navplan request",
-          "item": []
+          "item": [
+            {
+              "name": "Request deletion fail",
+              "item": [
+                {
+                  "name": "Request deletion fail - user is not req owner",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 403\", function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(403);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"FORBIDDEN_NAVPLAN_DELETE\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans/7",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "path": [
+                        "7"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Request deletion fail - navplan not in pending state",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans/1",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "path": [
+                            "1"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    }
+                  ]
+                },
+                {
+                  "name": "Request deletion fail - navplan not found",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 404\", function () {\r",
+                          "    pm.response.to.have.status(404);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(404);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NAVPLAN_DEL_NOT_FOUND\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans/1000",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "path": [
+                        "1000"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Request deletion fail - del req invalid",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NAVPLAN_DEL_REQ_INVALID\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans/pippo",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "path": [
+                        "pippo"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Request deletion success",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});\r",
+                      "pm.test(\"Response time is less than 500ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{JWT_USER}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}navplans/2",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ],
+                  "path": [
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         },
         {
           "name": "View navplan request",
-          "item": []
+          "item": [
+            {
+              "name": "Fail view request",
+              "item": [
+                {
+                  "name": "View navplan - date empty",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400)\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NAVPLAN_VIEW_REQ_INVALID\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?dateFrom&dateTo=2024-08-02&status=pending&format=xml",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "dateFrom",
+                          "value": null
+                        },
+                        {
+                          "key": "dateTo",
+                          "value": "2024-08-02",
+                          "type": "text"
+                        },
+                        {
+                          "key": "status",
+                          "value": "pending",
+                          "type": "text"
+                        },
+                        {
+                          "key": "format",
+                          "value": "xml",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Fail View navplan with or w/o filters - wrong date 1",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2024&dateTo=2024-08-02&status=pending&format=xml",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2024"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pending"
+                            },
+                            {
+                              "key": "format",
+                              "value": "xml"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Fail View navplan with or w/o filters - wrong date 2",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2025-08-01&dateTo=2024-08-02&status=pending&format=xml",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2025-08-01"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pending"
+                            },
+                            {
+                              "key": "format",
+                              "value": "xml"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Fail View navplan with or w/o filters - date with spaces",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2024- 08-01&dateTo=2024-08-02&status=pending&format=xml",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2024- 08-01"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pending"
+                            },
+                            {
+                              "key": "format",
+                              "value": "xml"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Fail View navplan with or w/o filters - wrong status",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2025-08-01&dateTo=2025-08-02&status=pippo&format=xml",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2025-08-01"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2025-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pippo"
+                            },
+                            {
+                              "key": "format",
+                              "value": "xml"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "Fail View navplan with or w/o filters - status with spaces",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2024-08-01&dateTo=2024-08-02&status=pend ing&format=xml",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2024-08-01"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pend ing"
+                            },
+                            {
+                              "key": "format",
+                              "value": "xml"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Fail View navplan with or w/o filters - wrong format",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2025-08-01&dateTo=2025-08-02&status=pending&format=pdf",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2025-08-01"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2025-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pending"
+                            },
+                            {
+                              "key": "format",
+                              "value": "pdf"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Fail View navplan with or w/o filters - format with spaces",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2024-08-02&dateTo=2024-08-02&status=pending&format= ml",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pending"
+                            },
+                            {
+                              "key": "format",
+                              "value": " ml"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    },
+                    {
+                      "name": "View navplan - date empty",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?dateFrom=2024-08-02&dateTo=2024-08-02&status=pending&format=xml&pippo",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "dateFrom",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "dateTo",
+                              "value": "2024-08-02"
+                            },
+                            {
+                              "key": "status",
+                              "value": "pending"
+                            },
+                            {
+                              "key": "format",
+                              "value": "xml"
+                            },
+                            {
+                              "key": "pippo",
+                              "value": null,
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "Not found - View navplan",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response;\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(404);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?dateFrom=2050-08-02&status=rejected&format=xml",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "dateFrom",
+                          "value": "2050-08-02"
+                        },
+                        {
+                          "key": "status",
+                          "value": "rejected"
+                        },
+                        {
+                          "key": "format",
+                          "value": "xml"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Success view request",
+              "item": [
+                {
+                  "name": "View navplan - xml - rejected with date<=",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"XML start string\", function () {\r",
+                          "    pm.expect(pm.response.text()).to.include(\"<?xml version=\\\"1.0\\\"?>\");\r",
+                          "});\r",
+                          "pm.test(\"Content-Type is present and is correct\", function () {\r",
+                          "    const contentType = pm.response.headers.get(\"Content-Type\");\r",
+                          "    pm.expect(contentType).to.be.a('string').and.contains(\"application/xml\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?dateTo=2050-08-02&status=rejected&format=xml",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "dateTo",
+                          "value": "2050-08-02"
+                        },
+                        {
+                          "key": "status",
+                          "value": "rejected"
+                        },
+                        {
+                          "key": "format",
+                          "value": "xml"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Success - json - pending with date >=",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON length is more or equal to 1\", function () {\r",
+                          "    pm.expect(responseBody.length).to.be.gte(1);\r",
+                          "});\r",
+                          "pm.test(\"Content-Type is present and is correct\", function () {\r",
+                          "    const contentType = pm.response.headers.get(\"Content-Type\");\r",
+                          "    pm.expect(contentType).to.be.a('string').and.contains(\"application/json\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?dateFrom=2020-08-02&status=pending&format=json",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "dateFrom",
+                          "value": "2020-08-02"
+                        },
+                        {
+                          "key": "status",
+                          "value": "pending"
+                        },
+                        {
+                          "key": "format",
+                          "value": "json"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Success - View  - standard - between dates",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON data navplans check length\", function () {\r",
+                          "    pm.expect(responseBody.data.navplans.length).to.be.gte(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?dateFrom=2020-08-02&dateTo=2050-08-02",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "dateFrom",
+                          "value": "2020-08-02"
+                        },
+                        {
+                          "key": "dateTo",
+                          "value": "2050-08-02"
+                        },
+                        {
+                          "key": "status",
+                          "value": "rejected",
+                          "disabled": true
+                        },
+                        {
+                          "key": "format",
+                          "value": "xml",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Success - View  - standard - without filters",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON data navplans check length\", function () {\r",
+                          "    pm.expect(responseBody.data.navplans.length).to.be.gte(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_USER}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "dateFrom",
+                          "value": "2020-08-02",
+                          "disabled": true
+                        },
+                        {
+                          "key": "dateTo",
+                          "value": "2050-08-02",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "rejected",
+                          "disabled": true
+                        },
+                        {
+                          "key": "format",
+                          "value": "xml",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Operator routes",
+      "item": [
+        {
+          "name": "nonavzones",
+          "item": [
+            {
+              "name": "Create nonavzone request",
+              "item": [
+                {
+                  "name": "Invalid create request - invalid date",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_NONAVPLAN_CREATE_REQ\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityStart\": \"2026-04-11T20:00:00Z\",\r\n    \"validityEnd\": \"2026-04-10T00:00:00Z\",\r\n    \"route\": [[1,2], [4,5]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Invalid create request - invalid array",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"validityStart\": \"2050-02-09T20:00:00Z\",\r\n    \"validityEnd\": \"2050-02-16T00:00:00Z\",\r\n    \"route\": [[1,2], [2,2]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Invalid create request - invalid date",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"validityEnd\": \"2026-04-10T00:00:00Z\",\r\n    \"route\": [[1,2], [4,5]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Invalid create request - invalid date",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"validityStart\": \"2026-04-11T20:00:00Z\",\r\n    \"route\": [[1,2], [4,5]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Invalid create request - invalid date",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"route\": [[1,2], [4,5]]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    }
+                  ]
+                },
+                {
+                  "name": "Invalid create request - route conflict",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 409\", function () {\r",
+                          "    pm.response.to.have.status(409);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(409);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NONAVZONE_CONFLICT\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityStart\": \"2050-04-09T20:00:00Z\",\r\n    \"validityEnd\": \"2050-04-10T00:00:00Z\",\r\n    \"route\": [[-73,39], [-72,40]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Success create request - null dates",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 409\", function () {\r",
+                          "    pm.response.to.have.status(201);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(201);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(201);\r",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"L'area vietata è stata creata con successo.\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityStart\": null,\r\n    \"validityEnd\": null,\r\n    \"route\": [[48,39], [59,48]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Success create request - not null dates",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 409\", function () {\r",
+                          "    pm.response.to.have.status(201);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(201);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(201);\r",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"L'area vietata è stata creata con successo.\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityStart\": \"2027-01-01T00:00:00Z\",\r\n    \"validityEnd\": \"2027-12-31T23:59:59Z\",\r\n    \"route\": [[56,89], [156,90]]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Update nonavzone request",
+              "item": [
+                {
+                  "name": "Success update request",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200);\r",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"L'area vietata è stata aggiornata con successo.\");\r",
+                          "    pm.expect(responseBody.data.id).to.be.a('number')\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityStart\": null,\r\n    \"validityEnd\": null\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones/2",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ],
+                      "path": [
+                        "2"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Success update request",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"validityStart\": \"2027-01-31T23:59:59Z\",\r\n    \"validityEnd\": \"2027-12-31T23:59:59Z\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones/2",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ],
+                          "path": [
+                            "2"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "Invalid request",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_NONAVPLAN_UPDATE_REQ\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityEnd\": null\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones/2",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ],
+                      "path": [
+                        "2"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Invalid request",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"validityStart\": \"2050-01-01T00:00:00Z\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones/2",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ],
+                          "path": [
+                            "2"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Invalid request",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"validityEnd\": null\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}nonavzones/2",
+                          "host": [
+                            "{{BASEURL}}nonavzones"
+                          ],
+                          "path": [
+                            "2"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": null,
+                      "header": null,
+                      "cookie": [],
+                      "body": null
+                    }
+                  ]
+                },
+                {
+                  "name": "Not found",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(404);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(404);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NONAVZONE_NOT_FOUND\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"validityStart\": null,\r\n    \"validityEnd\": null\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones/10000",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ],
+                      "path": [
+                        "10000"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Delete nonavzones request",
+              "item": [
+                {
+                  "name": "Delete success",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 204\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones/3",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ],
+                      "path": [
+                        "3"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete invalid",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NONAVPLAN_DEL_REQ_INVALID\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones/0",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ],
+                      "path": [
+                        "0"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete not found",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 409\", function () {\r",
+                          "    pm.response.to.have.status(404);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(404);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NONAVZONE_NOT_FOUND\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}nonavzones/10000",
+                      "host": [
+                        "{{BASEURL}}nonavzones"
+                      ],
+                      "path": [
+                        "10000"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "navplans",
+          "item": [
+            {
+              "name": "View navplan request",
+              "item": [
+                {
+                  "name": "Success - View  - standard - status",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON data navplans check length\", function () {\r",
+                          "    pm.expect(responseBody.data.navplans.length).to.be.gte(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?status=pending",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "pending"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Success - View  - standard - without filters",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON data navplans check length\", function () {\r",
+                          "    console.log(responseBody.data.navplans.length)\r",
+                          "    pm.expect(responseBody.data.navplans.length).to.be.gte(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Fail - View  - standard - invalid filters",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"NAVPLAN_VIEW_REQ_INVALID\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASEURL}}navplans?status=fiffo",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "query": [
+                        {
+                          "key": "pippo",
+                          "value": null,
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "fiffo"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Fail - View  - standard - invalid filters",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASEURL}}navplans?pippo&status=fiffo",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "query": [
+                            {
+                              "key": "pippo",
+                              "value": null
+                            },
+                            {
+                              "key": "status",
+                              "value": "fiffo"
+                            }
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Approve reject navplan",
+              "item": [
+                {
+                  "name": "Approve/reject - Invalid request",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 400\", function () {\r",
+                          "    pm.response.to.have.status(400);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_NAVPLAN_UPDATE_REQ\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"motivation\": \"pippo\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans/1",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "path": [
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Approve/reject - Invalid request",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"status\": \"no\",\r\n    \"motivation\": \"pippo\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans/1",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "path": [
+                            "1"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Approve/reject - Invalid request",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"status\": \"approved\",\r\n    \"motivation\": \"pippo\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans/1",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "path": [
+                            "1"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    },
+                    {
+                      "name": "Approve/reject - Invalid request",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"status\": \"approved\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans/0",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "path": [
+                            "0"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "Approve - success",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200);\r",
+                          "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"Il piano di navigazione è stato modificato con successo.\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\": \"approved\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans/15",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "path": [
+                        "15"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Reject - success",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"status\": \"rejected\",\r\n    \"motivation\": \"Invalid request\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans/11",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "path": [
+                            "11"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                },
+                {
+                  "name": "Reject forbidden",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "let responseBody = pm.response.json();\r",
+                          "pm.test(\"Status code is 403\", function () {\r",
+                          "    pm.response.to.have.status(403);\r",
+                          "});\r",
+                          "pm.test(\"Response time is less than 500ms\", function () {\r",
+                          "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                          "});\r",
+                          "pm.test(\"JSON fields type check\", function () {\r",
+                          "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(403);\r",
+                          "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"FORBIDDEN_NAVPLAN_UPDATE\");\r",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{JWT_OPERATOR}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\": \"rejected\",\r\n    \"motivation\": \"The plan is not valid for the user role.\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASEURL}}navplans/2",
+                      "host": [
+                        "{{BASEURL}}navplans"
+                      ],
+                      "path": [
+                        "2"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "Reject forbidden",
+                      "originalRequest": {
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"status\": \"approved\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASEURL}}navplans/5",
+                          "host": [
+                            "{{BASEURL}}navplans"
+                          ],
+                          "path": [
+                            "5"
+                          ]
+                        }
+                      },
+                      "_postman_previewlanguage": "",
+                      "header": [],
+                      "cookie": [
+                        {
+                          "expires": "Invalid Date",
+                          "domain": "",
+                          "path": ""
+                        }
+                      ],
+                      "body": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin route",
+      "item": [
+        {
+          "name": "Success charge user token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let responseBody = pm.response.json();\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "pm.test(\"Response time is less than 500ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "pm.test(\"JSON fields type check\", function () {\r",
+                  "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(200)\r",
+                  "    pm.expect(responseBody.message).to.be.a('string').to.be.eq(\"I token sono stati modificati con successo.\");\r",
+                  "    pm.expect(responseBody.data).to.have.all.keys(['user']);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_ADMIN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"tokenToAdd\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}users/2",
+              "host": [
+                "{{BASEURL}}users"
+              ],
+              "path": [
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fail charge user token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let responseBody = pm.response.json();\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "pm.test(\"Response time is less than 500ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "pm.test(\"JSON fields type check\", function () {\r",
+                  "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(400)\r",
+                  "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"INVALID_TOKEN_CHARGE_REQ\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_ADMIN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"tokenToAdd\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}users/0",
+              "host": [
+                "{{BASEURL}}users"
+              ],
+              "path": [
+                "0"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Fail charge user token",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASEURL}}users/2",
+                  "host": [
+                    "{{BASEURL}}users"
+                  ],
+                  "path": [
+                    "2"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "Fail charge user token",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"tokenToAdd\": \"\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASEURL}}users/2",
+                  "host": [
+                    "{{BASEURL}}users"
+                  ],
+                  "path": [
+                    "2"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ACL Test",
+      "item": [
+        {
+          "name": "user unautorized create nonavzones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let responseBody = pm.response.json();\r",
+                  "pm.test(\"Status code is 403\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "pm.test(\"Response time is less than 500ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "pm.test(\"JSON fields type check\", function () {\r",
+                  "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401);\r",
+                  "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"UNAUTHORIZED_JWT\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_USER}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}nonavzones",
+              "host": [
+                "{{BASEURL}}nonavzones"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "user unautorized update nonavzones",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}nonavzones/1",
+                  "host": [
+                    "{{BASEURL}}nonavzones"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "user unautorized delete nonavzones",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}nonavzones/1",
+                  "host": [
+                    "{{BASEURL}}nonavzones"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "user unauthorized charge tokens",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}users/1",
+                  "host": [
+                    "{{BASEURL}}users"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "user unautorized approve/reject navplan",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}navplans/1",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "admin unautorized create nonavzones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let responseBody = pm.response.json();\r",
+                  "pm.test(\"Status code is 403\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "pm.test(\"Response time is less than 500ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "pm.test(\"JSON fields type check\", function () {\r",
+                  "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401);\r",
+                  "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"UNAUTHORIZED_JWT\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_ADMIN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}nonavzones",
+              "host": [
+                "{{BASEURL}}nonavzones"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "admin unautorized create nonavzones",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}nonavzones/1",
+                  "host": [
+                    "{{BASEURL}}nonavzones"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "admin unautorized delete nonavzones",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}nonavzones/1",
+                  "host": [
+                    "{{BASEURL}}nonavzones"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "admin unautorized create navplans",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}navplans",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "admin unautorized create nonavzones",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}navplans/1",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": "",
+              "header": [],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "operator unautorized create navplans",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let responseBody = pm.response.json();\r",
+                  "pm.test(\"Status code is 403\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "pm.test(\"Response time is less than 500ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+                  "});\r",
+                  "pm.test(\"JSON fields type check\", function () {\r",
+                  "    pm.expect(responseBody.statusCode).to.be.a('number').to.be.eq(401);\r",
+                  "    pm.expect(responseBody.name).to.be.a('string').to.be.eq(\"UNAUTHORIZED_JWT\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_OPERATOR}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}navplans",
+              "host": [
+                "{{BASEURL}}navplans"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "operator unautorized delete navplans",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}navplans/1",
+                  "host": [
+                    "{{BASEURL}}navplans"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "operator unautorized charge tokens",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASEURL}}users/1",
+                  "host": [
+                    "{{BASEURL}}users"
+                  ],
+                  "path": [
+                    "1"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
         }
       ]
     },

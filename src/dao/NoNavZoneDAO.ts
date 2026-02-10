@@ -1,8 +1,9 @@
 import { Op, WhereOptions } from "sequelize";
-import { OrmModels } from "../db/OrmModels.js";
-import { IDao } from "../interfaces/dao/IDAO.js";
-import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone.js";
-import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest.js";
+import { OrmModels } from "../db/OrmModels";
+import { IDao } from "../interfaces/dao/IDAO";
+import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
+import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
+
 export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
 {
     private noNavZoneModel;
@@ -69,7 +70,6 @@ export class NoNavZoneDAO implements IDao<NoNavigationZoneAttributes>
         
     }
     async update(item: NoNavigationZoneAttributes): Promise<NoNavigationZoneAttributes | null> {
-        console.log(item)
         if(item.id)
         {
             if((item.validityEnd === null && item.validityStart === null) || (item.validityEnd && item.validityStart))

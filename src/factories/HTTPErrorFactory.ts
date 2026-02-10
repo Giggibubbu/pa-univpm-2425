@@ -1,6 +1,6 @@
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { HTTPError } from "../errors/HTTPError.js";
-import { appErrorMessages } from "../utils/messages/messages_utils.js";
+import { AppErrorName } from "../enum/AppErrorName";
+import { HTTPError } from "../errors/HTTPError";
+import { appErrorMessages } from "../utils/messages/messages_utils";
 
 export const errorFactory = (name: AppErrorName):HTTPError => {
     return new HTTPError(

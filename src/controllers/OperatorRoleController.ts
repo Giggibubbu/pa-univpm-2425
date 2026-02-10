@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import { OperatorRoleService } from "../services/OperatorRoleService.js";
-import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { successFactory } from "../factories/HTTPSuccessFactory.js";
-import { AppSuccessName } from "../enum/AppSuccessName.js";
-import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppSuccessName } from "../enum/AppSuccessName";
+import { AppLogicError } from "../errors/AppLogicError";
+import { successFactory } from "../factories/HTTPSuccessFactory";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
+import { OperatorRoleService } from "../services/OperatorRoleService";
+
 
 
 export class OperatorRoleController
@@ -19,7 +20,6 @@ export class OperatorRoleController
 
     createNoNavZone = async (req: Request, res: Response) => {
         let noNavZone: NoNavZone;
-        console.log("pippo")
         if(req.jwt?.email && req.noNavZone)
         {
             noNavZone = await this.opRoleService.createNoNavZone(req.jwt?.email, req.noNavZone);

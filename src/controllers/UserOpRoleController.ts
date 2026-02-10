@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import { OperatorRoleService } from "../services/OperatorRoleService.js";
-import { UserRoleService } from "../services/UserRoleService.js";
-import { AuthRoles } from "../enum/AuthRoles.js";
-import { NavPlan } from "../interfaces/http-requests/NavPlanRequest.js";
-import { appSuccessMessages } from "../utils/messages/messages_utils.js";
-import { AppSuccessName } from "../enum/AppSuccessName.js";
-import { successFactory } from "../factories/HTTPSuccessFactory.js";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppSuccessName } from "../enum/AppSuccessName";
+import { AuthRoles } from "../enum/AuthRoles";
+import { AppLogicError } from "../errors/AppLogicError";
+import { successFactory } from "../factories/HTTPSuccessFactory";
+import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
+import { OperatorRoleService } from "../services/OperatorRoleService";
+import { UserRoleService } from "../services/UserRoleService";
+import { appSuccessMessages } from "../utils/messages/messages_utils";
 import { create } from "xmlbuilder2";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
 
 
 export class UserOpRoleController

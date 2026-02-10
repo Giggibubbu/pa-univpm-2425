@@ -11,9 +11,6 @@ CREATE SCHEMA pa2425 AUTHORIZATION postgres;
 ALTER DATABASE pa2425 SET search_path=pa2425;
 SET search_path=pa2425;
 
--- Enable postgis extension
-CREATE EXTENSION postgis SCHEMA pa2425;
-
 -- Create types
 CREATE TYPE role AS ENUM ('user', 'operator', 'admin');
 CREATE TYPE reqstatus AS ENUM ('pending', 'approved', 'rejected', 'cancelled');

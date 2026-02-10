@@ -3,17 +3,12 @@
   "version": "1.0.0",
   "description": "Progetto Programmazione Avanzata AA 24/25",
   "main": "app.js",
-  "type": "module",
   "scripts": {
     "test": "jest",
-    "start": "node dist/app.js",
-    "build": "tsc",
+    "start": "node dist/server.js",
+    "build": "npx tsc",
     "dev": "nodemon --watch dist dist/app.js",
-    "olddev1": "tsx watch src/app.ts",
-    "olddev": "ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
-    "buildModels": "sequelize-auto --sg=true -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres --useDefine --cm=p --cp=c --cf=p --noAlias",
-    "buildNavReqModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres -t navigation_requests",
-    "buildNoNavModel": "sequelize-auto --sg -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres -t no_navigation_zones"
+    "buildModels": "sequelize-auto --sg=true -l ts -o ./src/models -h localhost -d pa2425 -u postgres -x postgres -p 5432 -e postgres --useDefine --cm=p --cp=c --cf=p --noAlias"
   },
   "repository": {
     "type": "git",
@@ -53,9 +48,7 @@
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
     "ts-jest": "^29.4.6",
-    "tsc": "^2.0.4",
-    "tsx": "^4.21.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0"
   }
 }

@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { NoAuthService } from "../services/NoAuthService.js";
-import { successFactory } from "../factories/HTTPSuccessFactory.js";
-import { AppSuccessName } from "../enum/AppSuccessName.js";
-import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest.js";
+import { AppSuccessName } from "../enum/AppSuccessName";
+import { successFactory } from "../factories/HTTPSuccessFactory";
+import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
+import { NoAuthService } from "../services/NoAuthService";
+
 export class NoAuthController
 {
     private authService: NoAuthService;

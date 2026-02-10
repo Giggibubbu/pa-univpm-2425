@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import { PGDATABASE, PGUSER, PGUSERPSW, PGHOST} from '../utils/env/app_parameters.js';
+import { PGDATABASE, PGUSER, PGUSERPSW, PGHOST } from "../utils/env/app_parameters";
 
 export class SequelizeDbConnection
 {

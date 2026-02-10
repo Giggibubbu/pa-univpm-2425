@@ -1,10 +1,10 @@
 import type { Sequelize } from "sequelize";
-import { NavigationRequest as _NavigationRequest } from "./NavigationRequest.js";
-import type { NavigationRequestAttributes, NavigationRequestCreationAttributes } from "./NavigationRequest.js";
-import { NoNavigationZone as _NoNavigationZone } from "./NoNavigationZone.js";
-import type { NoNavigationZoneAttributes, NoNavigationZoneCreationAttributes } from "./NoNavigationZone.js";
-import { User as _User } from "./User.js";
-import type { UserAttributes, UserCreationAttributes } from "./User.js";
+import { NavigationRequest as _NavigationRequest } from "./NavigationRequest";
+import type { NavigationRequestAttributes, NavigationRequestCreationAttributes } from "./NavigationRequest";
+import { NoNavigationZone as _NoNavigationZone } from "./NoNavigationZone";
+import type { NoNavigationZoneAttributes, NoNavigationZoneCreationAttributes } from "./NoNavigationZone";
+import { User as _User } from "./User";
+import type { UserAttributes, UserCreationAttributes } from "./User";
 
 export {
   _NavigationRequest as NavigationRequest,

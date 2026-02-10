@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { adminRoleValidation } from "../middlewares/auth_middlewares.js";
-import { UserDAO } from "../dao/UserDAO.js";
-import { AdminRoleService } from "../services/AdminRoleService.js";
-import { AdminRoleController } from "../controllers/AdminRoleController.js";
-import { finalizeChargeUserToken, validateChargeUserToken } from "../middlewares/admin_middlewares.js";
+import { adminRoleValidation } from "../middlewares/auth_middlewares";
+import { UserDAO } from "../dao/UserDAO";
+import { AdminRoleService } from "../services/AdminRoleService";
+import { AdminRoleController } from "../controllers/AdminRoleController";
+import { finalizeChargeUserToken, validateChargeUserToken } from "../middlewares/admin_middlewares";
 
 const adminRouter = Router();
 const userDao = new UserDAO();

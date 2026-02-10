@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response} from "express";
-import { errorFactory } from "../factories/HTTPErrorFactory.js";
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { AppLogicError } from "../errors/AppLogicError.js";
-import { HTTPError } from "../errors/HTTPError.js";
+import { errorFactory } from "../factories/HTTPErrorFactory";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppLogicError } from "../errors/AppLogicError";
+import { HTTPError } from "../errors/HTTPError";
 
 export const logError = (err: Error | AppLogicError | HTTPError, req:Request, res:Response, next:NextFunction):void=>{
   const logDate:string = new Date().toLocaleString("it-IT", {dateStyle: "short", timeStyle: "short", timeZone: "Europe/Rome"}).replace(',', '');

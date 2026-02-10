@@ -1,7 +1,7 @@
-import { AppErrorName } from "../enum/AppErrorName.js";
-import { AppSuccessName } from "../enum/AppSuccessName.js";
-import { HTTPSuccessMsgStructure } from "../interfaces/messages/success/HTTPSuccessMsgStructure.js";
-import { appSuccessMessages } from "../utils/messages/messages_utils.js";
+import { AppErrorName } from "../enum/AppErrorName";
+import { AppSuccessName } from "../enum/AppSuccessName";
+import { HTTPSuccessMsgStructure } from "../interfaces/messages/success/HTTPSuccessMsgStructure";
+import { appSuccessMessages } from "../utils/messages/messages_utils";
 
 export const successFactory = (name: AppSuccessName, data:object):HTTPSuccessMsgStructure => 
     {

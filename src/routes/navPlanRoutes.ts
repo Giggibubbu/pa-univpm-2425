@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { operatorRoleValidation, userOpRoleValidation, userRoleValidation } from "../middlewares/auth_middlewares.js";
-import { UserDAO } from "../dao/UserDAO.js";
-import { NavPlanDAO } from "../dao/NavPlanDAO.js";
-import { NoNavZoneDAO } from "../dao/NoNavZoneDAO.js";
-import { UserRoleService } from "../services/UserRoleService.js";
-import { UserRoleController } from "../controllers/UserRoleController.js";
-import { finalizeDelNavPlanReq, finalizeNavPlanCreateReq, navPlanDelReqValidator, navPlanReqCreationValidator, navPlanViewReqValidator, finalizeViewNavPlanReq, navPlanUpdReqValidator, finalizeNavPlanUpd } from "../middlewares/navplan_middlewares.js";
-import { OperatorRoleService } from "../services/OperatorRoleService.js";
-import { UserOpRoleController } from "../controllers/UserOpRoleController.js";
-import { OperatorRoleController } from "../controllers/OperatorRoleController.js";
+import { operatorRoleValidation, userOpRoleValidation, userRoleValidation } from "../middlewares/auth_middlewares";
+import { UserDAO } from "../dao/UserDAO";
+import { NavPlanDAO } from "../dao/NavPlanDAO";
+import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
+import { UserRoleService } from "../services/UserRoleService";
+import { UserRoleController } from "../controllers/UserRoleController";
+import { finalizeDelNavPlanReq, finalizeNavPlanCreateReq, navPlanDelReqValidator, navPlanReqCreationValidator, navPlanViewReqValidator, finalizeViewNavPlanReq, navPlanUpdReqValidator, finalizeNavPlanUpd } from "../middlewares/navplan_middlewares";
+import { OperatorRoleService } from "../services/OperatorRoleService";
+import { UserOpRoleController } from "../controllers/UserOpRoleController";
+import { OperatorRoleController } from "../controllers/OperatorRoleController";
 
 const navPlanRouter = Router();
 const userDao = new UserDAO();
