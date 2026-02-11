@@ -18,7 +18,7 @@ import { AppErrorName } from "../enum/AppErrorName";
 const validateTokens = body("tokenToAdd")
 .exists()
 .notEmpty()
-.isInt()
+.isInt({gt: 0})
 .toInt()
 
 /**

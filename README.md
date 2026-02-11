@@ -141,13 +141,649 @@ In particolare, di seguito verranno elencate le rotte con le funzionalità e ruo
 | `/navplans?status=` | GET | Operatore (user) | Visualizza i piani di navigazione di tutti gli utenti. (filtrabili eventualmente per stato) |
 | `/navplans/:id` | PATCH | Operatore | Approvazione/Rigetto di una richiesta/piano di navigazione in stato *pending*. |
 | `/nonavzones` | POST | Operatore | Creazione di una zona di navigazione proibita. |
-| `/nonavzones/:id` | PATCH | Operatore | Aggiornamento di una zona proibita esistente. (anche di altri operatori) |
-| `/nonavzones/:id` | DELETE | Operatore | Eliminazione di una zona proibita. (solo se creata inizialmente dall'operatore che ne fa richiesta) |
-| `/users` | PATCH | Amministratore | Ricarica del credito (token) per un utente specifico che non sia operatore/admin. |
+| `/nonavzones/:id` | PATCH | Operatore | Aggiornamento di una zona proibita esistente. |
+| `/nonavzones/:id` | DELETE | Operatore | Eliminazione di una zona proibita. |
+| `/users/:id` | PATCH | Amministratore | Ricarica del credito (token) per un utente specifico. |
 
 ### API Reference Detail
 
-Elencare payload e API una ad una.
+Di seguito sono riportate le rotte HTTP con la relativa richiesta che possono elaborare.
+
+#### POST /login
+
+Rotta utilizzata per autenticare un utente.
+L'utente deve fornire email e password nel corpo della richiesta.
+In particolare, la password deve essere forte e cioè deve avere una lunghezza minima di 8 caratteri di cui:
+- almeno un carattere minuscolo;
+- almeno un carattere maiuscolo;
+- almeno un numero;
+- almeno un carattere speciale.
+Se l'utente viene trovato nel database sulla base dell'indirizzo email e password forniti, allora viene generato il token jwt e fornito in uscita.
+
+Entrambi i campi sono obbligatori, quindi devono essere inseriti nel body della richiesta HTTP, pena ricezione di errore di login invalido.
+
+##### Richiesta
+```
+POST /login HTTP/1.1
+Content-Type: application/json
+```
+###### Body
+```
+{
+    "email": "{{USER_ROLE_EMAIL}}",
+    "password": "{{USER_ROLE_PSW}}"
+}
+```
+###### Success Response
+```
+{
+    "statusCode": 200,
+    "message": "Login avvenuto con successo.",
+    "data": {
+        "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzA4NDIxMDAsImV4cCI6MTc3MDg0NTcwMH0.egjGSDKg4zY_4Ngqgwf53en9wciLWSHJ_mQl5k9FT6QtIkNnzm-2F6QSdM0uJyRDKpLdz6zV-lujmA3PMVQGKrAWGi1Cw3g0DflS28MmDcc-y1FiIpT-RMbmQG9EkrSZZzH-5vYj-2oh-lJG24M9ZqicEB2W-JOTU--r-tu3tUZMoaNbRKEmnJjoY-zhz4_K8uP8CB7vVF--g_xBZPYl1OCQZ6I0hDYA4cj5ueGqCxYG-49kTQrFm0PihROVbLhzQk8B4JabuWcrPK20k5741hxt5o4CrZxYtZsnfa6bljQnDL-T2AjbdmIo4MpsHvuH0YPRu3v16jarZRcCislwi4h2eUU9LHiWD_q-I-kAJAa4KQ45xhpaXRrJnWnzfwiVuWsFnsqVzKXk6ePYd7hLGZy6EGytpEviDYVdyCUAbY3L4UcDT7CGJyqeAJ6Gh3SKwnE6oGIQygWF7ohgx2KfaHsIUYE7ouS5uuEl9eitYtMivXjl3Yl8Ao0Bcv8u-4xOlXM3oIItSfFjt_0aAdu8JKXucPg6Xj0zsoPoQFjzEg3vIGY8CwL3u6wbUFkPwcU6lz3euaXfxmBMN81il0DQr_VLElpcPCS0COaH8qq6wcOMVyObjOuQctJIBgJ33-LIHxZhhc-N-wVLiFiay5sVvWrE56gxQ3IUYKm9v3IWP5M",
+        "user": {
+            "id": 1,
+            "email": "alice@example.com",
+            "role": "user",
+            "tokens": 5000
+        }
+    }
+}
+```
+
+#### GET /nonavzones
+
+Rotta utilizzata da tutti gli utenti, autenticati e non per ottenere tutte le zone di navigazione proibite, sia attive che non.
+
+##### Richiesta
+```
+GET /nonavzones HTTP/1.1
+Content-Type: application/json
+```
+###### Body
+```
+// no body
+```
+###### Success Response
+```
+{
+    "statusCode": 200,
+    "message": "La richiesta di visualizzazione dei piani di navigazione è terminata con successo.",
+    "data": [
+        {
+            "id": 1,
+            "operatorId": 3,
+            "validityStart": null,
+            "validityEnd": null,
+            "route": [
+                [
+                    10,
+                    41
+                ],
+                [
+                    12,
+                    42
+                ]
+            ]
+        },
+        {
+            "id": 2,
+            "operatorId": 3,
+            "validityStart": "2025-01-01T00:00:00.000Z",
+            "validityEnd": "2027-12-31T23:59:59.000Z",
+            "route": [
+                [
+                    1,
+                    50.5
+                ],
+                [
+                    2,
+                    51
+                ]
+            ]
+        },
+        {
+            "id": 3,
+            "operatorId": 3,
+            "validityStart": "2020-01-01T00:00:00.000Z",
+            "validityEnd": "2020-12-31T23:59:59.000Z",
+            "route": [
+                [
+                    -73,
+                    39
+                ],
+                [
+                    -72,
+                    40
+                ]
+            ]
+        },
+        {
+            "id": 4,
+            "operatorId": 3,
+            "validityStart": "2050-01-01T00:00:00.000Z",
+            "validityEnd": "2050-12-31T23:59:59.000Z",
+            "route": [
+                [
+                    49,
+                    -18
+                ],
+                [
+                    51,
+                    -16
+                ]
+            ]
+        }
+    ]
+}
+```
+
+#### POST /navplans
+
+Rotta dedicata all'utente autenticato con ruolo Utente per effettuare la creazione delle richieste/piani di navigazione.
+I campi sono tutti obbligatori, dunque viene restituito un errore se non si rispetta il formato del body della richiesta di cui sotto.
+Viene restituito inoltre errore se:
+- Le date non sono formattate secondo lo standard ISO8601;
+- Se la data è maggiore rispetto alla data odierna;
+- Se la data di fine non è maggiore della data di inizio di almeno 30m;
+- Se l'id del drone non è specificatamente di 10 caratteri;
+- Se la rotta è formata da meno di tre punti;
+- Se la rotta non è chiusa;
+- Se sono presenti segmenti di lunghezza zero;
+- Se negli array più interni il primo numero non rispetta i criteri per essere longitudine e il secondo numero non rispetta i criteri per essere latitudine;
+
+##### Richiesta
+```
+POST /navplans HTTP/1.1
+Authorization: Bearer <JWT>
+
+```
+###### Body
+```
+{
+    "dateStart": "2100-06-23T15:30:00.000Z",
+    "dateEnd": "2100-06-24T16:02:00.000Z",
+    "droneId": "D423DMXC22",
+    "route": [[1,2], [105,90], [1,2]]
+}
+```
+###### Success Response
+```
+{
+    "statusCode": 201,
+    "message": "La richiesta di navigazione è stata creata con successo.",
+    "data": {
+        "navplan": {
+            "id": 16,
+            "submittedAt": "2026-02-11T20:47:16.352Z",
+            "status": "pending",
+            "dateStart": "2100-06-23T15:30:00.000Z",
+            "dateEnd": "2100-06-24T16:02:00.000Z",
+            "droneId": "D423DMXC22",
+            "route": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    105,
+                    90
+                ],
+                [
+                    1,
+                    2
+                ]
+            ]
+        },
+        "user": {
+            "email": "alice@example.com",
+            "tokens": 4993
+        }
+    }
+}
+```
+
+#### GET /navplans?dateFrom=&dateTo&status=&format=
+
+Rotta dedicata all'utente autenticato con ruolo Utente e con ruolo Operatore.
+Il ruolo utente ha a disposizione tutti i filtri mentre il ruolo Operatore soltanto uno, ossia lo status della richiesta/piano di navigazione.
+La risposta che vedrà l'operatore sarà quindi quella nominata no-format di seguito.
+Tutti i filtri sono opzionali.
+Le date devono essere in formato ISO8601, lo status deve essere compreso nell'insieme di stati "pending", "cancelled", "approved", "rejected" e il format deve essere una stringa del tipo "xml" o "json" di minimo tre caratteri e massimo quattro.
+Se viene specificato solo il parametro dateTo nella query string, vengono stampati i piani di navigazione inviati fino a quella data.
+Se viene specificato solo il parametro dateFrom, vengono stampati i piani di navigazione inviati da quella data in poi.
+
+##### Richiesta
+```
+GET /navplans?dateTo=2050-08-02&status=approved&dateFrom=2020-08-02&format=xml HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+no body
+```
+###### Success Response - xml
+```
+<?xml version="1.0"?>
+<navPlans>
+    <plan>
+        <id>1</id>
+        <submittedAt>2022-05-10T09:00:00.000Z</submittedAt>
+        <status>approved</status>
+        <dateStart>2022-05-15T10:00:00.000Z</dateStart>
+        <dateEnd>2022-05-15T11:30:00.000Z</dateEnd>
+        <droneId>DRONE-SEA1</droneId>
+        <route>
+            <point>
+                <lon>18.1</lon>
+                <lat>37.5</lat>
+            </point>
+            <point>
+                <lon>18.15</lon>
+                <lat>37.5</lat>
+            </point>
+            <point>
+                <lon>18.125</lon>
+                <lat>37.55</lat>
+            </point>
+            <point>
+                <lon>18.1</lon>
+                <lat>37.5</lat>
+            </point>
+        </route>
+    </plan>
+    <plan>
+        <id>3</id>
+        <submittedAt>2026-11-20T14:00:00.000Z</submittedAt>
+        <status>approved</status>
+        <dateStart>2026-12-05T10:00:00.000Z</dateStart>
+        <dateEnd>2026-12-05T11:45:00.000Z</dateEnd>
+        <droneId>DRONE-SEA1</droneId>
+        <route>
+            <point>
+                <lon>18.3</lon>
+                <lat>37.7</lat>
+            </point>
+            <point>
+                <lon>18.32</lon>
+                <lat>37.7</lat>
+            </point>
+            <point>
+                <lon>18.32</lon>
+                <lat>37.72</lat>
+            </point>
+            <point>
+                <lon>18.3</lon>
+                <lat>37.72</lat>
+            </point>
+            <point>
+                <lon>18.3</lon>
+                <lat>37.7</lat>
+            </point>
+        </route>
+    </plan>
+</navPlans>
+```
+###### Success Response - format=json
+```
+[
+    {
+        "id": 1,
+        "submittedAt": "2022-05-10T09:00:00.000Z",
+        "status": "approved",
+        "motivation": null,
+        "dateStart": "2022-05-15T10:00:00.000Z",
+        "dateEnd": "2022-05-15T11:30:00.000Z",
+        "droneId": "DRONE-SEA1",
+        "route": [
+            [
+                18.1,
+                37.5
+            ],
+            [
+                18.15,
+                37.5
+            ],
+            [
+                18.125,
+                37.55
+            ],
+            [
+                18.1,
+                37.5
+            ]
+        ]
+    },
+    {
+        "id": 3,
+        "submittedAt": "2026-11-20T14:00:00.000Z",
+        "status": "approved",
+        "motivation": null,
+        "dateStart": "2026-12-05T10:00:00.000Z",
+        "dateEnd": "2026-12-05T11:45:00.000Z",
+        "droneId": "DRONE-SEA1",
+        "route": [
+            [
+                18.3,
+                37.7
+            ],
+            [
+                18.32,
+                37.7
+            ],
+            [
+                18.32,
+                37.72
+            ],
+            [
+                18.3,
+                37.72
+            ],
+            [
+                18.3,
+                37.7
+            ]
+        ]
+    }
+]
+```
+###### Success Response - no format
+```
+{
+    "statusCode": 200,
+    "message": "La richiesta di visualizzazione dei piani di navigazione è terminata con successo.",
+    "data": {
+        "navplans": [
+            {
+                "id": 1,
+                "submittedAt": "2022-05-10T09:00:00.000Z",
+                "status": "approved",
+                "motivation": null,
+                "dateStart": "2022-05-15T10:00:00.000Z",
+                "dateEnd": "2022-05-15T11:30:00.000Z",
+                "droneId": "DRONE-SEA1",
+                "route": [
+                    [
+                        18.1,
+                        37.5
+                    ],
+                    [
+                        18.15,
+                        37.5
+                    ],
+                    [
+                        18.125,
+                        37.55
+                    ],
+                    [
+                        18.1,
+                        37.5
+                    ]
+                ]
+            },
+            {
+                "id": 3,
+                "submittedAt": "2026-11-20T14:00:00.000Z",
+                "status": "approved",
+                "motivation": null,
+                "dateStart": "2026-12-05T10:00:00.000Z",
+                "dateEnd": "2026-12-05T11:45:00.000Z",
+                "droneId": "DRONE-SEA1",
+                "route": [
+                    [
+                        18.3,
+                        37.7
+                    ],
+                    [
+                        18.32,
+                        37.7
+                    ],
+                    [
+                        18.32,
+                        37.72
+                    ],
+                    [
+                        18.3,
+                        37.72
+                    ],
+                    [
+                        18.3,
+                        37.7
+                    ]
+                ]
+            }
+        ]
+    }
+}
+```
+#### DELETE /navplans/:id
+
+Rotta dedicata alla funzionalità di cancellazione dei piani di navigazione da parte del ruolo autenticato Utente.
+L'utente dovrà obbligatoriamente inserire l'id della risorsa come HTTP param, altrimenti riceverà un errore di route not found.
+L'id dovrà essere un numero intero.
+
+##### Richiesta
+```
+DELETE /navplans/:id HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+no body
+```
+###### Success Response
+```
+Header status code: 204 (No Content)
+```
+
+#### PATCH /navplans/:id
+
+Rotta dedicata all'operatore per approvare o rigettare una richiesta/piano di navigazione.
+L'operatore può approvare/rigettare anche piani di altri operatori ma non può approvare/rigettare piani già in stato di approved/rejected/cancelled.
+Il campo status è un campo obbligatorio che può assumere soltanto i valori "approved" e "rejected".
+Il campo motivation è obbligatorio a seconda del valore del campo status.
+Il body può essere composto soltanto dal campo status se il suo valore è "approved", altrimenti se "rejected" deve essere per forza inserito il campo motivation.
+##### Richiesta
+```
+PATCH /navplans/:id HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+{
+    "status": "rejected",
+    "motivation": "Invalid request"
+}
+```
+###### Success Response (approved)
+```
+{
+    "statusCode": 200,
+    "message": "Il piano di navigazione è stato modificato con successo.",
+    "data": {
+        "navplan": {
+            "id": 15,
+            "submittedAt": "2027-05-01T10:00:00.000Z",
+            "status": "approved",
+            "dateStart": "2027-05-10T14:00:00.000Z",
+            "dateEnd": "2027-05-10T16:00:00.000Z",
+            "droneId": "DRONE-SEA6",
+            "route": [
+                [
+                    18.4,
+                    37.38
+                ],
+                [
+                    18.42,
+                    37.4
+                ],
+                [
+                    18.4,
+                    37.42
+                ],
+                [
+                    18.38,
+                    37.4
+                ],
+                [
+                    18.4,
+                    37.38
+                ]
+            ]
+        }
+    }
+}
+```
+#### POST /nonavzones
+
+La rotta in questione è dedicata all'utente Operatore per la funzionalità di inserimento delle zone proibite.
+I campi contenuti nel body di seguito sono tutti obbligatori.
+È possibile valorizzare le **entrambe** le date con valore null per inserire una zona sempre attiva.
+Qualora sia presente soltanto un campo data, si avrà un errore che segnala la non della richiesta.
+
+##### Richiesta
+```
+POST /nonavzones HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+{
+    "validityStart": "2027-01-01T00:00:00Z",
+    "validityEnd": "2027-12-31T23:59:59Z",
+    "route": [[56,89], [156,90]]
+}
+```
+###### Success Response
+```
+{
+    "statusCode": 201,
+    "message": "L'area vietata è stata creata con successo.",
+    "data": {
+        "id": 5,
+        "operatorId": 3,
+        "validityStart": "2027-01-01T00:00:00.000Z",
+        "validityEnd": "2027-12-31T23:59:59.000Z",
+        "route": [
+            [
+                56,
+                89
+            ],
+            [
+                156,
+                90
+            ]
+        ]
+    }
+}
+```
+
+#### PATCH /nonavzones/:id
+
+La rotta in questione serve per permettere all'utente autenticato Operatore di poter aggiornare la data di validità delle zone proibite.
+È obbligatorio inserire nel body entrambi i campi data e come param della richiesta un numero intero.
+Per fare in modo di impostare una zona attiva, occorre inserire le due date impostate al valore null.
+
+##### Richiesta
+```
+PATCH /nonavzones/:id HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+{
+    "validityStart": "2027-01-31T23:59:59Z",
+    "validityEnd": "2027-12-31T23:59:59Z"
+}
+```
+###### Success Response
+```
+{
+    "statusCode": 200,
+    "message": "L'area vietata è stata aggiornata con successo.",
+    "data": {
+        "id": 2,
+        "operatorId": 3,
+        "validityStart": "2027-01-31T23:59:59.000Z",
+        "validityEnd": "2027-12-31T23:59:59.000Z",
+        "route": [
+            [
+                1,
+                50.5
+            ],
+            [
+                2,
+                51
+            ]
+        ]
+    }
+}
+```
+
+#### DELETE /nonavzones/:id
+
+Rotta autenticata che consente all'utente ruolo Operatore di cancellare una zona proibita.
+Il param id da inserire è obbligatorio e deve essere un numero intero maggiore di zero.
+
+##### Richiesta
+```
+DELETE /nonavzones/:id HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+no body
+```
+###### Success Response
+```
+Header status code: 204 (No Content)
+```
+
+#### PATCH /users/:id
+
+Rotta autenticata che consente all'utente ruolo Amministratore di ricaricare il credito di un utente qualsiasi di una certa quantità.
+Il campo tokenToAdd nel body della richiesta è obbligatorio e deve essere un numero intero maggiore di zero.
+
+##### Richiesta
+```
+PATCH /nonavzones/:id HTTP/1.1
+Authorization: Bearer <JWT>
+```
+###### Body
+```
+{
+    "tokenToAdd": 2
+}
+```
+###### Success Response
+```
+{
+    "statusCode": 200,
+    "message": "I token sono stati modificati con successo.",
+    "data": {
+        "user": {
+            "id": 2,
+            "email": "notoken@example.com",
+            "role": "user",
+            "tokens": 4
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 🏗 Progettazione
 In questa sezione vengono illustrati l'architettura logica e i flussi di sistema.
@@ -842,7 +1478,7 @@ sequenceDiagram
                 App ->> OperatorRoleController: deleteNoNavZone(res, req)
                 OperatorRoleController ->> OperatorRoleService: deleteNoNavZone(req.noNavZone, req.jwt?.email)
                 OperatorRoleService ->> UserDAO: read(email)
-                UserDAO --> OperatorRoleService: User
+                UserDAO -->> OperatorRoleService: User
                 OperatorRoleService ->> NoNavZoneDAO: delete(noNavZoneToDelete)
                 
                 alt not existing nonavzone
@@ -939,15 +1575,49 @@ sequenceDiagram
 
 
 
-## 🐳 Avvio del Progetto (Docker)
+## 🐳 Istruzioni per l'avvio del backend (Docker)
 Il sistema è predisposto per essere avviato tramite **Docker Compose** per comporre i servizi necessari.
-
-1.  **Variabili d'Ambiente**: Creare un file `.env` basato sull'esempio fornito, inserendo la chiave privata per i token JWT (RS256).
-2.  **Comando di avvio**:
+1. **Clone del repository**: effettuare il git clone del repository.
+```bash
+git clone https://github.com/Giggibubbu/pa-univpm-2425.git
+```
+2.  **Variabili d'Ambiente**: Creare un file `.env` da inserire nella root di progetto basato sull'esempio fornito, inserendo la chiave privata per i token JWT (RS256).
+Il JWT Token va inserito come stringa nella variabile JWT_SECRET su un'unica riga.
+Di seguito è mostrato un esempio di file .env in cui sono presenti le variabili di ambiente da valorizzare:
+```env
+## PostgreSQL environment variables 
+PGUSER=postgres
+PGDATABASE=pa2425
+PGHOST=pa-dbpg
+PGPASSWORD=<password>
+PGPORT=5432
+## Application environment variables
+NODE_ENV=production
+APP_PORT=3000
+JWT_SECRET="<jwt-private-key>"
+```
+3. Qualora non si abbia a disposizione una coppia di chiavi, occorre generarla con i comandi di seguito:
+```bash
+# Generazione chiave privata
+ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+# Generazione chiave pubblica
+openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub.pem
+```
+4. Successivamente inserire la chiave pubblica generata all'interno della cartella keys/ del progetto.
+5. Effettuare il print della chiave privata per inserirla in una riga dentro il file .env
+```bash
+awk '{printf "%s\\n", $0}' jwtRS256.key
+```
+Copiare il risultato del comando al posto di "<jwt-private-key>" nel file .env di esempio illustrato sopra.
+6.  **Comando di avvio** - recarsi nella cartella di progetto in cui è presente il docker-compose.yml e digitare sulle linea di comando:
     ```bash
     docker-compose up --build
     ```
-3.  **Inizializzazione**: All'avvio, vengono eseguiti automaticamente gli script di **seed** per popolare il database con i ruoli predefiniti e il credito iniziale per gli utenti di test.
+7.  **Inizializzazione**: Attendere il download delle immagini e delle dipendenze di progetto. Subito dopo verranno verranno eseguiti automaticamente gli script di **seed** per popolare il database con i ruoli predefiniti, le zone proibite e alcuni piani di navigazione. Prima che il database sia up e running il servizio di node nel relativo container non verrà avviato grazie allo script wait-for-it.sh. Una volta che il server node si è avviato, sarà in ascolto di default sulla porta 3000 TCP, come impostato nel file .env di esempio di cui al punto 1.
+8. **Stop dei servizi**: per stoppare il docker compose occorre digitare il seguente comando, che si accerta della cancellazione dei docker volumes associati ai container creati:
+```bash
+docker compose down --volumes
+```
 
 ---
 
@@ -956,24 +1626,22 @@ Il sistema è predisposto per essere avviato tramite **Docker Compose** per comp
 ### Test dei Middleware (Jest)
 Sono stati sviluppati test unitari tramite **Jest** per tre middleware fondamentali:
 
-1.  **Middleware di Autenticazione**: Verifica la validità del token JWT e l'estrazione dei privilegi di ruolo.
-2.  **Middleware di Controllo Credito**: Blocca le richieste se l'utente ha un saldo inferiore a 2 token.
-3.  **Middleware di Validazione Rotta**: Verifica che il set di waypoint fornito non intersechi aree identificate come **zone proibite**.
+1.  **Middleware di Autenticazione**: Verifica la validità del token JWT.
+2.  **Middleware di Autorizzazione**: Blocca la richiesta se non è previsto che un certo ruolo acceda a una rotta ad esso non dedicata. 
+3.  **Middleware di gestione errori**: 
 
-Per eseguire i test: `npm test`
-
+Per eseguire i test:
+1. Entrare nel container tramite il seguente comando:
+```bash
+docker exec -it pa-web-node bash
+```
+2. Dall'interno del container e nella directory di lavoro, eseguire:
+```bash
+npm run test
+```
 ### Test delle API
-Le funzionalità possono essere verificate tramite **Postman** o comandi **curl**:
+Le funzionalità possono essere verificate effettuando il run della collection **Postman** presente nella cartella collections:
 
-* **Pubblico**: Consultazione delle zone di navigazione proibita.
-* **Auth**: Login e gestione sessione tramite JWT.
-* **Piani di Navigazione**: Sottomissione, cancellazione (se in stato *pending*) e filtraggio dello storico.
-* **Esportazione**: Verifica del corretto output in formato JSON e XML.
+
 
 ---
-
-## 📂 Struttura della Repository
-* `/src/controllers`: Gestione delle richieste e risposte HTTP.
-* `/src/services`: Logica di business core e calcoli di validazione.
-* `/src/middlewares`: Filtri di sicurezza e validatori di rotta/credito.
-* `/src/db`: Configurazione Sequelize, modelli e implementazione DAO.
