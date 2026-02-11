@@ -9,4 +9,5 @@ README.md
 sql/
 docker-scripts/
 node_modules/
-readme-content
+readme-content/
+collections/

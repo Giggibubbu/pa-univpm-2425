@@ -3,20 +3,18 @@
 Realizzazione di un backend per sostenere l'esame pratico di Programmazione avanzata (A.A 2024/2025) del corso di Laurea Magistrale
 in Ingegneria Informatica e dell'Automazione (LM-32) tenuto presso l'Università Politecnica delle Marche.
 
-1. [🎯 Obiettivo del Progetto](#-obiettivo-del-progetto)
+1. [🎯 Obiettivo del progetto](#-obiettivo-del-progetto)
 2. [🏗 Progettazione](#-progettazione)
-   - [Casi d'Uso](#casi-duso)
-   - [Diagrammi di Sequenza](#diagrammi-di-sequenza)
-3. [🧩 Design Pattern Utilizzati](#-design-pattern-utilizzati)
-4. [🛠 Tecnologie Utilizzate](#-tecnologie-utilizzate)
-5. [🐳 Avvio del Progetto (Docker)](#-avvio-del-progetto-docker)
-   - [Configurazione Ambiente](#configurazione-ambiente)
-   - [Comandi per l'Esecuzione](#comandi-per-lesecuzione)
+   - [Casi d'uso](#casi-duso)
+   - [Diagrammi di sequenza](#diagrammi-di-sequenza)
+3. [🚀 API Reference](#-api-reference)
+   - [API Summary](#api-summary)
+   - [API Reference Detail](#api-reference-detail)
+4. [🧩 Design pattern utilizzati](#-design-pattern-utilizzati)
+5. [🐳 Istruzioni per l'avvio del backend (Docker)](#-istruzioni-per-lavvio-del-backend-docker)
 6. [🧪 Test del Progetto](#-test-del-progetto)
-   - [Test Middleware (Jest)](#test-middleware-jest)
-   - [Test API (Postman/Curl)](#test-api-postmancurl)
 
-## 🎯 Obiettivo del Progetto
+## 🎯 Obiettivo del progetto
 
 L'obiettivo del progetto è lo sviluppo di un sistema backend che consenta di gestire diversi aspetti
 che riguardano la navigazione marina autonoma, al fine di dimostrare di aver compreso 
@@ -65,7 +63,7 @@ A livello tecnologico, il backend deve essere sviluppato in **Typescript**, face
 Essendo l'RDBMS a scelta libera, il database utilizzato dal corrente progetto è **PostgreSQL**.
 
 ---
-## 🧩 Design Pattern Utilizzati
+## 🧩 Design pattern utilizzati
 Per garantire robustezza e manutenibilità, il progetto implementa i seguenti pattern:
 
 * MVC - Model-View-Controller
@@ -125,7 +123,7 @@ Il costruttore privato va ad istanziare l'oggetto Sequelize e può essere chiama
 L'oggetto `SingletonDBConnection` viene istanziato all'interno di una variabile esportata chiamata `sequelize`, di cui `OrmModels` fa utilizzo per la connessione al database.
 
 ---
-## API Reference
+## 🚀 API Reference
 Prima di procedere all'illustrazione della fase di progettazione, si vuole elencare le API che il backend in questione mette a disposizione.
 In particolare, di seguito verranno elencate le rotte con le funzionalità e ruolo dell'utenza ad esse associate.
 
@@ -771,25 +769,13 @@ Authorization: Bearer <JWT>
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+---
 
 ## 🏗 Progettazione
 In questa sezione vengono illustrati l'architettura logica e i flussi di sistema.
-### Diagramma dei Casi d'Uso
+### Casi d'uso
 ![Use Case Diagram](./readme-content/pa2425-univpm-usecase.png)
-### Diagrammi di Sequenza
+### Diagrammi di sequenza
 
 #### POST /login (Utente non autenticato)
 ```mermaid
@@ -849,8 +835,6 @@ sequenceDiagram
 
     end
 ```
-
-
 
 
 #### GET /nonavzones (Utente non autenticato)
@@ -1553,7 +1537,7 @@ sequenceDiagram
                 
                 alt not existing user
                     UserDAO -->> AdminRoleService: null
-                    AdminRoleService -->> AdminRoleController: throws new AppLogicError(AppErrorName.USER_NOT_FOUND);
+                    AdminRoleService -->> AdminRoleController: throws new AppLogicError(AppErrorName.USER_NOT_FOUND)
                     AdminRoleController -->> App: next(new AppLogicError(AppErrorName.USER_NOT_FOUND);)
                     App ->> ErrorHandlerMiddleware: new AppLogicError(AppErrorName.USER_NOT_FOUND);
                     ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
@@ -1571,77 +1555,169 @@ sequenceDiagram
     end
 ```
 
-
-
-
+---
 
 ## 🐳 Istruzioni per l'avvio del backend (Docker)
 Il sistema è predisposto per essere avviato tramite **Docker Compose** per comporre i servizi necessari.
 1. **Clone del repository**: effettuare il git clone del repository.
-```bash
-git clone https://github.com/Giggibubbu/pa-univpm-2425.git
-```
-2.  **Variabili d'Ambiente**: Creare un file `.env` da inserire nella root di progetto basato sull'esempio fornito, inserendo la chiave privata per i token JWT (RS256).
+    ```bash
+    git clone https://github.com/Giggibubbu/pa-univpm-2425.git
+    ```
+2.  **Variabili d'ambiente**: Creare un file `.env` da inserire nella root di progetto basato sull'esempio fornito, inserendo la chiave privata per i token JWT (RS256).
 Il JWT Token va inserito come stringa nella variabile JWT_SECRET su un'unica riga.
 Di seguito è mostrato un esempio di file .env in cui sono presenti le variabili di ambiente da valorizzare:
-```env
-## PostgreSQL environment variables 
-PGUSER=postgres
-PGDATABASE=pa2425
-PGHOST=pa-dbpg
-PGPASSWORD=<password>
-PGPORT=5432
-## Application environment variables
-NODE_ENV=production
-APP_PORT=3000
-JWT_SECRET="<jwt-private-key>"
-```
+    ```env
+    ## PostgreSQL environment variables 
+    PGUSER=postgres
+    PGDATABASE=pa2425
+    PGHOST=pa-dbpg
+    PGPASSWORD=<password>
+    PGPORT=5432
+    ## Application environment variables
+    NODE_ENV=production
+    APP_PORT=3000
+    JWT_SECRET="<jwt-private-key>"
+    ```
 3. Qualora non si abbia a disposizione una coppia di chiavi, occorre generarla con i comandi di seguito:
-```bash
-# Generazione chiave privata
-ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
-# Generazione chiave pubblica
-openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub.pem
-```
+    ```bash
+    # Generazione chiave privata
+    ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+    # Generazione chiave pubblica
+    openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub.pem
+    ```
 4. Successivamente inserire la chiave pubblica generata all'interno della cartella keys/ del progetto.
 5. Effettuare il print della chiave privata per inserirla in una riga dentro il file .env
-```bash
-awk '{printf "%s\\n", $0}' jwtRS256.key
-```
+    ```bash
+    awk '{printf "%s\\n", $0}' jwtRS256.key
+    ```
 Copiare il risultato del comando al posto di "<jwt-private-key>" nel file .env di esempio illustrato sopra.
+
 6.  **Comando di avvio** - recarsi nella cartella di progetto in cui è presente il docker-compose.yml e digitare sulle linea di comando:
     ```bash
     docker-compose up --build
     ```
+
 7.  **Inizializzazione**: Attendere il download delle immagini e delle dipendenze di progetto. Subito dopo verranno verranno eseguiti automaticamente gli script di **seed** per popolare il database con i ruoli predefiniti, le zone proibite e alcuni piani di navigazione. Prima che il database sia up e running il servizio di node nel relativo container non verrà avviato grazie allo script wait-for-it.sh. Una volta che il server node si è avviato, sarà in ascolto di default sulla porta 3000 TCP, come impostato nel file .env di esempio di cui al punto 1.
+
 8. **Stop dei servizi**: per stoppare il docker compose occorre digitare il seguente comando, che si accerta della cancellazione dei docker volumes associati ai container creati:
-```bash
-docker compose down --volumes
-```
+    ```bash
+    docker compose down --volumes
+    ```
 
 ---
 
-## 🧪 Test del Progetto
+## 🧪 Test del progetto
 
 ### Test dei Middleware (Jest)
 Sono stati sviluppati test unitari tramite **Jest** per tre middleware fondamentali:
 
-1.  **Middleware di Autenticazione**: Verifica la validità del token JWT.
-2.  **Middleware di Autorizzazione**: Blocca la richiesta se non è previsto che un certo ruolo acceda a una rotta ad esso non dedicata. 
-3.  **Middleware di gestione errori**: 
+1.  **Middleware di Autenticazione**: Verifica la validità/presenza del token JWT.
+Per testare il middleware in questione è stato necessario inizializzare prima di ogni test la richiesta e la response wrappati dal tipo Partial, per permettere che la richiesta e la risposta possano essere oggetti parziali, non completi di tutte le loro caratteristiche obbligatorie.
+La response è stata eguagliata a un oggetto generico senza campi, mentre la request a un oggetto avente headers uguale a un oggetto vuoto.
+Inoltre dato che questo middleware chiama la funzione next, in test jest si è dovuto eguagliare la funzione next a una funzione Mock, ossia una sorta di funzione spia che viene valorizzata con gli argomenti della funzione next quando viene chiamata dal Middleware.
+    - 1° test: il primo test è consistito, essendo l'header vuoto, che l'errore lanciato fosse istanza di `AppLogicError` con nome `AppErrorName.AUTH_TOKEN_NOTFOUND`;
+    - 2° test: nel secondo test occorre creare un token jwt scaduto. Una volta lanciato il middleware si verifica che l'istanza dell'errore sia `AppLogicError` con nome `AppErrorName.JWT_EXPIRED`.
+    - 3° test: nel terzo test occorre creare un token jwt invalido (es. firma invalida), verificando che l'errore sia istanza della classe `AppLogicError` con nome `AppErrorName.INVALID_JWT`.
+    - 4° test: nel quarto test occorre generare un token valido e verificare che l'attributo jwt presente nella request venga valorizzato al jwt appena generato.
+    2.  **Middleware di Autorizzazione**: Blocca la richiesta se non è previsto che un certo ruolo acceda a una rotta ad esso non dedicata. 
+Allo stesso modo del middleware di autenticazione si è valorizzato i parametri req, res e next.
+    - 1° e 2° test: si è passato dei ruoli autorizzati al middleware che non corrispondevano a quelli del jwt presente nella richiesta HTTP, controllando che venga effettivamente lanciato l'errore della classe  `AppLogicError` con nome `AppErrorName.UNAUTHORIZED_JWT`.
+    - 3° test: il terzo test consiste nella verifica che gli argomenti del mock sono undefined, dato che la funzione next() nel caso in cui il ruolo contenuto nel JWT sia valido passa il controllo al middleware successivo. 
+3.  **Middleware di gestione errori**: Intercetta gli errori dell'applicazione per trasformarli in risposte HTTP di errore ben strutturate mediante la Factory.
+Vengono inizializzati gli stessi argomenti iniziali dei test precedenti. (req, res e next)
+Si pone questa volta però gli attributi status e json uguale alla funzione mock di jest.
+Si aggiunge la possibilità che questa funzione possa ritornare il mock stesso, in maniera tale che il middleware possa effettuare la concatenazione di .status().json().
+Gli argomenti di .status() e .json() finiranno all'interno delle chiamate del mock, rendendo così possibile effettuare i test di questo middleware.
+    - 1° e 2° test: si verifica che l'argomento della funzione next() sia un errore istanza della classe `HTTPError` e che lo status code della richiesta sia pari a 403. (questo perchè si è passato all'errorHandler specificatamente un errore con status code 403)
+    - 3° test: il terzo test verifica che quando viene passato all'error handler un errore generico, la classe dell'errore sia sempre `HTTPError` ma con status code pari a 500.
 
-Per eseguire i test:
+**Per eseguire i test**:
 1. Entrare nel container tramite il seguente comando:
-```bash
-docker exec -it pa-web-node bash
-```
+    ```bash
+    docker exec -it pa-web-node bash
+    ```
 2. Dall'interno del container e nella directory di lavoro, eseguire:
-```bash
-npm run test
-```
+    ```bash
+    npm run test
+    ```
+
+#### Risultati
+
+![Test Jest](./readme-content/testjest.png)
+
 ### Test delle API
-Le funzionalità possono essere verificate effettuando il run della collection **Postman** presente nella cartella collections:
+Le funzionalità possono essere verificate effettuando il run della collection **Postman** presente nella cartella collections.
 
+I test riportati nella collection di postman, riguardano le seguenti rotte e le seguenti casistiche/ambiti:
 
+#### 1. 🔐 Rotte pubbliche di autenticazione (Auth)
+Verifica dei flussi di login, generazione JWT e gestione errori credenziali.
 
----
+- [x] **POST /login** - Validazione fallita (campi mancanti) `400`
+- [x] **POST /login** - Credenziali errate (Utente non trovato) `401`
+- [x] **POST /login** - Login Utente (Successo) `200`
+- [x] **POST /login** - Login Utente "Low Token" (Successo) `200`
+- [x] **POST /login** - Login Operatore (Successo) `200`
+- [x] **POST /login** - Login Admin (Successo) `200`
+- [x] **Middleware** - JWT Invalido o scaduto `401`
+- [x] **Middleware** - JWT Vuoto/Mancante `401`
+
+#### 2. Piani di navigazione (User)
+Test creazione, validazione e gestione stato riguardanti i piani di navigazione e l'utente User.
+
+- [x] **POST /navplans** - Errore validazione (formato data) `400`
+- [x] **POST /navplans** - Credito insufficiente (< 2 token) `403`
+- [x] **POST /navplans** - Data inizio non valida (< 48h) `403`
+- [x] **POST /navplans** - Rotta in area vietata (NoNavZone) `403`
+- [x] **POST /navplans** - Conflitto temporale con altri piani `409`
+- [x] **POST /navplans** - Creazione piano con successo `201`
+- [x] **DELETE /navplans/:id** - Cancellazione fallita (non proprietario) `403`
+- [x] **DELETE /navplans/:id** - Cancellazione fallita (piano non trovato) `404`
+- [x] **DELETE /navplans/:id** - Cancellazione fallita (ID invalido) `400`
+- [x] **DELETE /navplans/:id** - Cancellazione successo (stato pending) `204`
+- [x] **GET /navplans** - Visualizzazione fallita (filtri errati) `400`
+- [x] **GET /navplans** - Visualizzazione successo (filtro JSON) `200`
+- [x] **GET /navplans** - Visualizzazione successo (filtro XML) `200`
+- [x] **GET /navplans** - Visualizzazione successo (senza filtri) `200`
+
+#### 3. Zone di navigazione proibita (Operator)
+Gestione delle aree interdette e consultazione pubblica.
+
+- [x] **GET /nonavzones** - Consultazione pubblica successo `200`
+- [x] **POST /nonavzones** - Creazione fallita (date/dati invalidi) `400`
+- [x] **POST /nonavzones** - Creazione fallita (conflitto spaziale) `409`
+- [x] **POST /nonavzones** - Creazione successo (date nulle) `201`
+- [x] **POST /nonavzones** - Creazione successo (date definite) `201`
+- [x] **PATCH /nonavzones/:id** - Aggiornamento successo `200`
+- [x] **PATCH /nonavzones/:id** - Aggiornamento fallito (dati invalidi) `400`
+- [x] **PATCH /nonavzones/:id** - Aggiornamento fallito (non trovato) `404`
+- [x] **DELETE /nonavzones/:id** - Eliminazione successo `204`
+- [x] **DELETE /nonavzones/:id** - Eliminazione fallita (ID invalido) `400`
+- [x] **DELETE /nonavzones/:id** - Eliminazione fallita (non trovato) `404`
+
+### 4. Moderazione piani (Operator)
+Flusso di approvazione e rifiuto delle richieste pendenti.
+
+- [x] **GET /navplans** - Visualizzazione richieste pending `200`
+- [x] **PATCH /navplans/:id** - Approvazione/Rifiuto falliti (req. invalida) `400`
+- [x] **PATCH /navplans/:id** - Approvazione successo `200`
+- [x] **PATCH /navplans/:id** - Rifiuto (senza motivazione/non permesso) `403`
+
+### 5. Amministrazione (Admin)
+Gestione ricarica crediti utenti.
+
+- [x] **PATCH /users/:id** - Ricarica token successo `200`
+- [x] **PATCH /users/:id** - Ricarica fallita (input errato) `400`
+
+### 6. ACL & Errori
+Verifica delle autorizzazioni e errori di sistema.
+
+- [x] **ACL** - Utente non autorizzato su rotte Operator `401`
+- [x] **ACL** - Admin non autorizzato su rotte Operator `401`
+- [x] **ACL** - Operatore non autorizzato su rotte navplan `401`
+- [x] **404 Handling** - Rotta sconosciuta gestita correttamente `404`
+- [x] **Malformed Body** - Gestione JSON corrotto `500`
+
+Il run della collection ha prodotto i seguenti risultati:
+
+![Postman collection run](./readme-content/postman-run-collection.png)
