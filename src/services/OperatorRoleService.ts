@@ -180,7 +180,7 @@ export class OperatorRoleService
 
     /**
      * Elimina una zona proibita.
-     * Solo l'operatore creatore può eliminare la zona.
+     * 
      * 
      * @param noNavZone - Zona da eliminare
      * @param email - Email dell'operatore che richiede l'eliminazione
@@ -208,7 +208,7 @@ export class OperatorRoleService
     }
 
     /**
-     * Aggiorna lo stato di un piano di navigazione (approva, rigetta o cancella).
+     * Aggiorna lo stato di un piano di navigazione (approva, rigetta).
      * Non permette l'aggiornamento di piani già approvati, rigettati o cancellati.
      * 
      * @param navPlan - Piano con nuovo stato e motivazione opzionale

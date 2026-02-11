@@ -54,9 +54,9 @@ In particolare, le utenze e le relative funzionalità ad esse permesse all'inter
         - può rigettare un piano di navigazione a patto che non si trovi già in stato di accepted/rejected/cancelled;
         - può creare una zona di navigazione probita a patto che la sua rotta non confligga con una zona già presente;
         - può modificare zone di navigazione proibita;
-        - può cancellare zone di navigazione proibita da esso create (non degli altri operatori); 
+        - può cancellare zone di navigazione proibita; 
     - amministratore (admin):
-        - può ricaricare i token di uno specifico utente (user) di una certa quantità.
+        - può ricaricare i token di uno specifico utente di una certa quantità.
 
 A livello tecnologico, il backend deve essere sviluppato in **Typescript**, facendo utilizzo dei framework:
 - **Express**: libreria per lo sviluppo di Web Applications e APIs;
@@ -125,39 +125,815 @@ Il costruttore privato va ad istanziare l'oggetto Sequelize e può essere chiama
 L'oggetto `SingletonDBConnection` viene istanziato all'interno di una variabile esportata chiamata `sequelize`, di cui `OrmModels` fa utilizzo per la connessione al database.
 
 ---
-##
+## API Reference
 Prima di procedere all'illustrazione della fase di progettazione, si vuole elencare le API che il backend in questione mette a disposizione.
 In particolare, di seguito verranno elencate le rotte con le funzionalità e ruolo dell'utenza ad esse associate.
 
-| Rotta                                                                                                                                    | Metodo HTTP | Ruolo autorizzato      | Descrizione                                                                                                                                                                                 |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| /login                                                                                                                                   | POST        | utente non autenticato | Ritorna il token JWT nell'header e tutto l'utente con messaggio di succcesso e dati utente.                                                                                                 |
-| /nonavzones                                                                                                                              | GET         | utente non autenticato | Visualizzare tutte le aree vietate.                                                                                                                                                         |
-| /navplans                                                                                                                                | POST        | utente                 | Crea la richiesta di autorizzazione per piano di navigazione;                                                                                                                               |
-| /navplans?status=pending&date_from=01/01/2026&date_to=30/01/2026&from=2025-12-01&to=2025-12-9&format=xml<br><br>/navplans?status=pending | GET         | utente                 | Visualizza i piani di navigazione, eventualmente filtrandoli per stato di approvazione, data inizio, data fine.<br>È possibile scegliere di visualizzare i risultati in formato JSON o XML. |
-| /navplans/:id<br><br>Es. /navplans/1                                                                                                     | DELETE      | utente                 | Cancellazione di una richiesta di approvazione piano di navigazione in stato di pending.                                                                                                    |
-| /navplans?status=pending                                                                                                                 | GET         | operatore              | Visualizza i piani di navigazione, eventualmente filtrandoli per stato di approvazione.                                                                                                     |
-| /navplans                                                                                                                                | PATCH       | operatore              | Approvare una richiesta piano di navigazione in stato di pending.                                                                                                                           |
-| /navplans                                                                                                                                | PATCH       | operatore              | Rigettare una richiesta piano di navigazione fornendo una motivazione.                                                                                                                      |
-| /nonavzones                                                                                                                              | POST        | operatore              | Creazione di un'area vietata.                                                                                                                                                               |
-| /nonavzones/:id                                                                                                                          | PATCH       | operatore              | Aggiornamento di un'area vietata.                                                                                                                                                           |
-| /nonavzones/:id                                                                                                                          | DELETE      | operatore              | Eliminazione di un'area vietata.                                                                                                                                                            |
-| /users                                                                                                                                   | PATCH       | amministratore         | Ricarica                                                                                                                                                                                    |
+### API Summary
+
+| Rotta | Metodo HTTP | Ruolo autorizzato | Descrizione |
+| :--- | :--- | :--- | :--- |
+| `/login` | POST | Utente non autenticato | Rotta di autenticazione. |
+| `/nonavzones` | GET | Utente non autenticato | Visualizza tutte le zone di navigazione proibite. |
+| `/navplans` | POST | Utente (user) | Crea la richiesta di navigazione / piano di navigazione in stato di *pending*. |
+| `/navplans?dateFrom=&dateTo&status=&format=` | GET | Utente (user) | Visualizza piani di navigazione con filtri opzionali su (stato, date inizio e fine) ed esportazione JSON/XML. |
+| `/navplans/:id` | DELETE | Utente (user) | Cancellazione di una propria richiesta in stato *pending*. |
+| `/navplans?status=` | GET | Operatore (user) | Visualizza i piani di navigazione di tutti gli utenti. (filtrabili eventualmente per stato) |
+| `/navplans/:id` | PATCH | Operatore | Approvazione/Rigetto di una richiesta/piano di navigazione in stato *pending*. |
+| `/nonavzones` | POST | Operatore | Creazione di una zona di navigazione proibita. |
+| `/nonavzones/:id` | PATCH | Operatore | Aggiornamento di una zona proibita esistente. (anche di altri operatori) |
+| `/nonavzones/:id` | DELETE | Operatore | Eliminazione di una zona proibita. (solo se creata inizialmente dall'operatore che ne fa richiesta) |
+| `/users` | PATCH | Amministratore | Ricarica del credito (token) per un utente specifico che non sia operatore/admin. |
+
+### API Reference Detail
+
+Elencare payload e API una ad una.
 
 ## 🏗 Progettazione
 In questa sezione vengono illustrati l'architettura logica e i flussi di sistema.
-### Diagramma dei Casi d'Uso (Use Case Diagram)
+### Diagramma dei Casi d'Uso
 ![Use Case Diagram](./readme-content/pa2425-univpm-usecase.png)
-### Diagrammi di Sequenza (Sequence Diagrams)
+### Diagrammi di Sequenza
+
+#### POST /login (Utente non autenticato)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant AuthController
+    participant AuthService
+    participant UserDAO
+    participant ErrorHandlerMiddleware
+    
+    %% Inizio
+    Client->>App: POST /login
+
+    App->>AuthMiddleware: finalizeLoginValidation(req, res)
+    
+    alt login validation failed
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.LOGIN_INVALID))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.LOGIN_INVALID)
+        ErrorHandlerMiddleware-->>App: HTTP Error Response (400)
+        App-->>Client: HTTP Error Response (400)
+    end
+
+    alt login validation success
+        
+        App ->> AuthController: login(req, res)
+        AuthController ->> AuthService: loginUser(email)
+        AuthService ->> UserDAO: read(email)
+
+        alt user not found
+            UserDAO -->> AuthService: null
+            AuthService -->> AuthController: throws AppLogicError(AppErrorName.INVALID_CREDENTIALS)
+            AuthController -->> App: next(AppLogicError(AppErrorName.INVALID_CREDENTIALS))
+            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_CREDENTIALS)
+            ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+            App -->> Client: HTTP Error Response (401)
+        end
+        
+        alt user found
+        UserDAO -->> AuthService: User
+        AuthService ->> AuthService: comparePassword(req.password, user.password)
+            alt wrong password
+                AuthService -->> AuthController: throws AppLogicError(AppErrorName.INVALID_CREDENTIALS)
+                AuthController -->> App: next(AppLogicError(AppErrorName.INVALID_CREDENTIALS))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_CREDENTIALS)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+                App -->> Client: HTTP Error Response (401)
+            end
+            alt correct password
+                AuthService ->> AuthService: createJwt(user.email, user.role)
+                AuthService -->> AuthController: JWT Token
+                AuthController -->> App: HTTP Success Response (200) + HTTP Body: {JWT Token, User}
+                App -->> Client: HTTP Success Response (200) + HTTP Body: JWT Token
+            end
+        end
+
+    end
+```
 
 
-Prima di mostrare i diagrammi di sequenza, fare una tabella contente tutte le rotte e relative funzionalità.
-* **Creazione e Validazione Piano**: Mostra il flusso dalla richiesta dell'utente al controllo del credito e della rotta rispetto alle zone proibite.
-* **Gestione Operatore**: Flusso di approvazione o rifiuto di una richiesta di navigazione.
 
 
+#### GET /nonavzones (Utente non autenticato)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant NoAuthController
+    participant NoAuthService
+    participant NoNavZoneDAO
+    participant ErrorHandlerMiddleware
 
----
+    Client ->> App: GET /nonavzones
+
+
+    App ->> NoAuthController: view(res, req)
+    NoAuthController ->> NoAuthService: viewNoNavZones()
+    NoAuthService ->> NoNavZoneDAO: readAll()
+
+    alt no navzone found
+    NoNavZoneDAO -->> NoAuthService: []
+    NoAuthService -->> NoAuthController: throws new AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND)
+    NoAuthController -->> App: AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND)
+    App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND)
+    ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+    App -->> Client: HTTP Error Response (404)
+    end 
+    alt at least one navzone found
+    NoNavZoneDAO -->> NoAuthService: [NoNavZones]
+    NoAuthService -->> NoAuthController: [NoNavZones]
+    NoAuthController -->> App: HTTP Success Response (200) + [NoNavZones]
+    App -->> Client: HTTP Success Response + [NoNavZones]
+
+    end
+```
+
+#### POST /navplans (Utente)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NavPlanMiddleware
+    participant UserRoleController
+    participant UserRoleService
+    participant UserDAO
+    participant NavPlanDAO
+    participant NoNavZoneDAO
+    participant ErrorHandlerMiddleware
+
+    Client->>App: POST /navplans
+
+    App->>AuthMiddleware: verifyJwt(req, res)
+    
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+
+    alt valid jwt
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+
+        end
+
+        alt valid role
+            AuthMiddleware -->> App: next()
+            App ->> NavPlanMiddleware: finalizeNavPlanCreateReq(req, res)
+
+            alt invalid navplan request
+                NavPlanMiddleware -->> App: next(AppLogicError(AppErrorName.NAVPLAN_REQ_INVALID))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_REQ_INVALID)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid navplan request
+                
+                NavPlanMiddleware -->> App: next()
+                App ->> UserRoleController: create(res, req)
+                UserRoleController ->> UserRoleService: createNavPlan(req.jwt, req.navPlan)
+                UserRoleService ->> UserRoleService: checkAndDecreaseTokens(userJwt.email, TokenPayment.REQ_TOTAL_COST)
+                UserRoleService ->> UserDAO: read(email)
+                UserDAO -->> UserRoleService: User
+                alt insufficient token
+                    UserRoleService -->> UserRoleService: checkAndDecreaseTokens throws AppLogicError(AppErrorName.INSUFFICIENT_TOKENS)
+                    UserRoleService -->> UserRoleController: AppLogicError(AppErrorName.INSUFFICIENT_TOKENS)
+                    UserRoleController -->> App: next(AppLogicError(AppErrorName.INSUFFICIENT_TOKENS))
+                    App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INSUFFICIENT_TOKENS)
+                    ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                    App -->> Client: HTTP Error Response (403)
+                end
+                
+                alt sufficient token
+                    UserRoleService ->> UserDAO: update(user)
+                    UserDAO -->> UserRoleService: User
+                    UserRoleService -->> UserRoleService: checkAndDecreaseTokens returns User
+                    
+                    UserRoleService ->> UserRoleService: checkReqDateStart(navPlan)
+                    alt invalid navplan date begin
+                        UserRoleService -->> UserRoleService: checkReqDateStart returns false
+                        UserRoleService ->> UserRoleService: addToken(user.email, TokenPayment.NAVPLAN_INVALID_REFUND)
+                        UserRoleService ->> UserDAO: update(user)
+                        UserDAO -->> UserRoleService: User
+                        UserRoleService -->> UserRoleService: addToken returns void
+                        UserRoleService -->> UserRoleController: throws AppLogicError(AppErrorName.INVALID_NAVPLAN_DATE)
+                        UserRoleController -->> App: next(AppLogicError(AppErrorName.INVALID_NAVPLAN_DATE))
+                        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_NAVPLAN_DATE)
+                        ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                    end
+
+                    alt valid navplan date begin
+                        UserRoleService -->> UserRoleService: checkReqDateStart returns true
+                        UserRoleService ->> UserRoleService: checkInNoNavZone(navPlan)
+                        UserRoleService ->> NoNavZoneDAO: readAll(noNavZoneQueryFilters)
+                        NoNavZoneDAO -->> UserRoleService: [{NoNavZones}]
+
+                        alt navplan with at least one point in one no_nav_zone
+                            UserRoleService -->> UserRoleService: checkInNoNavZone returns true
+                            UserRoleService ->> UserRoleService: addToken(user.email, TokenPayment.NAVPLAN_INVALID_REFUND)
+                            UserRoleService ->> UserDAO: update(user)
+                            UserDAO -->> UserRoleService: User
+                            UserRoleService -->> UserRoleService: addToken returns void
+                            UserRoleService -->> UserRoleController: throws AppLogicError(AppErrorName.FORBIDDEN_AREA_ERROR)
+                            UserRoleController -->> App: next(AppLogicError(AppErrorName.FORBIDDEN_AREA_ERROR))
+                            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.FORBIDDEN_AREA_ERROR)
+                            ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                            App -->> Client: HTTP Error Response (403)
+                        end
+
+                        alt navplan not in no no_nav_zones (navplan is valid)
+                            UserRoleService -->> UserRoleService: checkInNoNavZone returns false
+                            UserRoleService ->> UserRoleService: checkUserNavPlanConflict(navPlan)
+                            UserRoleService ->> NavPlanDAO: readAll(noNavZoneQueryFilters)
+                            NavPlanDAO -->> UserRoleService: [{NavPlans}]
+
+                            alt navplan conflict
+                                UserRoleService -->> UserRoleService: checkUserNavPlanConflict(navPlan) returns true
+                                UserRoleService ->> UserRoleService: addToken(user.email, TokenPayment.NAVPLAN_INVALID_REFUND)
+                                UserRoleService ->> UserDAO: update(user)
+                                UserDAO -->> UserRoleService: User
+                                UserRoleService -->> UserRoleService: addToken returns void
+                                UserRoleService -->> UserRoleController: throws AppLogicError(AppErrorName.NAVPLAN_CONFLICT)
+                                UserRoleController -->> App: next(AppLogicError(AppErrorName.NAVPLAN_CONFLICT))
+                                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_CONFLICT)
+                                ErrorHandlerMiddleware -->> App: HTTP Error Response (409)
+                                App -->> Client: HTTP Error Response (409)
+                            end
+                            alt no navplan conflict
+                                UserRoleService -->> UserRoleService: checkUserNavPlanConflict(navPlan) returns false
+                                UserRoleService -->> UserRoleController: NavPlan
+                                UserRoleController -->> App: HTTP Success Response (201) + {NavPlan,User}
+                                App -->> Client: HTTP Success Response (201) + {NavPlan,User}
+                            end
+
+                        end
+                        
+                    end
+                end
+            end
+        end
+    end
+```
+
+
+#### GET /navplans?dateFrom=&dateTo=&status=&format= (Utente e Operatore)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NavPlanMiddleware
+    participant UserOpRoleController
+    participant UserRoleService/OperatorRoleService
+    participant NavPlanDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: GET /navplans?date_from=27012023&date_to=30012023&status=pending&format=xml | GET /navplans?status=pending
+
+    App->>AuthMiddleware: verifyJwt(req, res)
+    
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+
+    alt valid jwt
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(jwt.role)
+
+        alt invalid role
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+
+        end
+
+        alt valid role
+            AuthMiddleware -->> App: next()
+            App ->> NavPlanMiddleware: finalizeViewNavPlanReq(req, res)
+        
+            alt invalid view request
+                NavPlanMiddleware -->> App: next(AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_VIEW_REQ_INVALID)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid view request
+                NavPlanMiddleware -->> App: next()
+                App ->> UserOpRoleController: view(res, req)
+                UserOpRoleController ->> UserRoleService/OperatorRoleService: viewNavPlans(jwt.email, req.navplan) | viewNavPlans(req.navplan) 
+                UserRoleService/OperatorRoleService ->> NavPlanDAO: readAll(navplan)
+                alt no navplans found
+                NavPlanDAO -->> UserRoleService/OperatorRoleService: []
+                UserRoleService/OperatorRoleService -->> UserOpRoleController: throws AppLogicError(AppErrorName.NAVPLAN_VIEW_NOT_FOUND)
+                UserOpRoleController -->> App: AppLogicError(AppErrorName.NAVPLAN_VIEW_NOT_FOUND)
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_VIEW_NOT_FOUND)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+                App -->> Client: HTTP Error Response (404)
+                end
+
+                alt navplans found
+                    NavPlanDAO -->> UserRoleService/OperatorRoleService: [NavPlans]
+                    UserRoleService/OperatorRoleService -->> UserOpRoleController: [NavPlans]
+                    UserOpRoleController -->> App: HTTP Success Reponse (200) + [NavPlans]
+                    App -->> Client: HTTP Success Response (200) + [NavPlans]
+                end
+            end
+        end
+
+    end
+```
+
+#### DELETE /navplans/:id (Utente)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NavPlanMiddleware
+    participant UserRoleController
+    participant UserRoleService
+    participant UserDAO
+    participant NavPlanDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: DELETE /navPlan/:id
+    App ->> AuthMiddleware: NavPlanMiddleware: verifyJwt(req, res)
+
+    alt invalid jwt | jwt expired
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware ->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+    
+    alt valid jwt
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+        end
+
+        alt valid role
+
+            AuthMiddleware -->> App: next()
+            App ->> NavPlanMiddleware: validateDelReq(res, req)
+            
+            alt invalid delete request
+                NavPlanMiddleware -->> App: next(AppLogicError(AppErrorName.NAVPLAN_DEL_REQ_INVALID))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_DEL_REQ_INVALID)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid delete request
+                NavPlanMiddleware -->> App: next()
+                App ->> UserRoleController: delete(req.jwt.email,navPlan.id)
+                UserRoleController ->> UserRoleService: deleteNavPlan(req.jwt.email, req.navPlan.id)
+                UserRoleService ->> UserDAO: read(email)
+                UserDAO -->> UserRoleService: User
+                UserRoleService ->> NavPlanDAO: read(navPlanId)
+
+                alt navplan does not exists
+                    NavPlanDAO -->> UserRoleService: null
+                    UserRoleService -->> UserRoleController: throws AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND)
+                    UserRoleController -->> App: AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND)
+                    App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND)
+                    ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+                    App -->> Client: HTTP Error Response (404)
+                end
+
+                alt navplan exists
+                        alt user is not owner
+                            NavPlanDAO -->> UserRoleService: NavPlan
+                            UserRoleService -->> UserRoleController: throws AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE)
+                            UserRoleController -->> App: next(AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE))
+                            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE)
+                            ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                            App -->> Client: HTTP Error Response (403)
+                        end
+
+                        alt user is owner
+                            alt navPlan not in pending state
+                                NavPlanDAO -->> UserRoleService: NavPlan
+                                UserRoleService -->> UserRoleController: throws AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE)
+                                UserRoleController -->> App: AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE)
+                                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.FORBIDDEN_NAVPLAN_DELETE)
+                                ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                                App -->> Client: HTTP Error Response (403)
+                            end
+                            alt state pending
+                                UserRoleService ->> NavPlanDAO: update(req.navPlan.id)
+                                NavPlanDAO -->> UserRoleService: NavPlan
+                                UserRoleService -->> UserRoleController: void
+                                UserRoleController -->> App: HTTP Success Reponse (204)
+                                App -->> Client: HTTP Success Reponse (204)
+                            end
+                        end
+                end
+            end
+        end
+
+    end
+
+```
+
+#### PATCH /navplans/:id (Operatore)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NavPlanMiddleware
+    participant OperatorRoleController
+    participant OperatorRoleService
+    participant NavPlanDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: PATCH /navplans/:id
+    App ->> AuthMiddleware: verifyJwt(req, res)
+
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+
+    alt valid jwt
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+            AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+            ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+            App -->> Client: HTTP Error Response (401)
+        end
+
+        alt valid role
+            AuthMiddleware -->> App: next()
+            App ->> NavPlanMiddleware: finalizeNavPlanUpd(res, req)
+
+
+            alt invalid approve request
+                NavPlanMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_NAVPLAN_UPDATE_REQ))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_NAVPLAN_UPDATE_REQ)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid approve request
+                NavPlanMiddleware -->> App: next()
+                App ->> OperatorRoleController: approve(res, req)
+                OperatorRoleController ->> OperatorRoleService: updateNavPlan(req.navPlan)
+                OperatorRoleService ->> NavPlanDAO: read(navPlan.id)
+                
+
+                alt no navplan found
+                        NavPlanDAO -->> OperatorRoleService: null
+                        OperatorRoleService -->> OperatorRoleController: throws AppLogicError(AppErrorName.NAVPLAN_UPD_NOT_FOUND)
+                        OperatorRoleController -->> App: next(AppLogicError(AppErrorName.NAVPLAN_UPD_NOT_FOUND))
+                        App ->> ErrorHandlerMiddleware: 
+                        ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+                        App -->> Client: HTTP Error Response (404)
+                end
+
+                alt navplan found
+                    NavPlanDAO -->> OperatorRoleService: NavPlan
+
+                    alt navplan in approved|rejected|cancelled state
+                        OperatorRoleService -->> OperatorRoleController: throws AppErrorLogic(AppErrorName.FORBIDDEN_NAVPLAN_UPDATE)
+                        OperatorRoleController -->> App: AppErrorLogic(AppErrorName.FORBIDDEN_NAVPLAN_UPDATE)
+                        App ->> ErrorHandlerMiddleware: AppErrorLogic(AppErrorName.FORBIDDEN_NAVPLAN_UPDATE)
+                        ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                        App -->> Client: HTTP Error Response (403)
+                    end
+
+                    alt navplan in pending state
+                        OperatorRoleService ->> NavPlanDAO: update(navplan)
+                        NavPlanDAO -->> OperatorRoleService: NavPlan
+                        OperatorRoleService -->> OperatorRoleController: NavPlan
+                        OperatorRoleController -->> App: HTTP Success Message (200) + NavPlan
+                        App -->> Client: HTTP Success Message (200) + NavPlan
+                    end
+                end
+            end
+        end
+    end
+```
+
+#### POST /nonavzones (Operatore)
+
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NoNavZoneMiddleware
+    participant OperatorRoleController
+    participant OperatorRoleService
+    participant UserDAO
+    participant NoNavZoneDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: POST /nonavzones
+    App ->> AuthMiddleware: verifyJwt()
+
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+
+    alt valid jwt
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+            AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+            ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+            App -->> Client: HTTP Error Response (401)
+        end
+
+        alt valid role
+
+            AuthMiddleware -->> App: next()
+            App ->> NoNavZoneMiddleware: finalizeNoNavZoneCreation(req, res)
+            
+            alt invalid creation req
+                NoNavZoneMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_NONAVPLAN_CREATE_REQ))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_NONAVPLAN_CREATE_REQ)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid creation req
+                NoNavZoneMiddleware -->> App: next()
+                App ->> OperatorRoleController: createNoNavZone(res, req)
+                OperatorRoleController ->> OperatorRoleService: createNoNavZone(req.jwt.email, req.noNavZone)
+                OperatorRoleService ->> UserDAO: read(email)
+                UserDAO -->> OperatorRoleService: User
+                OperatorRoleService ->> NoNavZoneDAO: readAll(navPlanToSearch)
+
+                alt existing nonavzone (same route)
+                    NoNavZoneDAO -->> OperatorRoleService: NoNavZone
+                    OperatorRoleService -->> OperatorRoleController: throws AppLogicError(AppErrorName.NONAVZONE_CONFLICT)
+                    OperatorRoleController -->> App: next(AppLogicError(AppErrorName.NONAVZONE_CONFLICT))
+                    App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NONAVZONE_CONFLICT)
+                    ErrorHandlerMiddleware -->> App: HTTP Error Response (403)
+                    App -->> Client: HTTP Error Response (403)
+                end
+
+                alt navzone not existing
+                    NoNavZoneDAO -->> OperatorRoleService: []
+                    OperatorRoleService ->> NoNavZoneDAO: create(nonavzone)
+                    NoNavZoneDAO -->> OperatorRoleService: NoNavZone
+                    OperatorRoleService -->> OperatorRoleController: NoNavZone
+                    OperatorRoleController -->> App: HTTP Success Response (201) + NoNavZone
+                    App -->> Client: HTTP Success Response (201) + NoNavZone
+                end
+            end
+        end 
+        
+    end
+```
+
+#### PATCH /nonavzones/:id (Operatore)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NoNavZoneMiddleware
+    participant OperatorRoleController
+    participant OperatorRoleService
+    participant NoNavZoneDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: PATCH /nonavzones/:id
+    App ->> AuthMiddleware: verifyJwt()
+
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+
+    alt valid jwt
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+            AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+            ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+            App -->> Client: HTTP Error Response (401)
+        end
+        alt valid role
+
+            AuthMiddleware -->> App: next()
+            App ->> NoNavZoneMiddleware: finalizeNoNavZoneUpdate(req, res)
+            
+            alt invalid update req
+                NoNavZoneMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_NONAVPLAN_UPDATE_REQ))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_NONAVPLAN_UPDATE_REQ)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid update req
+                NoNavZoneMiddleware -->> App: next()
+                App ->> OperatorRoleController: updateNoNavZone(res, req)
+                OperatorRoleController ->> OperatorRoleService: updateNoNavZone(req.noNavZone)
+                OperatorRoleService ->> NoNavZoneDAO: update(noNavZoneToSearch)
+                
+                alt not existing nonavzone
+                    NoNavZoneDAO -->> OperatorRoleService: null
+                    OperatorRoleService -->> OperatorRoleController: throws AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND)
+                    OperatorRoleController -->> App: next(AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND))
+                    App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NONAVZONE_NOT_FOUND)
+                    ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+                    App -->> Client: HTTP Error Response (404)
+                end
+
+                alt navzone update success
+                    NoNavZoneDAO -->> OperatorRoleService: NoNavZone
+                    OperatorRoleService -->> OperatorRoleController: NoNavZone
+                    OperatorRoleController -->> App: HTTP Success Response (200) + NoNavZone
+                    App -->> Client: HTTP Success Response (200) + NoNavZone
+                end
+            end
+        end
+    end
+```
+
+#### DELETE /nonavzones/:id (Operatore)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant NoNavZoneMiddleware
+    participant OperatorRoleController
+    participant OperatorRoleService
+    participant NoNavZoneDAO
+    participant UserDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: DELETE /nonavzones/:id
+    App ->> AuthMiddleware: verifyJwt()
+
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+
+    alt valid jwt
+
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+            AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+            ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+            App -->> Client: HTTP Error Response (401)
+        end
+        
+        alt valid role
+            AuthMiddleware -->> App: next()
+            App ->> NoNavZoneMiddleware: finalizeNoNavZoneDelete(req, res)
+            
+            alt invalid deletion req
+                NoNavZoneMiddleware -->> App: next(AppLogicError(AppErrorName.NONAVPLAN_DEL_REQ_INVALID))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NONAVPLAN_DEL_REQ_INVALID)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+
+            alt valid deletion req
+                NoNavZoneMiddleware -->> App: next()
+                App ->> OperatorRoleController: deleteNoNavZone(res, req)
+                OperatorRoleController ->> OperatorRoleService: deleteNoNavZone(req.noNavZone, req.jwt?.email)
+                OperatorRoleService ->> UserDAO: read(email)
+                UserDAO --> OperatorRoleService: User
+                OperatorRoleService ->> NoNavZoneDAO: delete(noNavZoneToDelete)
+                
+                alt not existing nonavzone
+                    NoNavZoneDAO -->> OperatorRoleService: false
+                    OperatorRoleService -->> OperatorRoleController: throws AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND)
+                    OperatorRoleController -->> App: next(AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND))
+                    App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.NAVPLAN_DEL_NOT_FOUND)
+                    ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+                    App -->> Client: HTTP Error Response (404)
+                end
+
+                alt navzone deletion success
+                    NoNavZoneDAO -->> OperatorRoleService: 1
+                    OperatorRoleService -->> OperatorRoleController: 1
+                    OperatorRoleController -->> App: HTTP Success Response (204)
+                    App -->> Client: HTTP Success Response (204)
+                end
+            end
+        end 
+        
+    end
+```
+
+#### PATCH /users/:id (Amministratore)
+```mermaid
+sequenceDiagram
+    actor Client
+    participant App
+    participant AuthMiddleware
+    participant UserMiddleware
+    participant AdminRoleController
+    participant AdminRoleService
+    participant UserDAO
+    participant ErrorHandlerMiddleware
+
+    Client ->> App: PATCH /users/:id
+
+    App ->> AuthMiddleware: verifyJwt(req, res)
+    alt invalid jwt
+        AuthMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_JWT))
+        App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_JWT)
+        ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+        App -->> Client: HTTP Error Response (401)
+    end
+    alt valid jwt
+
+
+        AuthMiddleware -->> App: next()
+        App ->> AuthMiddleware: checkRole(req, res)
+
+        alt invalid role
+            AuthMiddleware -->> App: next(AppLogicError(AppErrorName.UNAUTHORIZED_JWT))
+            App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.UNAUTHORIZED_JWT)
+            ErrorHandlerMiddleware -->> App: HTTP Error Response (401)
+            App -->> Client: HTTP Error Response (401)
+        end
+
+        alt valid role
+            AuthMiddleware ->> App: next()
+            App ->> UserMiddleware: finalizeChargeUserToken(req, res)
+            alt token req invalid
+                UserMiddleware -->> App: next(AppLogicError(AppErrorName.INVALID_TOKEN_CHARGE_REQ))
+                App ->> ErrorHandlerMiddleware: AppLogicError(AppErrorName.INVALID_TOKEN_CHARGE_REQ)
+                ErrorHandlerMiddleware -->> App: HTTP Error Response (400)
+                App -->> Client: HTTP Error Response (400)
+            end
+            alt token req valid
+                UserMiddleware -->> App: next()
+                App ->> AdminRoleController: load(req, res)
+                AdminRoleController ->> AdminRoleService: chargeToken(user)
+                AdminRoleService ->> UserDAO: update()
+                
+                alt not existing user
+                    UserDAO -->> AdminRoleService: null
+                    AdminRoleService -->> AdminRoleController: throws new AppLogicError(AppErrorName.USER_NOT_FOUND);
+                    AdminRoleController -->> App: next(new AppLogicError(AppErrorName.USER_NOT_FOUND);)
+                    App ->> ErrorHandlerMiddleware: new AppLogicError(AppErrorName.USER_NOT_FOUND);
+                    ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
+                    App -->> Client: HTTP Error Response (404)
+                end
+
+                alt existing user
+                    UserDAO -->> AdminRoleService: User
+                    AdminRoleService -->> AdminRoleController: User
+                    AdminRoleController -->> App: HTTP Success Response (200) + {User}
+                    App -->> Client: HTTP Success Response (200) + {User}
+                end
+            end
+        end
+    end
+```
 
 
 

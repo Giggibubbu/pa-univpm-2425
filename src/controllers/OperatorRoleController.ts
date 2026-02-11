@@ -62,8 +62,6 @@ export class OperatorRoleController
                 res.status(message.statusCode).json(message)
             }
         }
-        
-        res.status(200).json()
     }
 
     /**
