@@ -1538,7 +1538,7 @@ sequenceDiagram
                 alt not existing user
                     UserDAO -->> AdminRoleService: null
                     AdminRoleService -->> AdminRoleController: throws new AppLogicError(AppErrorName.USER_NOT_FOUND)
-                    AdminRoleController -->> App: next(new AppLogicError(AppErrorName.USER_NOT_FOUND);)
+                    AdminRoleController -->> App: next(new AppLogicError(AppErrorName.USER_NOT_FOUND))
                     App ->> ErrorHandlerMiddleware: new AppLogicError(AppErrorName.USER_NOT_FOUND);
                     ErrorHandlerMiddleware -->> App: HTTP Error Response (404)
                     App -->> Client: HTTP Error Response (404)
