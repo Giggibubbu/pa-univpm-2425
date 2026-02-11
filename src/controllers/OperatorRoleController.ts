@@ -82,7 +82,6 @@ export class OperatorRoleController
                 const message = successFactory(AppSuccessName.NONAVZONE_DELETED, {deleted});
                 res.status(message.statusCode).json();
             }
-            res.status(200).json()
         }
         
     }

@@ -1,16 +1,17 @@
 # Download immagine base di Node.js
 FROM node:24-bookworm-slim
+
 # Imposta la directory di lavoro del container
 WORKDIR /usr/app
+
 # Copia il contenuto della root di progetto nella directory di lavoro del container
 COPY . .
-# Installa le dipendenze del progetto
-RUN apt update -y
-RUN apt install openssh-client openssl -y
-RUN mkdir -p /usr/app/keys
-RUN echo y | ssh-keygen -t rsa -b 4096 -m PEM -f ./keys/jwtRS256.key -N ""
-RUN openssl rsa -in ./keys/jwtRS256.key -pubout -out ./keys/jwtRS256.key.pub.pem
+
+# Installa dipendenze di progetto
 RUN npm install
 
+# Compilazione del progetto
 RUN npm run build
+
+# Run di node a patto che si sia avviato PostgreSQL server
 CMD ["./wait-for-it.sh", "pa-dbpg-web-node:5432", "-t", "60", "--", "npm", "run", "start"]

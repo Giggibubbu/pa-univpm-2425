@@ -12,6 +12,11 @@ export class SequelizeDbConnection
     private static instance:SequelizeDbConnection|null = null;
     private sequelize: Sequelize;
 
+    /**
+     * Inizializza l'istanza di Sequelize utilizzando le variabili d'ambiente.
+     * Il costruttore è privato per impedire l'istanziazione multipla e garantire
+     * l'integrità del pattern Singleton.
+     */
     private constructor()
     {
         this.sequelize = new Sequelize(
@@ -25,6 +30,12 @@ export class SequelizeDbConnection
         );
     }
 
+    /**
+     * Recupera l'istanza unica della connessione al database.
+     * Se l'istanza non esiste, viene creata; altrimenti viene restituita quella già attiva.
+     * @returns L'istanza dell'ORM Sequelize pronta per l'esecuzione delle query.
+     */
+
     public static getInstance(): Sequelize
     {
         if(!SequelizeDbConnection.instance) {
@@ -32,10 +43,7 @@ export class SequelizeDbConnection
         }
         return SequelizeDbConnection.instance.sequelize;
     }
-    public static async authenticate(): Promise<void>
-    {
-        await this.instance?.sequelize.authenticate();
-    }
+
 }
 
 export const sequelize = SequelizeDbConnection.getInstance();

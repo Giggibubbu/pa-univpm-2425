@@ -8,6 +8,5 @@ docker-compose-*.yml
 README.md
 sql/
 docker-scripts/
-passwords.txt
-keys.old
-*eslint
+node_modules/
+readme-content

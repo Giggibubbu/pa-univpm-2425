@@ -20,21 +20,4 @@ export class OrmModels
   {
     return initModels(sequelize);
   }
-
-  /**
-   * Verifica lo stato della connessione al database
-   * eseguendo un test di autenticazione verso il server PostgreSQL.
-   */
-  public static async authenticate(): Promise<void>
-  {
-    try
-    {
-      await sequelize.authenticate();
-    }
-    catch(e)
-    {
-      console.log("Errore di connessione al database", e);
-    }
-      
-  }
 }
