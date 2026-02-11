@@ -1,10 +1,15 @@
 import { Op, WhereOptions } from "sequelize";
 import { OrmModels } from "../db/OrmModels";
 import { NavPlanReqStatus } from "../enum/NavPlanReqStatus";
-import { IDao } from "../interfaces/dao/IDAO";
-import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter";
+import { IDao } from "../interfaces/db/IDAO";
+import { NavPlanQueryFilter } from "../interfaces/db/NavPlanQueryFilter";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
 
+/**
+ * Data Access Object (DAO) per la gestione delle richieste di navigazione.
+ * Fornisce i metodi per l'interazione, per il tramite di Sequelize
+ * con la tabella delle richieste/piani di navigazione nel database.
+ */
 
 export class NavPlanDAO implements IDao<NavigationRequestAttributes>
 {
@@ -13,6 +18,12 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
     {
         this.navReqModel = OrmModels.initModels().NavigationRequest;
     }
+
+    /**
+     * Crea una nuova richiesta/piano di navigazione nel database.
+     * @param item Oggetto contenente gli attributi della richiesta da creare.
+     * @returns Una promessa che risolve con l'istanza della richiesta/piano creata/o.
+     */
     async create(item: NavigationRequestAttributes): Promise<NavigationRequestAttributes> {
         return await this.navReqModel.create({
             userId: item.userId,
@@ -23,9 +34,21 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
             navigationPlan: item.navigationPlan
         });
     }
+
+    /**
+     * Recupera una singola richiesta/piano di navigazione tramite il suo ID.
+     * @param field L'identificativo univoco della richiesta.
+     * @returns L'istanza trovata o null se non corrispondente ad alcun record.
+     */
     async read(field: number): Promise<NavigationRequestAttributes | null> {
         return await this.navReqModel.findOne({where: {id: field}});
     }
+
+    /**
+     * Recupera una lista di richieste di navigazione basata su filtri opzionali.
+     * @param item Oggetto contenente i parametri di filtraggio.
+     * @returns Un array di richieste di navigazione che soddisfano i criteri.
+     */
     async readAll(item?: NavPlanQueryFilter): Promise<NavigationRequestAttributes[]> {
         item = item?? {}
         const whereClause: WhereOptions<NavigationRequestAttributes> = {};
@@ -78,6 +101,11 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
         }
     }
 
+    /**
+     * Aggiorna lo solo lo stato o lo stato e la motivazione (se valorizzata) di una richiesta esistente.
+     * @param item Oggetto contenente l'ID della richiesta e i campi da modificare.
+     * @returns L'istanza aggiornata o null se l'ID non è stato trovato.
+     */
     async update(item: NavigationRequestAttributes|NavPlanQueryFilter): Promise<NavigationRequestAttributes | null> {
         if('dateFrom' in item && !Array.isArray(item.status) && item.motivation)
         {
@@ -115,6 +143,11 @@ export class NavPlanDAO implements IDao<NavigationRequestAttributes>
     }
 
  
+    /**
+     * Rimuove una richiesta di navigazione dal sistema.
+     * @param item ID numerico della richiesta o l'intero oggetto attributi.
+     * @returns Esito dell'operazione di eliminazione.
+     */
     async delete(item: NavigationRequestAttributes | number): Promise<boolean> {
         let affectedCount: number;
         switch(true)

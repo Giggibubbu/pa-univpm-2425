@@ -4,9 +4,20 @@ import { AppLogicError } from "../errors/AppLogicError";
 import { AppErrorName } from "../enum/AppErrorName";
 import { HTTPError } from "../errors/HTTPError";
 
+/**
+ * Test jest per il middleware di gestione errori.
+ * Verifica la corretta trasformazione degli errori in risposte HTTP standardizzate.
+ */
+
 let req: Partial<Request>;
 let res: Partial<Response>;
 let next: NextFunction;
+
+/**
+ * Test del middleware errorHandler.
+ * Verifica che diversi tipi di errore vengano convertiti correttamente in HTTPError.
+ * Ulteriore verifica dello statusCode che sarà presente nell'header della risposta.
+ */
 
 describe("errorHandler Middleware testing", () => {
     
@@ -26,7 +37,7 @@ describe("errorHandler Middleware testing", () => {
 
     })
 
-    it("caso AppLogicError", () => {
+    it("caso HTTPError", () => {
 
         errorHandler(new HTTPError(403, "pippo", "message"), req as Request, res as Response, next)
 

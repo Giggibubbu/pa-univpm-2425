@@ -4,6 +4,10 @@ import { HTTPUser } from "../interfaces/http-requests/UserLogin";
 import { AdminRoleService } from "../services/AdminRoleService";
 import { Request, Response } from "express";
 
+/**
+ * Controller per la gestione delle risposte HTTP per quanto concerne
+ * le operazioni effettuabili dall'admin. (es. ricarica token)
+ */
 
 export class AdminRoleController
 {

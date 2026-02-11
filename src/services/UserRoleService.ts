@@ -14,16 +14,13 @@ import { TokenPayment } from "../enum/TokenPayment";
 import { UserTokenInterface } from "../interfaces/UserTokenInterface";
 import { LineString, Position } from "geojson";
 import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
-import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter";
+import { NavPlanQueryFilter } from "../interfaces/db/NavPlanQueryFilter";
 
 /**
- * Service class for managing user roles functionality.
- * 
- * Handles business logic related to user functionalities (create navplans, delete navplans, get navplans with pending state).
- * 
- * Integrates with UserDAO, NavPlanDAO, and NoNavZoneDAO for data persistence.
- * 
- * @class UserRoleService
+ * Service per la gestione delle operazioni riservate agli utenti autenticati.
+ * Gestisce creazione, visualizzazione ed eliminazione dei piani di navigazione,
+ * inclusa la validazione delle rotte e la gestione dei token che possono
+ * essere ricondotte a logiche di business.
  */
 export class UserRoleService
 {
@@ -39,12 +36,13 @@ export class UserRoleService
 
 
     /**
-     * Checks if a user has sufficient tokens and decreases their token balance by the specified cost.
-     * @param user - The JWT user object containing user identification information
-     * @param cost - The number of tokens to deduct from the user's balance
-     * @returns A promise that resolves to the updated user attributes
-     * @throws {AppLogicError} Throws INSUFFICIENT_TOKENS error if user has less than 7 tokens
-     * @throws {AppLogicError} Throws INTERNAL_SERVER_ERROR if user is not found or update fails
+     * Verifica che l'utente abbia token sufficienti e scala il costo specificato.
+     * 
+     * @param user - Dati JWT dell'utente
+     * @param cost - Numero di token da scalare
+     * @returns L'utente aggiornato con il nuovo saldo token
+     * @throws {AppLogicError} INSUFFICIENT_TOKENS se l'utente ha meno di cost token
+     * @throws {AppLogicError} INTERNAL_SERVER_ERROR se l'utente non esiste o l'aggiornamento fallisce
      */
     private checkAndDecreaseToken = async (user:UserJwt, cost: TokenPayment):Promise<UserAttributes> =>
     {
@@ -52,7 +50,7 @@ export class UserRoleService
         
         if(userUpdated !== null)
         {
-            if(userUpdated.tokens < 7)
+            if(userUpdated.tokens < cost)
             {
                 throw new AppLogicError(AppErrorName.INSUFFICIENT_TOKENS);
             }
@@ -76,6 +74,13 @@ export class UserRoleService
         }
     }
 
+    /**
+     * Verifica se il piano di navigazione attraversa zone proibite.
+     * Controlla ogni punto della rotta per determinare se cade all'interno di zone proibite attive.
+     * 
+     * @param navPlan - Piano di navigazione da verificare
+     * @returns true se la rotta attraversa zone proibite, false altrimenti
+     */
     private checkInNoNavZone = async (navPlan: NavPlan):Promise<boolean> =>
     {
         const noNavZoneQueryFilters: NavigationRequestAttributes = {
@@ -110,6 +115,13 @@ export class UserRoleService
         return false;
     }
 
+     /**
+     * Verifica che la data di inizio del piano sia almeno 48 ore dopo la data di richiesta.
+     * 
+     * @param navPlan - Piano di navigazione da validare
+     * @returns true se la data è valida (>48h), false altrimenti
+     * @throws {AppLogicError} INTERNAL_SERVER_ERROR se le date mancano
+     */
     private checkReqDateStart = (navPlan: NavPlan):boolean =>
     {
         let isReqDateValid: boolean;
@@ -126,6 +138,15 @@ export class UserRoleService
         return isReqDateValid;
     }
 
+     /**
+     * Verifica se l'utente ha già piani di navigazione approvati o in sospeso
+     * che si sovrappongono temporalmente con il nuovo piano.
+     * 
+     * @param user - Utente richiedente
+     * @param navPlan - Piano di navigazione da verificare
+     * @returns true se esiste conflitto temporale, false altrimenti
+     */
+
     private checkUserNavPlanConflict = async (user: UserAttributes, navPlan: NavPlan): Promise<boolean> =>
     {
         const navPlanFilters: NavPlanQueryFilter = {
@@ -135,10 +156,17 @@ export class UserRoleService
             status: [NavPlanReqStatus.APPROVED, NavPlanReqStatus.PENDING]
         }
         const navPlans = await this.navPlanDao.readAll(navPlanFilters);
-
         
         return navPlans.length > 0;
     }
+
+    /**
+     * Aggiunge token al saldo dell'utente (usato per rimborsi).
+     * 
+     * @param user - Utente a cui aggiungere i token
+     * @param tokens - Numero di token da aggiungere
+     * @throws {AppLogicError} INTERNAL_SERVER_ERROR se l'aggiornamento fallisce
+     */
 
     private addToken = async (user: UserAttributes, tokens: TokenPayment): Promise<void> => 
     {
@@ -149,6 +177,21 @@ export class UserRoleService
             throw new AppLogicError(AppErrorName.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Crea un nuovo piano di navigazione.
+     * Effettua validazioni complete: token sufficienti, data valida (>48h),
+     * assenza in zone proibite e conflitti temporali.
+     * In caso di validazione fallita, rimborsa i token all'utente.
+     * 
+     * @param user - Dati JWT dell'utente richiedente
+     * @param navPlan - Piano di navigazione da creare
+     * @returns Tupla con il piano creato e il nuovo saldo token dell'utente
+     * @throws {AppLogicError} INSUFFICIENT_TOKENS se i token sono insufficienti
+     * @throws {AppLogicError} INVALID_NAVPLAN_DATE se la data è < 48h dalla richiesta
+     * @throws {AppLogicError} FORBIDDEN_AREA_ERROR se la rotta attraversa zone proibite
+     * @throws {AppLogicError} NAVPLAN_CONFLICT se esiste sovrapposizione temporale
+     */
 
     createNavPlan = async (user: UserJwt, navPlan: NavPlan): Promise<[NavPlan, UserTokenInterface]> => {
         
@@ -220,6 +263,16 @@ export class UserRoleService
         
     }
 
+    /**
+     * Elimina (cancella) un piano di navigazione dell'utente.
+     * Solo piani in stato PENDING possono essere cancellati.
+     * 
+     * @param email - Email dell'utente richiedente
+     * @param navPlanId - ID del piano da eliminare
+     * @throws {AppLogicError} NAVPLAN_DEL_NOT_FOUND se il piano non esiste
+     * @throws {AppLogicError} FORBIDDEN_NAVPLAN_DELETE se il piano non appartiene all'utente o non è PENDING
+     */
+
     deleteNavPlan = async (email: string, navPlanId: number): Promise<void> =>
     {
         const userDeletionReq = await this.userDao.read(email);
@@ -254,6 +307,15 @@ export class UserRoleService
 
 
     }
+
+    /**
+     * Recupera i piani di navigazione dell'utente con filtri opzionali.
+     * 
+     * @param email - Email dell'utente
+     * @param query - Filtri di ricerca (status, date, ecc.)
+     * @returns Lista dei piani di navigazione dell'utente
+     * @throws {AppLogicError} NAVPLAN_VIEW_NOT_FOUND se non ci sono piani che corrispondono ai filtri
+     */
 
     viewNavPlan = async (email: string, query: ViewNavPlanQS):Promise<NavPlan[]> => {
         const user = await this.userDao.read(email);

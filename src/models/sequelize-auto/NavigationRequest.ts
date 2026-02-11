@@ -21,6 +21,22 @@ export type NavigationRequestId = NavigationRequest[NavigationRequestPk];
 export type NavigationRequestOptionalAttributes = "id" | "status" | "submittedAt" | "motivation";
 export type NavigationRequestCreationAttributes = Optional<NavigationRequestAttributes, NavigationRequestOptionalAttributes>;
 
+/**
+ * Modello sequelize per le richieste di navigazione effettuate dagli utenti.
+ * Consente di mappare la tabella 'navigation_requests' del database con il modello.
+ * * @class NavigationRequest
+ * Attributi tabella - modello:
+ * - id: identificatore univoco e chiave primaria della richiesta.
+ * - userId: identificativo dell'utente che ha creato la richiesta.
+ * - status: stato della richiesta
+ * - submittedAt: data e ora di invio della richiesta al sistema.
+ * - dateStart: data e ora di inizio navigazione.
+ * - dateEnd: data e ora di fine navigazione.
+ * - droneId: codice identificativo del drone con cui la navigazione verrà effettuata.
+ * - navigationPlan: geometria del percorso di navigazione.
+ * - motivation: motivazione di rigetto della richiesta di navigazione.
+ */
+
 export class NavigationRequest extends Model<NavigationRequestAttributes, NavigationRequestCreationAttributes> implements NavigationRequestAttributes {
   id!: number;
   userId!: number;

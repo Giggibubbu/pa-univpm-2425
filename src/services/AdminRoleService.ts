@@ -1,4 +1,3 @@
-import { Console } from "console";
 import { UserDAO } from "../dao/UserDAO";
 import { AppErrorName } from "../enum/AppErrorName";
 import { AuthRoles } from "../enum/AuthRoles";
@@ -7,6 +6,11 @@ import { AdminChargeToken } from "../interfaces/http-requests/AdminChargeToken";
 import { HTTPUser } from "../interfaces/http-requests/UserLogin";
 import { UserAttributes } from "../models/sequelize-auto/User";
 
+/**
+ * Service per la gestione delle operazioni amministrative.
+ * Gestisce funzionalità riservate agli amministratori come la ricarica dei token.
+ */
+
 export class AdminRoleService
 {
     private userDao: UserDAO;
@@ -14,6 +18,16 @@ export class AdminRoleService
     {
         this.userDao = userDao
     }
+
+    /**
+     * Ricarica i token di un utente.
+     * Aggiunge i token specificati al saldo esistente dell'utente.
+     * 
+     * @param user - Dati della ricarica. (ID utente e quantità di token da aggiungere)
+     * @returns L'utente aggiornato con il nuovo saldo token.
+     * @throws {AppLogicError} USER_NOT_FOUND se l'utente non esiste.
+     * @throws {AppLogicError} INTERNAL_SERVER_ERROR se l'utente non ha il campo tokens.
+     */
 
     chargeToken = async (user: AdminChargeToken):Promise<HTTPUser> => {
         

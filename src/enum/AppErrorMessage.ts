@@ -1,3 +1,7 @@
+/**
+ * Messaggi con cui viene popolata la risposta HTTP di operazioni concluse in stato di errore
+ * (causa violazione logiche di business o in generale operazioni non permesse).
+ */
 export enum AppErrorMessage {
     INVALID_JWT="Il token di autenticazione non è valido.",
     INVALID_CREDENTIALS="Le credenziali inserite non sono corrette.",

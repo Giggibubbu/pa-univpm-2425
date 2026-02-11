@@ -1,37 +1,28 @@
 import { body, param } from "express-validator";
 import { DateCompareConst } from "../enum/DateCompareConst";
 
-export const validateDate = (date: string) => {
-    return body(date)
-    .exists()
-    .withMessage("Il campo non contiene alcun valore.").bail()
-    .isString()
-    .withMessage("Il campo non è una stringa.").bail()
-    .notEmpty()
-    .withMessage("Il campo contiene una stringa vuota.").bail()
-    .customSanitizer((value:string) => {
-        return value.replace(/\s/g, '');
-    })
-    .isISO8601()
-    .withMessage("Il campo non contiene una stringa avente formato ISO8601").bail()
-    .toDate()
-    .isAfter()
-    .withMessage("Il campo data non contiene un valore successivo alla data odierna.").bail();
-}
+/**
+ * Modulo middleware per la validazione dei dati.
+ * Gestisce la logica di validazione e sanificazione dei dati (date, ID) inviati tramite body e params HTTP.
+ * Contiene utilities/middleware riutilizzabili in più contesti all'interno dell'applicazione.
+ */
+
+/**
+ * Verifica se l'intervallo temporale tra due date è superiore a 30 minuti.
+ * * @param start - Data di inizio del periodo.
+ * @param end - Data di fine del periodo.
+ * @returns Esito del controllo (true se la differenza supera i 30 min).
+ */
 
 export const validateCompareDates = (start: Date, end: Date) => {
     const diff: DateCompareConst = end.getTime() - start.getTime() 
     return  diff > DateCompareConst.TIME_DIFF_30M_TO_MS;
 }
 
-export const equals = (a: number[], b: number[]):boolean => {
-    return JSON.stringify(a) === JSON.stringify(b)
-}
-
-export const isLatLon = (a: number, b: number):boolean => {
-    return (a >= -180 && a <= 180) && (b >= -90 && b <= 90);
-}
-
+/**
+ * Middleware per la validazione dell'ID passato come parametro nell'URL.
+ * Verifica che il valore sia un intero positivo e lo converte automaticamente in numero.
+ */
 
 export const validateId = param('id')
 .isInt({gt: 0}).bail()

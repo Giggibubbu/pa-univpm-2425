@@ -11,8 +11,14 @@ import { ViewNavPlanQS } from "../interfaces/http-requests/ViewNavPlanQS";
 import { NavigationRequestAttributes } from "../models/sequelize-auto/NavigationRequest";
 import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
 import { UserAttributes } from "../models/sequelize-auto/User";
-import {transformArrayToPolygon, transformPolygonToArray} from "../utils/geojson_utils"
-import { NavPlanQueryFilter } from "../interfaces/dao/NavPlanQueryFilter";
+import {transformArrayToPolygon, transformPolygonToArray} from "../utils/geo_utils"
+import { NavPlanQueryFilter } from "../interfaces/db/NavPlanQueryFilter";
+
+/**
+ * Service per le operazioni riservate agli operatori.
+ * Gestisce visualizzazione e aggiornamento piani di navigazione, creazione/modifica/eliminazione zone proibite.
+ */
+
 
 export class OperatorRoleService
 {
@@ -25,6 +31,14 @@ export class OperatorRoleService
         this.navPlanDao = navPlanDao;
         this.noNavZoneDao = noNavZoneDao;
     }
+
+     /**
+     * Recupera i piani di navigazione filtrati per stato.
+     * 
+     * @param query - Parametri di ricerca (status)
+     * @returns Lista dei piani di navigazione
+     * @throws {AppLogicError} NAVPLAN_VIEW_NOT_FOUND se non ci sono piani con lo stato richiesto
+     */
 
     viewNavPlan = async (query: ViewNavPlanQS): Promise<NavPlan[]> => {
 
@@ -54,6 +68,17 @@ export class OperatorRoleService
         return navPlansToReturn;
         
     }
+
+    /**
+     * Crea una nuova zona proibita.
+     * Verifica che non esista un'altra zona proibita valorizzata con la stessa rotta.
+     * 
+     * 
+     * @param email - Email dell'operatore che crea la zona
+     * @param noNavZone - Dati della zona da creare
+     * @returns La zona creata con ID assegnato
+     * @throws {AppLogicError} NONAVZONE_CONFLICT se esiste sovrapposizione con altre zone
+     */
 
     createNoNavZone = async (email: string, noNavZone: NoNavZone):Promise<NoNavZone> =>
     {
@@ -113,6 +138,14 @@ export class OperatorRoleService
 
     }
 
+    /**
+     * Aggiorna le date di validità di una zona proibita.
+     * Un operatore può modificare la data inizio e fine validità della zona creata inizialmente da un altro operatore.
+     * 
+     * @param noNavZone - Dati della zona da aggiornare (con nuove date)
+     * @returns La zona aggiornata
+     * @throws {AppLogicError} NONAVZONE_NOT_FOUND se la zona non esiste
+     */
     updateNoNavZone = async (noNavZone: NoNavZone):Promise<NoNavZone> => {
         const noNavZoneToSearch: NoNavigationZoneAttributes = {
             id: noNavZone.id,
@@ -145,6 +178,15 @@ export class OperatorRoleService
         return noNavZone
     }
 
+    /**
+     * Elimina una zona proibita.
+     * Solo l'operatore creatore può eliminare la zona.
+     * 
+     * @param noNavZone - Zona da eliminare
+     * @param email - Email dell'operatore che richiede l'eliminazione
+     * @returns true se l'eliminazione ha successo
+     * @throws {AppLogicError} NONAVZONE_NOT_FOUND se la zona non esiste o non appartiene all'operatore
+     */
     deleteNoNavZone = async (noNavZone: NoNavZone, email: string):Promise<boolean> => {
         const user: UserAttributes| null = await this.userDao.read(email);
 
@@ -165,6 +207,15 @@ export class OperatorRoleService
         }
     }
 
+    /**
+     * Aggiorna lo stato di un piano di navigazione (approva, rigetta o cancella).
+     * Non permette l'aggiornamento di piani già approvati, rigettati o cancellati.
+     * 
+     * @param navPlan - Piano con nuovo stato e motivazione opzionale
+     * @returns Il piano aggiornato
+     * @throws {AppLogicError} FORBIDDEN_NAVPLAN_UPDATE se il piano è già in uno stato finale
+     * @throws {AppLogicError} NAVPLAN_UPD_NOT_FOUND se il piano non esiste
+     */
     updateNavPlan = async (navPlan: NavPlan):Promise<NavPlan> => {
 
         if(navPlan.status)

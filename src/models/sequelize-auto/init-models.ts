@@ -21,6 +21,10 @@ export type {
   UserCreationAttributes,
 };
 
+/**
+ * Funzione di inizializzazione dei modelli Sequelize e delle relative associazioni.
+ * * @function initModels
+*/
 export function initModels(sequelize: Sequelize) {
   const NavigationRequest = _NavigationRequest.initModel(sequelize);
   const NoNavigationZone = _NoNavigationZone.initModel(sequelize);

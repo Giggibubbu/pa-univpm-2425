@@ -6,7 +6,17 @@ import { AppSuccessMessage } from "../../enum/AppSuccessMessage"
 import { HTTPErrorMsgStructure } from "../../interfaces/messages/error/HTTPErrorMsgStructure"
 import { HTTPSuccessMsgStructure } from "../../interfaces/messages/success/HTTPSuccessMsgStructure"
 
+
+/**
+ * Mappa degli errori dell'applicazione con i rispettivi codici HTTP e messaggi.
+ * Utilizzata per standardizzare le risposte di errore dell'API.
+ */
 type HTTPAppErrorMsgMap = Record<AppErrorName, HTTPErrorMsgStructure>;
+
+/**
+ * Mappa dei messaggi di successo dell'applicazione con i rispettivi codici HTTP.
+ * Utilizzata per standardizzare le risposte di successo dell'API.
+ */
 type HTTPAppSuccessMsgMap = Record<AppSuccessName, HTTPSuccessMsgStructure>
 
 export const appErrorMessages:HTTPAppErrorMsgMap = {
@@ -167,6 +177,10 @@ export const appErrorMessages:HTTPAppErrorMsgMap = {
     }
 }
 
+/**
+ * Configurazione dei messaggi di successo HTTP per ogni operazione completata con successo.
+ * Ogni successo è associato a un codice di stato HTTP, un messaggio descrittivo e un oggetto dati (vuoto di default).
+ */
 export const appSuccessMessages: HTTPAppSuccessMsgMap = 
 {
     [AppSuccessName.LOGIN_SUCCESS]: {

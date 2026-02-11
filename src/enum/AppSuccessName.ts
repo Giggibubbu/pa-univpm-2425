@@ -1,3 +1,7 @@
+/**
+ * Nomi di stati di successo dell'applicazione.
+ * Utilizzati da Factory per generare messaggi di successo HTTP corrispondenti.
+ */
 export enum AppSuccessName
 {
     LOGIN_SUCCESS="LOGIN_SUCCESS",

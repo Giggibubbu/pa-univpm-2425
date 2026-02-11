@@ -7,7 +7,10 @@ import { NavPlan } from "../interfaces/http-requests/NavPlanRequest";
 import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
 import { OperatorRoleService } from "../services/OperatorRoleService";
 
-
+/**
+ * Controller per la gestione delle risposte HTTP su rotte che possono ricevere richieste
+ * solo da utenti 'operator'.
+ */
 
 export class OperatorRoleController
 {
@@ -18,6 +21,13 @@ export class OperatorRoleController
     }
 
 
+    /**
+     * Gestisce la creazione di una nuova zona di navigazione proibita.
+     * @param req Oggetto della richiesta HTTP contenente il token e i dati della zona.
+     * @param res Oggetto della risposta HTTP, utilizzato per confermare l'avvenuta creazione.
+     * @returns Una promessa che si risolve con l'invio della risposta al client.
+     * @throws AppLogicError se la creazione della zona fallisce internamente nonostante la validità dei dati.
+     */
     createNoNavZone = async (req: Request, res: Response) => {
         let noNavZone: NoNavZone;
         if(req.jwt?.email && req.noNavZone)
@@ -35,6 +45,13 @@ export class OperatorRoleController
         }
     }
 
+    /**
+     * Gestisce l'aggiornamento di una zona di navigazione proibita esistente.
+     * @param req Oggetto della richiesta HTTP contenente i nuovi dati della zona.
+     * @param res Oggetto della risposta HTTP per confermare l'aggiornamento.
+     * @returns Una promessa che si risolve con l'esito dell'operazione.
+     */
+
     updateNoNavZone = async (req: Request, res: Response) => {
         if(req.noNavZone)
         {
@@ -48,6 +65,13 @@ export class OperatorRoleController
         
         res.status(200).json()
     }
+
+    /**
+     * Gestisce la cancellazione di una zona di navigazione proibita..
+     * @param req Oggetto della richiesta HTTP contenente l'identificativo della zona e il JWT.
+     * @param res Oggetto della risposta HTTP.
+     * @returns Una promessa che si risolve con la conferma della cancellazione.
+     */
 
     deleteNoNavZone = async (req: Request, res: Response) => {
         if(req.noNavZone && req.jwt)
@@ -63,6 +87,12 @@ export class OperatorRoleController
         
     }
 
+    /**
+     * Gestisce l'aggiornamento di una richiesta/piano di navigazione (approvazione o rifiuto).
+     * @param req Oggetto della richiesta HTTP contenente i dati del piano aggiornato.
+     * @param res Oggetto della risposta HTTP.
+     * @returns Una promessa che si risolve con l'invio del piano aggiornato al client.
+     */
     updateNavPlan = async (req: Request, res: Response) => {
         if(req.navPlan)
         {

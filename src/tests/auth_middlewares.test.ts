@@ -7,9 +7,19 @@ import { JwtKeysCouple, readJwtKeys } from "../utils/jwt/jwt_utils";
 import * as jwt from "jsonwebtoken";
 import { UserJwt } from "../interfaces/jwt/UserJwt";
 
+/**
+ * Test jest per i middleware di autenticazione e autorizzazione.
+ * Verifica il comportamento di verifyJwt e checkRole nei possibili scenari.
+ */
+
+
 let req: Partial<Request>;
 let res: Partial<Response>;
 let next: NextFunction;
+
+/**
+ * Test del middleware verifyJwt.
+ */
 
 describe("verifyJwt Middleware testing", () => {
     let keys:JwtKeysCouple;
@@ -58,7 +68,7 @@ describe("verifyJwt Middleware testing", () => {
 
         let jwtToken: string = jwt.sign(userJwt, keys.privKey, {algorithm: "RS256", expiresIn: "1h"});
 
-        jwtToken = jwtToken + "pippo";
+        jwtToken = jwtToken + "toInvalidate";
 
         req = { headers: {authorization: `Bearer ${jwtToken}`}}
 
@@ -82,7 +92,9 @@ describe("verifyJwt Middleware testing", () => {
 
 })
 
-
+/**
+ * Test del middleware checkRole.
+ */
 
 describe("checkRole Middleware testing", () => {
 

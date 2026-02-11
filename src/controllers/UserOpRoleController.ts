@@ -10,7 +10,10 @@ import { UserRoleService } from "../services/UserRoleService";
 import { appSuccessMessages } from "../utils/messages/messages_utils";
 import { create } from "xmlbuilder2";
 
-
+/**
+ * Controller per la gestione delle risposte HTTP su rotte autenticate, 
+ * che possono ricevere richieste sia da utenti 'user' che 'operator'.
+ */
 export class UserOpRoleController
 {
     private userRoleService: UserRoleService;
@@ -21,6 +24,15 @@ export class UserOpRoleController
         this.opRoleService = opRoleService;
     }
 
+    /**
+     * Gestisce la visualizzazione dei piani di navigazione filtrati per ruolo.
+     * Permette agli utenti di scaricare i piani in formati specifici (es. XML) o riceverli come JSON.
+     * Permette agli operatori di visualizzare i piani filtrando eventualmente soltanto per stato.
+     * @param req Oggetto della richiesta HTTP contenente il token JWT, il ruolo e i parametri di formattazione.
+     * @param res Oggetto della risposta HTTP per l'invio dei dati o del file allegato.
+     * @returns Una promessa che si risolve con l'invio della lista dei piani o del file al client.
+     * @throws AppLogicError se il ruolo dell'utente non è autorizzato o se mancano i parametri necessari.
+     */
     view = async (req: Request, res: Response): Promise<void> => {
         let navPlans: NavPlan[];
 
@@ -66,7 +78,8 @@ export class UserOpRoleController
             }
             else
             {
-                res.status(appSuccessMessages[AppSuccessName.NAVPLAN_VIEW_SUCCESS].statusCode).send(JSON.stringify(navPlans, null, 2));
+                const navPlanToJSON = JSON.stringify(navPlans, null, 2)
+                res.status(appSuccessMessages[AppSuccessName.NAVPLAN_VIEW_SUCCESS].statusCode).send(navPlanToJSON);
             }
         }
         else

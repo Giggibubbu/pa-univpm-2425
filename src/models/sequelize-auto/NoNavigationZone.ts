@@ -16,6 +16,18 @@ export type NoNavigationZoneId = NoNavigationZone[NoNavigationZonePk];
 export type NoNavigationZoneOptionalAttributes = "id" | "validityStart" | "validityEnd";
 export type NoNavigationZoneCreationAttributes = Optional<NoNavigationZoneAttributes, NoNavigationZoneOptionalAttributes>;
 
+/**
+ * Modello sequelize per la gestione delle zone proibite.
+ * Consente di mappare la tabella 'no_navigation_zones' del database con il modello.
+ * * @class NoNavigationZone
+ * Attributi tabella - modello:
+ * - id: identificatore univoco e chiave primaria della zona proibita.
+ * - operatorId: identificativo dell'operatore che ha creato la zona proibita.
+ * - route: geometria dell'area interessata dal divieto (formato Polygon).
+ * - validityStart: data e ora di inizio della validità della zona.
+ * - validityEnd: data e ora di termine della validità della zona.
+ */
+
 export class NoNavigationZone extends Model<NoNavigationZoneAttributes, NoNavigationZoneCreationAttributes> implements NoNavigationZoneAttributes {
   id!: number;
   operatorId!: number;

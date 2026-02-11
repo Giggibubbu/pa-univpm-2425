@@ -11,7 +11,13 @@ import { HTTPUserLogin } from "../interfaces/http-requests/UserLogin";
 import { NoNavZoneDAO } from "../dao/NoNavZoneDAO";
 import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
 import { NoNavigationZoneAttributes } from "../models/sequelize-auto/NoNavigationZone";
-import { transformPolygonToArray } from "../utils/geojson_utils";
+import { transformPolygonToArray } from "../utils/geo_utils";
+
+
+/**
+ * Service per la gestione delle operazioni che non richiedono autenticazione.
+ * Gestisce login utenti e visualizzazione pubblica delle zone proibite.
+ */
 
 export class NoAuthService
 {
@@ -23,6 +29,14 @@ export class NoAuthService
         this.userDao = userDao;
     }
 
+    /**
+     * Autentica un utente e genera un token JWT.
+     * 
+     * @param email - Email dell'utente.
+     * @param password - Password in chiaro.
+     * @returns Token JWT e dati utente.
+     * @throws {AppLogicError} INVALID_CREDENTIALS se email o password sono errati.
+     */
     async loginUser(email:string, password:string): Promise<HTTPUserLogin>
     {
         const user:UserAttributes|null|undefined = await this.userDao.read(email);
@@ -54,6 +68,13 @@ export class NoAuthService
         return loginResponseObject
     }
 
+    /**
+     * Recupera tutte le zone proibite.
+     * Converte le geometrie da formato GeoJSON a array di coordinate.
+     * 
+     * @returns Lista di tutte le zone proibite.
+     * @throws {AppLogicError} NONAVZONE_NOT_FOUND se non esistono zone.
+     */
     viewNoNavZones = async ():Promise<NoNavZone[]> =>
     {
         const noNavZones: NoNavigationZoneAttributes[]|undefined = await this.noNavZoneDao.readAll();

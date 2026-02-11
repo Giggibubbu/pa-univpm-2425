@@ -1,3 +1,6 @@
+/**
+ * Messaggi con cui viene popolata la risposta HTTP di operazioni concluse con successo.
+ */
 export enum AppSuccessMessage
 {
     LOGIN_SUCCESS="Login avvenuto con successo.",

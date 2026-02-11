@@ -7,6 +7,16 @@ import { readJwtKeys } from "../utils/jwt/jwt_utils";
 import { AuthRoles } from "../enum/AuthRoles";
 import { UserJwt } from "../interfaces/jwt/UserJwt";
 
+/**
+ * Modulo middleware per l'autenticazione e l'autorizzazione degli utenti.
+ * Gestisce la validazione delle credenziali di login, la verifica dei token JWT
+ * e il controllo degli accessi.
+ */
+
+/**
+ * Validatore per l'indirizzo email nel corpo della richiesta.
+ * Verifica l'esistenza, il formato corretto e applica la sanificazione/normalizzazione.
+ */
 export const validateAndSanitizeEmail: ValidationChain = body('email')
 .exists()
 .withMessage("Il campo non contiene alcun valore.").bail()
@@ -21,6 +31,10 @@ export const validateAndSanitizeEmail: ValidationChain = body('email')
 .withMessage("Il campo non contiene una stringa avente formato email.").bail()
 .normalizeEmail();
 
+/**
+ * Validatore per la password nel corpo della richiesta.
+ * Impone requisiti di sicurezza minimi (8 caratteri, maiuscole, numeri, simboli).
+ */
 export const validateAndSanitizePassword: ValidationChain = body('password')
 .exists()
 .withMessage("Il campo non contiene alcun valore.").bail()
@@ -40,6 +54,13 @@ export const validateAndSanitizePassword: ValidationChain = body('password')
 })
 .withMessage("Il campo non contiene una stringa avente formato password forte.").bail();
 
+/**
+ * Middleware di finalizzazione della validazione della richiesta di login di un generico utente.
+ * Controlla l'esito delle validazioni precedenti e popola l'oggetto login nella richiesta.
+ * * @param req - Oggetto della richiesta Express.
+ * @param res - Oggetto della risposta Express.
+ * @param next - Funzione per passare il controllo al middleware successivo.
+ */
 export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunction) => {
     const errors: Result<ValidationError> = validationResult(req);
     if (!errors.isEmpty()) 
@@ -56,7 +77,18 @@ export const finalizeLoginValidation = (req:Request, res:Response, next:NextFunc
     next();
 }
 
+/**
+ * Catena di validazione esatta per la rotta di login.
+ */
+
 export const loginValidationRules = checkExact([validateAndSanitizeEmail, validateAndSanitizePassword])
+
+/**
+ * Middleware per il controllo dei ruoli utente.
+ * Verifica che il ruolo presente nel JWT corrisponda a quello richiesto per la risorsa.
+ * * @param role - Singolo ruolo o array di ruoli autorizzati.
+ * @returns Funzione middleware per la verifica del ruolo.
+ */
 
 export const checkRole = (role: AuthRoles | AuthRoles[]) => (req:Request, res:Response, next:NextFunction) =>
 {
@@ -71,6 +103,14 @@ export const checkRole = (role: AuthRoles | AuthRoles[]) => (req:Request, res:Re
     
     next()
 }
+
+/**
+ * Middleware per la verifica del token JWT.
+ * Estrae il token dall'header Authorization ed esegue la verifica tramite chiave pubblica.
+ * * @param req - Oggetto della richiesta Express.
+ * @param res - Oggetto della risposta Express.
+ * @param next - Funzione per passare il controllo al middleware successivo.
+ */
 
 export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
 {
@@ -103,10 +143,26 @@ export const verifyJwt = async (req:Request, res:Response, next:NextFunction) =>
     next()
 }
 
+/**
+ * Catena di middleware per verifica autenticazione e autorizzazione per rotte utente.
+ */
+
 export const userRoleValidation = [verifyJwt, checkRole(AuthRoles.USER)]
+
+/**
+ * Catena di middleware per verifica autenticazione e autorizzazione per rotte operatore.
+ */
 
 export const operatorRoleValidation = [verifyJwt, checkRole(AuthRoles.OPERATOR)]
 
+/**
+ * Catena di middleware per verifica autenticazione e autorizzazione per rotte admin.
+ */
+
 export const adminRoleValidation = [verifyJwt, checkRole(AuthRoles.ADMIN)]
+
+/**
+ * Catena di middleware per verifica autenticazione e autorizzazione per rotte condivise tra utente e operatore.
+ */
 
 export const userOpRoleValidation = [verifyJwt, checkRole([AuthRoles.USER, AuthRoles.OPERATOR])]

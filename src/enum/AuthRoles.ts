@@ -1,3 +1,6 @@
+/**
+ * Ruoli utente.
+ */
 export enum AuthRoles 
 {
     USER="user",

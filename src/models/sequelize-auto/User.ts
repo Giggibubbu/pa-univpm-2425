@@ -16,6 +16,18 @@ export type UserId = User[UserPk];
 export type UserOptionalAttributes = "id" | "tokens";
 export type UserCreationAttributes = Optional<UserAttributes, UserOptionalAttributes>;
 
+/**
+ * Modello sequelize per la gestione degli utenti del sistema.
+ * Consente di mappare la tabella 'users' del database con il modello.
+ * * @class User
+ * Attributi tabella - modello:
+ * - id: identificatore univoco e chiave primaria dell'utente.
+ * - email: indirizzo email dell'utente, utilizzato per l'accesso al sistema.
+ * - password: password cifrata dell'utente per l'autenticazione.
+ * - role: ruolo assegnato all'utente (user, operator, admin) che ne definisce i permessi.
+ * - tokens: credito disponibile per l'utente per l'effettuazione di richieste di navigazione.
+ */
+
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   id!: number;
   email!: string;

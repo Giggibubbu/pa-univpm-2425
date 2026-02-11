@@ -1,3 +1,7 @@
+/**
+ * Nomi di errore dell'applicazione standardizzati.
+ * Utilizzati da Factory per generare messaggi di errore HTTP corrispondenti.
+ */
 export enum AppErrorName {
     INVALID_JWT="INVALID_JWT",
     INVALID_CREDENTIALS="INVALID_CREDENTIALS",
