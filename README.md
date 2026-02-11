@@ -1650,7 +1650,7 @@ Le funzionalità possono essere verificate effettuando il run della collection *
 
 I test riportati nella collection di postman, riguardano le seguenti rotte e le seguenti casistiche/ambiti:
 
-#### 1. 🔐 Rotte pubbliche di autenticazione (Auth)
+#### 1. Rotte pubbliche di autenticazione (Auth)
 Verifica dei flussi di login, generazione JWT e gestione errori credenziali.
 
 - [x] **POST /login** - Validazione fallita (campi mancanti) `400`
