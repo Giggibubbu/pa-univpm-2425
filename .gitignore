@@ -5,4 +5,3 @@ docker-compose-dev.yml
 .git
 dist/
 docker-scripts/
-collections/pa-univpm-2425-*env*
