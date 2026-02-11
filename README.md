@@ -1619,10 +1619,12 @@ Inoltre dato che questo middleware chiama la funzione next, in test jest si è d
     - 2° test: nel secondo test occorre creare un token jwt scaduto. Una volta lanciato il middleware si verifica che l'istanza dell'errore sia `AppLogicError` con nome `AppErrorName.JWT_EXPIRED`.
     - 3° test: nel terzo test occorre creare un token jwt invalido (es. firma invalida), verificando che l'errore sia istanza della classe `AppLogicError` con nome `AppErrorName.INVALID_JWT`.
     - 4° test: nel quarto test occorre generare un token valido e verificare che l'attributo jwt presente nella request venga valorizzato al jwt appena generato.
-    2.  **Middleware di Autorizzazione**: Blocca la richiesta se non è previsto che un certo ruolo acceda a una rotta ad esso non dedicata. 
+
+2.  **Middleware di Autorizzazione**: Blocca la richiesta se non è previsto che un certo ruolo acceda a una rotta ad esso non dedicata. 
 Allo stesso modo del middleware di autenticazione si è valorizzato i parametri req, res e next.
     - 1° e 2° test: si è passato dei ruoli autorizzati al middleware che non corrispondevano a quelli del jwt presente nella richiesta HTTP, controllando che venga effettivamente lanciato l'errore della classe  `AppLogicError` con nome `AppErrorName.UNAUTHORIZED_JWT`.
     - 3° test: il terzo test consiste nella verifica che gli argomenti del mock sono undefined, dato che la funzione next() nel caso in cui il ruolo contenuto nel JWT sia valido passa il controllo al middleware successivo. 
+
 3.  **Middleware di gestione errori**: Intercetta gli errori dell'applicazione per trasformarli in risposte HTTP di errore ben strutturate mediante la Factory.
 Vengono inizializzati gli stessi argomenti iniziali dei test precedenti. (req, res e next)
 Si pone questa volta però gli attributi status e json uguale alla funzione mock di jest.
@@ -1695,7 +1697,7 @@ Gestione delle aree interdette e consultazione pubblica.
 - [x] **DELETE /nonavzones/:id** - Eliminazione fallita (ID invalido) `400`
 - [x] **DELETE /nonavzones/:id** - Eliminazione fallita (non trovato) `404`
 
-### 4. Moderazione piani (Operator)
+#### 4. Moderazione piani (Operator)
 Flusso di approvazione e rifiuto delle richieste pendenti.
 
 - [x] **GET /navplans** - Visualizzazione richieste pending `200`
@@ -1703,13 +1705,13 @@ Flusso di approvazione e rifiuto delle richieste pendenti.
 - [x] **PATCH /navplans/:id** - Approvazione successo `200`
 - [x] **PATCH /navplans/:id** - Rifiuto (senza motivazione/non permesso) `403`
 
-### 5. Amministrazione (Admin)
+#### 5. Amministrazione (Admin)
 Gestione ricarica crediti utenti.
 
 - [x] **PATCH /users/:id** - Ricarica token successo `200`
 - [x] **PATCH /users/:id** - Ricarica fallita (input errato) `400`
 
-### 6. ACL & Errori
+#### 6. ACL & Errori
 Verifica delle autorizzazioni e errori di sistema.
 
 - [x] **ACL** - Utente non autorizzato su rotte Operator `401`
@@ -1718,6 +1720,7 @@ Verifica delle autorizzazioni e errori di sistema.
 - [x] **404 Handling** - Rotta sconosciuta gestita correttamente `404`
 - [x] **Malformed Body** - Gestione JSON corrotto `500`
 
+#### Risultati 
 Il run della collection ha prodotto i seguenti risultati:
 
 ![Postman collection run](./readme-content/postman-run-collection.png)
