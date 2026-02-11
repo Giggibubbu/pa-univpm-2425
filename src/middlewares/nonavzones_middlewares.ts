@@ -1,9 +1,10 @@
 import { body, checkExact, matchedData, validationResult } from "express-validator";
-import { isLatLon, validateCompareDates, validateId } from "./generic_middlewares";
+import { validateCompareDates, validateId } from "./generic_middlewares";
 import { NextFunction, Request, Response } from "express";
 import { AppLogicError } from "../errors/AppLogicError";
 import { AppErrorName } from "../enum/AppErrorName";
 import { NoNavZone } from "../interfaces/http-requests/NoNavZoneRequest";
+import { isLatLon } from "../utils/geo_utils";
 
 /**
  * Modulo middleware per la validazione delle zone proibite.

@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { param } from "express-validator";
 import { DateCompareConst } from "../enum/DateCompareConst";
 
 /**
